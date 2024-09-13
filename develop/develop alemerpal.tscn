@@ -1,0 +1,31 @@
+[gd_scene load_steps=4 format=3 uid="uid://b3d68ym3ec1db"]
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_klqdp"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_0dumk"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_2xfhb"]
+
+[node name="Node3D" type="Node3D"]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(4.03195, 0, 0, 0, 1, 0, 0, 0, 4.03195, 0, 0, 0)
+mesh = SubResource("PlaneMesh_klqdp")
+
+[node name="Enemies" type="Node" parent="."]
+
+[node name="EnemyBase" type="CharacterBody3D" parent="Enemies"]
+transform = Transform3D(0.455765, 0, 0, 0, 0.455765, 0, 0, 0, 0.455765, 0, 0.260331, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Enemies/EnemyBase"]
+shape = SubResource("BoxShape3D_0dumk")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Enemies/EnemyBase"]
+mesh = SubResource("BoxMesh_2xfhb")
+
+[node name="State machine" type="Node" parent="Enemies/EnemyBase"]
+
+[node name="Player Fakeout" type="Node" parent="."]
+
+[node name="Camera3D" type="Camera3D" parent="Player Fakeout"]
+transform = Transform3D(1, 0, 0, 0, 0.19675, 0.980454, 0, -0.980454, 0.19675, 0, 1.35458, 1.26615)

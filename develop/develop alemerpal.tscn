@@ -1,4 +1,6 @@
-[gd_scene load_steps=4 format=3 uid="uid://b3d68ym3ec1db"]
+[gd_scene load_steps=7 format=3 uid="uid://b3d68ym3ec1db"]
+
+[ext_resource type="Script" path="res://Player/Camera.gd" id="1_gotj5"]
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_klqdp"]
 
@@ -6,7 +8,15 @@
 
 [sub_resource type="BoxMesh" id="BoxMesh_2xfhb"]
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_fxmop"]
+albedo_color = Color(0.768476, 0.258759, 0.418796, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_kclq8"]
+
 [node name="Node3D" type="Node3D"]
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -0.029422, 0.999567, 0, -0.999567, -0.029422, 0, 2.37374, -0.0228663)
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
 transform = Transform3D(4.03195, 0, 0, 0, 1, 0, 0, 0, 4.03195, 0, 0, 0)
@@ -15,7 +25,7 @@ mesh = SubResource("PlaneMesh_klqdp")
 [node name="Enemies" type="Node" parent="."]
 
 [node name="EnemyBase" type="CharacterBody3D" parent="Enemies"]
-transform = Transform3D(0.455765, 0, 0, 0, 0.455765, 0, 0, 0, 0.455765, 0, 0.260331, 0)
+transform = Transform3D(0.455765, 0, 0, 0, 0.455765, 0, 0, 0, 0.455765, -1.52296, 0.260331, -2.21374)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="Enemies/EnemyBase"]
 shape = SubResource("BoxShape3D_0dumk")
@@ -25,7 +35,40 @@ mesh = SubResource("BoxMesh_2xfhb")
 
 [node name="State machine" type="Node" parent="Enemies/EnemyBase"]
 
-[node name="Player Fakeout" type="Node" parent="."]
+[node name="EnemyBase2" type="CharacterBody3D" parent="Enemies"]
+transform = Transform3D(0.455765, 0, 0, 0, 0.455765, 0, 0, 0, 0.455765, 1.74725, 0.260331, -2.40513)
 
-[node name="Camera3D" type="Camera3D" parent="Player Fakeout"]
-transform = Transform3D(1, 0, 0, 0, 0.19675, 0.980454, 0, -0.980454, 0.19675, 0, 1.35458, 1.26615)
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Enemies/EnemyBase2"]
+shape = SubResource("BoxShape3D_0dumk")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Enemies/EnemyBase2"]
+mesh = SubResource("BoxMesh_2xfhb")
+
+[node name="State machine" type="Node" parent="Enemies/EnemyBase2"]
+
+[node name="EnemyBase3" type="CharacterBody3D" parent="Enemies"]
+transform = Transform3D(0.455765, 0, 0, 0, 0.455765, 0, 0, 0, 0.455765, 1.90116, 0.260331, 1.75037)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Enemies/EnemyBase3"]
+shape = SubResource("BoxShape3D_0dumk")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Enemies/EnemyBase3"]
+mesh = SubResource("BoxMesh_2xfhb")
+
+[node name="State machine" type="Node" parent="Enemies/EnemyBase3"]
+
+[node name="Camera3D" type="Camera3D" parent="." node_paths=PackedStringArray("player", "possible_targets", "camera_target")]
+transform = Transform3D(1, 0, 0, 0, 0.352119, 0.935955, 0, -0.935955, 0.352119, -0.416695, 2.66955, 1.44892)
+script = ExtResource("1_gotj5")
+player = NodePath("../Player body fakeout")
+possible_targets = [NodePath("../Enemies/EnemyBase"), NodePath("../Enemies/EnemyBase2"), NodePath("../Enemies/EnemyBase3")]
+camera_target = NodePath("../Player body fakeout/Camera target")
+
+[node name="Player body fakeout" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.559362, 0, 0, 0, 0.559362, 0, 0, 0, 0.559362, -0.416695, 0.270334, 0.353034)
+material_override = SubResource("StandardMaterial3D_fxmop")
+mesh = SubResource("BoxMesh_kclq8")
+skeleton = NodePath("")
+
+[node name="Camera target" type="Node3D" parent="Player body fakeout"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.28921, 1.95917)

@@ -1,4 +1,4 @@
-@tool
+tool
 extends Camera3D
 
 @export_category("Provided")

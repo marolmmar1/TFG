@@ -11,10 +11,14 @@ config_version=5
 [application]
 
 config/name="TFG"
-run/main_scene="res://develop/develop alemerpal.tscn"
-config/features=PackedStringArray("4.2", "Forward Plus")
+run/main_scene="res://develop/develop marolmmar1.tscn"
+config/features=PackedStringArray("4.3", "Forward Plus")
 config/icon="res://icon.svg"
+
+[autoload]
+
+EventSystem="*res://EventSystem/EventSystem.tscn"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/Todo_Manager/plugin.cfg", "res://addons/anthonyec.camera_preview/plugin.cfg")
+enabled=PackedStringArray("res://addons/Todo_Manager/plugin.cfg", "res://addons/anthonyec.camera_preview/plugin.cfg", "res://addons/draw3d/plugin.cfg")

@@ -1,4 +1,3 @@
-tool
 extends Camera3D
 
 @export_category("Provided")
@@ -6,8 +5,6 @@ extends Camera3D
 @export var player: Node3D
 
 @export var locked_on_target: Node3D
-
-@export var possible_targets: Array[Node3D]
 
 @export var camera_target: Node3D
 
@@ -21,6 +18,8 @@ extends Camera3D
 
 @export_category("DEBUG")
 
+var debug_draw = null
+
 @export var switch_target_debug : bool = false : set = switch_target_debug_func #DEBUG
 
 func switch_target_debug_func(a: bool) -> void: #DEBUG
@@ -31,6 +30,7 @@ func switch_target_debug_func(a: bool) -> void: #DEBUG
 func switch_lock_on_debug_func(a: bool) -> void: #DEBUG
 	switch_lock_on()
 
+@export var possible_targets: Array[Node]
 
 func switch_lock_on():
 	if locked_on_target:
@@ -47,6 +47,13 @@ func switch_target() -> void:
 			locked_on_target = possible_targets[i]
 			break
 
+func add_target(target: Node3D) -> void:
+	if target not in possible_targets:
+		possible_targets.append(target)
+
+func _ready():
+	possible_targets = get_tree().get_nodes_in_group("Targetables")
+	EventSystem.main_game_bus.on_enemy_enter.connect(add_target)
 
 func _process(delta):
 
@@ -59,10 +66,11 @@ func _process(delta):
 			position = lerp(position, camera_target.global_position, delta * speed)
 
 	#DEBUG
+	%Draw3D.clear()
 	if player:
-		DebugDraw3D.draw_line(player.position, self.position, Color.GREEN)
+		%Draw3D.draw_line([player.global_position, self.global_position - Vector3(0, 0.1, 0)], Color.GREEN)
 	if locked_on_target:
-		DebugDraw3D.draw_line(locked_on_target.position, self.position, Color.RED)
+		%Draw3D.draw_line([locked_on_target.global_position, self.global_position - Vector3(0, 0.1, 0)], Color.RED)
 	for target in possible_targets:
 		if target and target != locked_on_target:
-			DebugDraw3D.draw_line(target.position, self.position, Color.YELLOW)
+			%Draw3D.draw_line([target.global_position, self.global_position - Vector3(0, 0.1, 0)], Color.YELLOW)

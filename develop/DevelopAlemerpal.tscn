@@ -1,13 +1,10 @@
-[gd_scene load_steps=13 format=3 uid="uid://im3a857g68pb"]
+[gd_scene load_steps=11 format=3 uid="uid://im3a857g68pb"]
 
 [ext_resource type="Script" path="res://Enemies/enemy_controller.gd" id="1_sgpoj"]
 [ext_resource type="PackedScene" uid="uid://d4nbfuwq6n6jj" path="res://Player/Camera.tscn" id="2_axo3v"]
-[ext_resource type="Script" path="res://addons/draw3d/draw_3d.gd" id="3_1ynjy"]
 [ext_resource type="PackedScene" uid="uid://bdlbr1d4epu11" path="res://Player/player.tscn" id="3_utwhp"]
 [ext_resource type="Script" path="res://Player/StateMachine/finite_state_machine.gd" id="4_b28be"]
 [ext_resource type="Script" path="res://Player/StateMachine/move.gd" id="5_kg1ny"]
-
-[sub_resource type="ImmediateMesh" id="ImmediateMesh_mjrdp"]
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_vytvr"]
 
@@ -21,12 +18,6 @@ albedo_color = Color(0.768476, 0.258759, 0.418796, 1)
 [sub_resource type="BoxMesh" id="BoxMesh_78rks"]
 
 [node name="Node3D" type="Node3D"]
-
-[node name="Draw3D" type="MeshInstance3D" parent="."]
-unique_name_in_owner = true
-mesh = SubResource("ImmediateMesh_mjrdp")
-skeleton = NodePath("../Camera")
-script = ExtResource("3_1ynjy")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, -0.029422, 0.999567, 0, -0.999567, -0.029422, 0, 2.37374, -0.0228663)

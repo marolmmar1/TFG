@@ -55,6 +55,10 @@ func _ready():
 	possible_targets = get_tree().get_nodes_in_group("Targetables")
 	EventSystem.main_game_bus.on_enemy_enter.connect(add_target)
 
+	debug_draw = Draw3D.new()
+	get_tree().root.get_child(0).add_child(debug_draw)
+
+
 func _process(delta):
 
 	if camera_target:
@@ -66,11 +70,11 @@ func _process(delta):
 			position = lerp(position, camera_target.global_position, delta * speed)
 
 	#DEBUG
-	%Draw3D.clear()
+	debug_draw.clear()
 	if player:
-		%Draw3D.draw_line([player.global_position, self.global_position - Vector3(0, 0.1, 0)], Color.GREEN)
+		debug_draw.draw_line([player.global_position, self.global_position - Vector3(0, 0.1, 0)], Color.GREEN)
 	if locked_on_target:
-		%Draw3D.draw_line([locked_on_target.global_position, self.global_position - Vector3(0, 0.1, 0)], Color.RED)
+		debug_draw.draw_line([locked_on_target.global_position, self.global_position - Vector3(0, 0.1, 0)], Color.RED)
 	for target in possible_targets:
 		if target and target != locked_on_target:
-			%Draw3D.draw_line([target.global_position, self.global_position - Vector3(0, 0.1, 0)], Color.YELLOW)
+			debug_draw.draw_line([target.global_position, self.global_position - Vector3(0, 0.1, 0)], Color.YELLOW)

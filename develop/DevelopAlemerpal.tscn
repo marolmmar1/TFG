@@ -1,16 +1,12 @@
-[gd_scene load_steps=11 format=3 uid="uid://im3a857g68pb"]
+[gd_scene load_steps=9 format=3 uid="uid://im3a857g68pb"]
 
-[ext_resource type="Script" path="res://Enemies/enemy_controller.gd" id="1_sgpoj"]
+[ext_resource type="PackedScene" uid="uid://fbvujkq78l25" path="res://Enemies/EnemyBase.tscn" id="1_w0hyu"]
 [ext_resource type="PackedScene" uid="uid://d4nbfuwq6n6jj" path="res://Player/Camera.tscn" id="2_axo3v"]
 [ext_resource type="PackedScene" uid="uid://bdlbr1d4epu11" path="res://Player/player.tscn" id="3_utwhp"]
 [ext_resource type="Script" path="res://Player/StateMachine/finite_state_machine.gd" id="4_b28be"]
 [ext_resource type="Script" path="res://Player/StateMachine/move.gd" id="5_kg1ny"]
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_vytvr"]
-
-[sub_resource type="BoxShape3D" id="BoxShape3D_qg8cn"]
-
-[sub_resource type="BoxMesh" id="BoxMesh_cho3x"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_8i680"]
 albedo_color = Color(0.768476, 0.258759, 0.418796, 1)
@@ -28,39 +24,17 @@ mesh = SubResource("PlaneMesh_vytvr")
 
 [node name="Enemies" type="Node" parent="."]
 
-[node name="EnemyBase" type="CharacterBody3D" parent="Enemies"]
-transform = Transform3D(0.455765, 0, 0, 0, 0.455765, 0, 0, 0, 0.455765, -1.52296, 0.260331, -2.21374)
-script = ExtResource("1_sgpoj")
+[node name="EnemyBase" parent="Enemies" instance=ExtResource("1_w0hyu")]
+transform = Transform3D(0.455765, 0, 0, 0, 0.455765, 0, 0, 0, 0.455765, -1.38249, 0.32796, -1.9867)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Enemies/EnemyBase"]
-shape = SubResource("BoxShape3D_qg8cn")
+[node name="EnemyBase2" parent="Enemies" instance=ExtResource("1_w0hyu")]
+transform = Transform3D(0.455765, 0, 0, 0, 0.455765, 0, 0, 0, 0.455765, 2.73031, 0.260331, -3.13719)
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="Enemies/EnemyBase"]
-mesh = SubResource("BoxMesh_cho3x")
+[node name="EnemyBase3" parent="Enemies" instance=ExtResource("1_w0hyu")]
+transform = Transform3D(0.455765, 0, 0, 0, 0.455765, 0, 0, 0, 0.455765, 1.95002, 0.260331, 1.29823)
 
-[node name="EnemyBase2" type="CharacterBody3D" parent="Enemies"]
-transform = Transform3D(0.455765, 0, 0, 0, 0.455765, 0, 0, 0, 0.455765, 1.74725, 0.260331, -2.40513)
-script = ExtResource("1_sgpoj")
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Enemies/EnemyBase2"]
-shape = SubResource("BoxShape3D_qg8cn")
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="Enemies/EnemyBase2"]
-mesh = SubResource("BoxMesh_cho3x")
-
-[node name="EnemyBase3" type="CharacterBody3D" parent="Enemies"]
-transform = Transform3D(0.455765, 0, 0, 0, 0.455765, 0, 0, 0, 0.455765, 1.90116, 0.260331, 1.75037)
-script = ExtResource("1_sgpoj")
-
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Enemies/EnemyBase3"]
-shape = SubResource("BoxShape3D_qg8cn")
-
-[node name="MeshInstance3D" type="MeshInstance3D" parent="Enemies/EnemyBase3"]
-mesh = SubResource("BoxMesh_cho3x")
-
-[node name="Camera" parent="." node_paths=PackedStringArray("player", "locked_on_target", "camera_target") instance=ExtResource("2_axo3v")]
+[node name="Camera" parent="." node_paths=PackedStringArray("player", "camera_target") instance=ExtResource("2_axo3v")]
 player = NodePath("../Player body fakeout")
-locked_on_target = NodePath("../Enemies/EnemyBase")
 camera_target = NodePath("../Player body fakeout/Camera target")
 
 [node name="Player body fakeout" type="MeshInstance3D" parent="."]

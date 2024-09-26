@@ -1,0 +1,17 @@
+[gd_scene load_steps=4 format=3 uid="uid://fbvujkq78l25"]
+
+[ext_resource type="Script" path="res://Enemies/enemy_controller.gd" id="1_ghopu"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_cho3x"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_mpc0u"]
+
+[node name="EnemyBase" type="CharacterBody3D"]
+transform = Transform3D(0.455765, 0, 0, 0, 0.455765, 0, 0, 0, 0.455765, 0, 0, 0)
+script = ExtResource("1_ghopu")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+mesh = SubResource("BoxMesh_cho3x")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("BoxShape3D_mpc0u")

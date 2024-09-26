@@ -1,0 +1,57 @@
+[gd_scene load_steps=9 format=3 uid="uid://b3d68ym3ec1db"]
+
+[ext_resource type="Script" path="res://Player/camera.gd" id="1_gotj5"]
+[ext_resource type="PackedScene" uid="uid://bdlbr1d4epu11" path="res://Player/player.tscn" id="2_2yn5y"]
+[ext_resource type="Script" path="res://Player/StateMachine/finite_state_machine.gd" id="3_kv5kl"]
+[ext_resource type="Script" path="res://Player/StateMachine/move.gd" id="4_in03b"]
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_klqdp"]
+
+[sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_vlxm6"]
+data = PackedVector3Array(1, 0, 1, -1, 0, 1, 1, 0, -1, -1, 0, 1, -1, 0, -1, 1, 0, -1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_fxmop"]
+albedo_color = Color(0.768476, 0.258759, 0.418796, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_kclq8"]
+
+[node name="Node3D" type="Node3D"]
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -0.029422, 0.999567, 0, -0.999567, -0.029422, 0, 2.37374, -0.0228663)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(10, 0, 0, 0, 2.48, 0, 0, 0, 10, 0, 0, 0)
+mesh = SubResource("PlaneMesh_klqdp")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="MeshInstance3D"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MeshInstance3D/StaticBody3D"]
+shape = SubResource("ConcavePolygonShape3D_vlxm6")
+
+[node name="Camera3D" type="Camera3D" parent="." node_paths=PackedStringArray("player", "locked_on_target", "camera_target")]
+transform = Transform3D(1, 0, 0, 0, 0.352119, 0.935955, 0, -0.935955, 0.352119, -0.180869, 2.64278, 1.00288)
+script = ExtResource("1_gotj5")
+player = NodePath("../Player")
+locked_on_target = NodePath("../Player")
+camera_target = NodePath("../Player body fakeout/Camera target")
+
+[node name="Player body fakeout" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.559362, 0, 0, 0, 0.559362, 0, 0, 0, 0.559362, -0.314225, 0.243562, 0.646423)
+material_override = SubResource("StandardMaterial3D_fxmop")
+mesh = SubResource("BoxMesh_kclq8")
+skeleton = NodePath("")
+
+[node name="Camera target" type="Node3D" parent="Player body fakeout"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.28921, 1.95917)
+
+[node name="Player" parent="." instance=ExtResource("2_2yn5y")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.68023, 0)
+script = null
+
+[node name="FiniteStateMachine" type="Node" parent="Player" node_paths=PackedStringArray("state")]
+script = ExtResource("3_kv5kl")
+state = NodePath("WanderState")
+
+[node name="WanderState" type="Node" parent="Player/FiniteStateMachine"]
+script = ExtResource("4_in03b")

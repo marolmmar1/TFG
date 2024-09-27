@@ -53,6 +53,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.52358, 0.968837, 0)
 script = ExtResource("4_b28be")
 state = NodePath("WanderState")
 
-[node name="WanderState" type="Node" parent="Player/FiniteStateMachine" node_paths=PackedStringArray("actor")]
+[node name="WanderState" type="Node" parent="Player/FiniteStateMachine" node_paths=PackedStringArray("controller")]
 script = ExtResource("5_kg1ny")
-actor = NodePath("../..")
+controller = NodePath("../..")

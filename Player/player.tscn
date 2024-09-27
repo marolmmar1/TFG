@@ -1,6 +1,4 @@
-[gd_scene load_steps=5 format=3 uid="uid://bdlbr1d4epu11"]
-
-[ext_resource type="Script" path="res://Player/playerontroler.gd" id="1_osfll"]
+[gd_scene load_steps=4 format=3 uid="uid://bdlbr1d4epu11"]
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_ekxad"]
 
@@ -9,7 +7,6 @@
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_01j77"]
 
 [node name="Player" type="CharacterBody3D"]
-script = ExtResource("1_osfll")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
 mesh = SubResource("CapsuleMesh_ekxad")

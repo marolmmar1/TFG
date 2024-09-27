@@ -1,9 +1,11 @@
-[gd_scene load_steps=11 format=3 uid="uid://b3d68ym3ec1db"]
+[gd_scene load_steps=13 format=3 uid="uid://b3d68ym3ec1db"]
 
 [ext_resource type="Script" path="res://Player/Camera.gd" id="1_iydw4"]
 [ext_resource type="PackedScene" uid="uid://bdlbr1d4epu11" path="res://Player/player.tscn" id="2_klvgl"]
 [ext_resource type="Script" path="res://Player/StateMachine/finite_state_machine.gd" id="3_xls10"]
 [ext_resource type="Script" path="res://Player/StateMachine/move.gd" id="4_snwch"]
+[ext_resource type="Script" path="res://Player/StateMachine/dash.gd" id="5_tecd5"]
+[ext_resource type="Script" path="res://Player/StateMachine/run.gd" id="6_c8jpa"]
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_klqdp"]
 
@@ -93,6 +95,24 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.68023, 0)
 script = ExtResource("3_xls10")
 state = NodePath("MoveState")
 
-[node name="MoveState" type="Node" parent="Player/FiniteStateMachine" node_paths=PackedStringArray("controller")]
+[node name="MoveState" type="Node" parent="Player/FiniteStateMachine" node_paths=PackedStringArray("controller", "dash", "run")]
 script = ExtResource("4_snwch")
 controller = NodePath("../..")
+dash = NodePath("../DashState")
+run = NodePath("../RunState")
+
+[node name="DashState" type="Node" parent="Player/FiniteStateMachine" node_paths=PackedStringArray("controller", "move", "run")]
+script = ExtResource("5_tecd5")
+controller = NodePath("../..")
+move = NodePath("../MoveState")
+run = NodePath("../RunState")
+
+[node name="RunState" type="Node" parent="Player/FiniteStateMachine" node_paths=PackedStringArray("controller", "move", "dash")]
+script = ExtResource("6_c8jpa")
+controller = NodePath("../..")
+move = NodePath("../MoveState")
+dash = NodePath("../DashState")
+
+[connection signal="on_change_state" from="Player/FiniteStateMachine/MoveState" to="Player/FiniteStateMachine" method="_on_move_state_on_change_state"]
+[connection signal="on_change_state" from="Player/FiniteStateMachine/DashState" to="Player/FiniteStateMachine" method="_on_dash_state_on_change_state"]
+[connection signal="on_change_state" from="Player/FiniteStateMachine/RunState" to="Player/FiniteStateMachine" method="_on_run_state_on_change_state"]

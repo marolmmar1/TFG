@@ -1,0 +1,10 @@
+[gd_scene load_steps=3 format=3 uid="uid://h06iv8g5snmb"]
+
+[ext_resource type="Script" path="res://EventSystem/event_system.gd" id="1_wayp7"]
+[ext_resource type="Script" path="res://EventSystem/main_game_bus.gd" id="2_8dvth"]
+
+[node name="EventSystem" type="Node"]
+script = ExtResource("1_wayp7")
+
+[node name="MainGameBus" type="Node" parent="."]
+script = ExtResource("2_8dvth")

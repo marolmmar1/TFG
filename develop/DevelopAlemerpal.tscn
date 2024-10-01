@@ -1,0 +1,58 @@
+[gd_scene load_steps=9 format=3 uid="uid://im3a857g68pb"]
+
+[ext_resource type="PackedScene" uid="uid://fbvujkq78l25" path="res://Enemies/EnemyBase.tscn" id="1_w0hyu"]
+[ext_resource type="PackedScene" uid="uid://d4nbfuwq6n6jj" path="res://Player/Camera.tscn" id="2_axo3v"]
+[ext_resource type="PackedScene" uid="uid://bdlbr1d4epu11" path="res://Player/player.tscn" id="3_utwhp"]
+[ext_resource type="Script" path="res://Player/StateMachine/finite_state_machine.gd" id="4_b28be"]
+[ext_resource type="Script" path="res://Player/StateMachine/move.gd" id="5_kg1ny"]
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_vytvr"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_8i680"]
+albedo_color = Color(0.768476, 0.258759, 0.418796, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_78rks"]
+
+[node name="Node3D" type="Node3D"]
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, -0.029422, 0.999567, 0, -0.999567, -0.029422, 0, 2.37374, -0.0228663)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(10, 0, 0, 0, 2.48, 0, 0, 0, 10, 0, 0, 0)
+mesh = SubResource("PlaneMesh_vytvr")
+
+[node name="Enemies" type="Node" parent="."]
+
+[node name="EnemyBase" parent="Enemies" instance=ExtResource("1_w0hyu")]
+transform = Transform3D(0.455765, 0, 0, 0, 0.455765, 0, 0, 0, 0.455765, -1.38249, 0.32796, -1.9867)
+
+[node name="EnemyBase2" parent="Enemies" instance=ExtResource("1_w0hyu")]
+transform = Transform3D(0.455765, 0, 0, 0, 0.455765, 0, 0, 0, 0.455765, 2.73031, 0.260331, -3.13719)
+
+[node name="EnemyBase3" parent="Enemies" instance=ExtResource("1_w0hyu")]
+transform = Transform3D(0.455765, 0, 0, 0, 0.455765, 0, 0, 0, 0.455765, 1.95002, 0.260331, 1.29823)
+
+[node name="Camera" parent="." node_paths=PackedStringArray("player", "camera_target") instance=ExtResource("2_axo3v")]
+player = NodePath("../Player body fakeout")
+camera_target = NodePath("../Player body fakeout/Camera target")
+
+[node name="Player body fakeout" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.559362, 0, 0, 0, 0.559362, 0, 0, 0, 0.559362, -0.314225, 0.243562, 0.646423)
+material_override = SubResource("StandardMaterial3D_8i680")
+mesh = SubResource("BoxMesh_78rks")
+skeleton = NodePath("")
+
+[node name="Camera target" type="Node3D" parent="Player body fakeout"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.28921, 1.95917)
+
+[node name="Player" parent="." instance=ExtResource("3_utwhp")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.52358, 0.968837, 0)
+
+[node name="FiniteStateMachine" type="Node" parent="Player" node_paths=PackedStringArray("state")]
+script = ExtResource("4_b28be")
+state = NodePath("WanderState")
+
+[node name="WanderState" type="Node" parent="Player/FiniteStateMachine" node_paths=PackedStringArray("controller")]
+script = ExtResource("5_kg1ny")
+controller = NodePath("../..")

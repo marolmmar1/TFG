@@ -25,6 +25,6 @@ func _physics_process(delta):
 
 func _unhandled_input(event):
 	if event.is_action_pressed("dash") and controller.is_on_floor() and  abs(controller.velocity.x)+ abs(controller.velocity.z)> 0:
-		exit_state(dash)
+		exit_state(dash, event)
 	if event.is_action_released("run") or controller.is_on_floor()==false or  abs(controller.velocity.x)+ abs(controller.velocity.z)== 0:
-		exit_state(move)
+		exit_state(move, event)

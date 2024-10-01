@@ -24,6 +24,7 @@ func _physics_process(delta):
 	# Get the input direction and handle the movement/deceleration.
 	# As good practice, you should replace UI actions with custom gameplay actions.
 	var input_dir = Input.get_vector("left", "right", "up", "down")
+	print(input_dir)
 	var direction = (controller.transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
 	if direction:
 		controller.velocity.x = direction.x * SPEED
@@ -36,6 +37,6 @@ func _physics_process(delta):
 
 func _unhandled_input(event):
 	if event.is_action_pressed("dash") and controller.is_on_floor() and  abs(controller.velocity.x)+ abs(controller.velocity.z)> 0 :
-		exit_state(dash)
+		exit_state(dash, event)
 	if event.is_action_pressed("run") and controller.is_on_floor() and  abs(controller.velocity.x)+ abs(controller.velocity.z)> 0:
-		exit_state(run)
+		exit_state(run, event)

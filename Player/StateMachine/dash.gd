@@ -21,7 +21,7 @@ func _physics_process(delta):
 	controller.move_and_slide()
 	
 
-func enter_state(state):
+func enter_state(state, event = null):
 	super(state)
 	controller.velocity.x = controller.velocity.x * DASH_VELOCITY
 	controller.velocity.z = controller.velocity.z * DASH_VELOCITY

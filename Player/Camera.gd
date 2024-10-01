@@ -6,7 +6,7 @@ extends Camera3D
 
 @export var locked_on_target: Node3D
 
-@export var camera_target: Node3D
+var camera_target: Node3D
 
 
 @export_category("Main")
@@ -62,6 +62,7 @@ func add_target(target: Node3D) -> void:
 func _ready():
 	possible_targets = get_tree().get_nodes_in_group("Targetables")
 	EventSystem.main_game_bus.on_enemy_enter.connect(add_target)
+	camera_target = player.get_node("Camera target")
 
 	#DEBUG
 	debug_draw = Draw3D.new()

@@ -1,8 +1,10 @@
-[gd_scene load_steps=7 format=3 uid="uid://bdlbr1d4epu11"]
+[gd_scene load_steps=9 format=3 uid="uid://bdlbr1d4epu11"]
 
 [ext_resource type="Script" path="res://Player/StateMachine/finite_state_machine.gd" id="1_7gaqk"]
 [ext_resource type="Script" path="res://Player/StateMachine/move.gd" id="2_mcf13"]
-[ext_resource type="Script" path="res://develop/attack_state.gd" id="3_46x1y"]
+[ext_resource type="Script" path="res://Player/StateMachine/attack_state.gd" id="3_46x1y"]
+[ext_resource type="Script" path="res://Player/StateMachine/dash.gd" id="4_sn5km"]
+[ext_resource type="Script" path="res://Player/StateMachine/run.gd" id="5_fb026"]
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_ekxad"]
 
@@ -21,12 +23,31 @@ shape = SubResource("CapsuleShape3D_01j77")
 
 [node name="Weapon holder" type="Node3D" parent="."]
 
+[node name="Camera target" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.28921, 1.95917)
+
 [node name="FiniteStateMachine" type="Node" parent="." node_paths=PackedStringArray("state")]
 script = ExtResource("1_7gaqk")
 state = NodePath("MoveState")
 
-[node name="MoveState" type="Node" parent="FiniteStateMachine"]
+[node name="MoveState" type="Node" parent="FiniteStateMachine" node_paths=PackedStringArray("controller", "dash", "run")]
 script = ExtResource("2_mcf13")
+controller = NodePath("../..")
+dash = NodePath("../DashState")
+run = NodePath("../RunState")
 
-[node name="AttackState" type="Node" parent="FiniteStateMachine"]
+[node name="AttackState" type="Node" parent="FiniteStateMachine" node_paths=PackedStringArray("controller")]
 script = ExtResource("3_46x1y")
+controller = NodePath("../..")
+
+[node name="DashState" type="Node" parent="FiniteStateMachine" node_paths=PackedStringArray("controller", "move", "run")]
+script = ExtResource("4_sn5km")
+controller = NodePath("../..")
+move = NodePath("../MoveState")
+run = NodePath("../RunState")
+
+[node name="RunState" type="Node" parent="FiniteStateMachine" node_paths=PackedStringArray("controller", "move", "dash")]
+script = ExtResource("5_fb026")
+controller = NodePath("../..")
+move = NodePath("../MoveState")
+dash = NodePath("../DashState")

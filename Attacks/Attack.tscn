@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://bopumqwuigbeu"]
 
-[ext_resource type="Script" path="res://attack.gd" id="1_xk2xn"]
+[ext_resource type="Script" path="res://Attacks/attack.gd" id="1_xk2xn"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_ed6h0"]
 

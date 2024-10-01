@@ -1,9 +1,7 @@
-[gd_scene load_steps=11 format=3 uid="uid://b3d68ym3ec1db"]
+[gd_scene load_steps=9 format=3 uid="uid://b3d68ym3ec1db"]
 
-[ext_resource type="Script" path="res://Player/Camera.gd" id="1_iydw4"]
+[ext_resource type="Script" path="res://Player/camera.gd" id="1_iydw4"]
 [ext_resource type="PackedScene" uid="uid://bdlbr1d4epu11" path="res://Player/player.tscn" id="2_klvgl"]
-[ext_resource type="Script" path="res://Player/StateMachine/finite_state_machine.gd" id="3_xls10"]
-[ext_resource type="Script" path="res://Player/StateMachine/move.gd" id="4_snwch"]
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_klqdp"]
 
@@ -88,11 +86,3 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.28921, 1.95917)
 
 [node name="Player" parent="." instance=ExtResource("2_klvgl")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.68023, 0)
-
-[node name="FiniteStateMachine" type="Node" parent="Player" node_paths=PackedStringArray("state")]
-script = ExtResource("3_xls10")
-state = NodePath("MoveState")
-
-[node name="MoveState" type="Node" parent="Player/FiniteStateMachine" node_paths=PackedStringArray("controller")]
-script = ExtResource("4_snwch")
-controller = NodePath("../..")

@@ -1,11 +1,8 @@
-[gd_scene load_steps=10 format=3 uid="uid://im3a857g68pb"]
+[gd_scene load_steps=7 format=3 uid="uid://im3a857g68pb"]
 
 [ext_resource type="PackedScene" uid="uid://fbvujkq78l25" path="res://Enemies/EnemyBase.tscn" id="1_w0hyu"]
 [ext_resource type="PackedScene" uid="uid://d4nbfuwq6n6jj" path="res://Player/Camera.tscn" id="2_axo3v"]
 [ext_resource type="PackedScene" uid="uid://bdlbr1d4epu11" path="res://Player/player.tscn" id="3_utwhp"]
-[ext_resource type="Script" path="res://Player/StateMachine/finite_state_machine.gd" id="4_b28be"]
-[ext_resource type="Script" path="res://Player/StateMachine/move.gd" id="5_kg1ny"]
-[ext_resource type="PackedScene" uid="uid://bopumqwuigbeu" path="res://Attack.tscn" id="6_ap8y3"]
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_vytvr"]
 
@@ -49,11 +46,3 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.28921, 1.95917)
 
 [node name="Player" parent="." instance=ExtResource("3_utwhp")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.52358, 0.968837, 0)
-
-[node name="FiniteStateMachine" type="Node" parent="Player" node_paths=PackedStringArray("state")]
-script = ExtResource("4_b28be")
-state = NodePath("WanderState")
-
-[node name="WanderState" type="Node" parent="Player/FiniteStateMachine" node_paths=PackedStringArray("controller")]
-script = ExtResource("5_kg1ny")
-controller = NodePath("../..")

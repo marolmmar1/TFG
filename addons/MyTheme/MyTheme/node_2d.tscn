@@ -1,0 +1,10 @@
+[gd_scene format=3 uid="uid://c55a2lw6v4f8d"]
+
+[node name="Node2D" type="Node2D"]
+
+[node name="Node2D" type="Node2D" parent="."]
+
+[node name="Node2D" type="Node2D" parent="Node2D"]
+position = Vector2(291, 127)
+
+[node name="Node2D2" type="Node2D" parent="Node2D"]

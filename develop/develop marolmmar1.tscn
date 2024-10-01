@@ -1,7 +1,8 @@
-[gd_scene load_steps=9 format=3 uid="uid://flemgd1q65d8"]
+[gd_scene load_steps=10 format=3 uid="uid://flemgd1q65d8"]
 
 [ext_resource type="Script" path="res://Player/camera.gd" id="1_gotj5"]
 [ext_resource type="PackedScene" uid="uid://bdlbr1d4epu11" path="res://Player/player.tscn" id="2_2yn5y"]
+[ext_resource type="Script" path="res://Player/player.gd" id="3_0wjl1"]
 [ext_resource type="Script" path="res://Player/StateMachine/finite_state_machine.gd" id="3_kv5kl"]
 [ext_resource type="Script" path="res://Player/StateMachine/move.gd" id="4_in03b"]
 
@@ -47,6 +48,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.28921, 1.95917)
 
 [node name="Player" parent="." instance=ExtResource("2_2yn5y")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.68023, 0)
+script = ExtResource("3_0wjl1")
 
 [node name="FiniteStateMachine" type="Node" parent="Player" node_paths=PackedStringArray("state")]
 script = ExtResource("3_kv5kl")

@@ -22,25 +22,26 @@ shape = SubResource("CapsuleShape3D_01j77")
 
 [node name="Weapon holder" type="Node3D" parent="."]
 
-[node name="FiniteStateMachine" type="Node" parent="." node_paths=PackedStringArray("state")]
+[node name="FiniteStateMachine" type="Node" parent="." node_paths=PackedStringArray("player", "state")]
 script = ExtResource("1_cb5ng")
+player = NodePath("..")
 state = NodePath("MoveState")
 
 [node name="MoveState" type="Node" parent="FiniteStateMachine" node_paths=PackedStringArray("controller", "dash", "run")]
 script = ExtResource("2_ido2b")
-controller = NodePath("")
+controller = NodePath("../..")
 dash = NodePath("../DashState")
 run = NodePath("../RunState")
 
 [node name="DashState" type="Node" parent="FiniteStateMachine" node_paths=PackedStringArray("controller", "move", "run")]
 script = ExtResource("3_ym1wr")
-controller = NodePath("")
+controller = NodePath("../..")
 move = NodePath("../MoveState")
 run = NodePath("../RunState")
 
 [node name="RunState" type="Node" parent="FiniteStateMachine" node_paths=PackedStringArray("controller", "move", "dash")]
 script = ExtResource("4_2w4oq")
-controller = NodePath("")
+controller = NodePath("../..")
 move = NodePath("../MoveState")
 dash = NodePath("../DashState")
 

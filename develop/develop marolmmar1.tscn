@@ -50,9 +50,9 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.28921, 1.95917)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.68023, 0)
 script = ExtResource("3_0wjl1")
 
-[node name="FiniteStateMachine" type="Node" parent="Player" node_paths=PackedStringArray("state")]
+[node name="FiniteStateMachine2" type="Node" parent="Player" node_paths=PackedStringArray("state")]
 script = ExtResource("3_kv5kl")
 state = NodePath("WanderState")
 
-[node name="WanderState" type="Node" parent="Player/FiniteStateMachine"]
+[node name="WanderState" type="Node" parent="Player/FiniteStateMachine2"]
 script = ExtResource("4_in03b")

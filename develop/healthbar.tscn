@@ -1,4 +1,6 @@
-[gd_scene load_steps=5 format=3 uid="uid://d4n28vuote3lh"]
+[gd_scene load_steps=6 format=3 uid="uid://d4n28vuote3lh"]
+
+[ext_resource type="Script" path="res://develop/healthbar.gd" id="1_3dm2r"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_8i0sy"]
 
@@ -24,6 +26,7 @@ theme_override_styles/background = SubResource("StyleBoxEmpty_8i0sy")
 theme_override_styles/fill = SubResource("StyleBoxFlat_1j6sq")
 value = 60.0
 show_percentage = false
+script = ExtResource("1_3dm2r")
 
 [node name="DamageBar" type="ProgressBar" parent="."]
 z_index = -1
@@ -39,3 +42,7 @@ value = 80.0
 show_percentage = false
 
 [node name="Timer" type="Timer" parent="."]
+wait_time = 0.4
+one_shot = true
+
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]

@@ -1,10 +1,9 @@
-[gd_scene load_steps=9 format=3 uid="uid://bdlbr1d4epu11"]
+[gd_scene load_steps=8 format=3 uid="uid://bdlbr1d4epu11"]
 
-[ext_resource type="Script" path="res://Player/StateMachine/finite_state_machine.gd" id="1_7gaqk"]
-[ext_resource type="Script" path="res://Player/StateMachine/move.gd" id="2_mcf13"]
-[ext_resource type="Script" path="res://Player/StateMachine/attack_state.gd" id="3_46x1y"]
-[ext_resource type="Script" path="res://Player/StateMachine/dash.gd" id="4_sn5km"]
-[ext_resource type="Script" path="res://Player/StateMachine/run.gd" id="5_fb026"]
+[ext_resource type="Script" path="res://Player/StateMachine/finite_state_machine.gd" id="1_cb5ng"]
+[ext_resource type="Script" path="res://Player/StateMachine/move.gd" id="2_ido2b"]
+[ext_resource type="Script" path="res://Player/StateMachine/dash.gd" id="3_ym1wr"]
+[ext_resource type="Script" path="res://Player/StateMachine/run.gd" id="4_2w4oq"]
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_ekxad"]
 
@@ -23,31 +22,29 @@ shape = SubResource("CapsuleShape3D_01j77")
 
 [node name="Weapon holder" type="Node3D" parent="."]
 
-[node name="Camera target" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.28921, 1.95917)
-
-[node name="FiniteStateMachine" type="Node" parent="." node_paths=PackedStringArray("state")]
-script = ExtResource("1_7gaqk")
+[node name="FiniteStateMachine" type="Node" parent="." node_paths=PackedStringArray("player", "state")]
+script = ExtResource("1_cb5ng")
+player = NodePath("..")
 state = NodePath("MoveState")
 
 [node name="MoveState" type="Node" parent="FiniteStateMachine" node_paths=PackedStringArray("controller", "dash", "run")]
-script = ExtResource("2_mcf13")
+script = ExtResource("2_ido2b")
 controller = NodePath("../..")
 dash = NodePath("../DashState")
 run = NodePath("../RunState")
 
-[node name="AttackState" type="Node" parent="FiniteStateMachine" node_paths=PackedStringArray("controller")]
-script = ExtResource("3_46x1y")
-controller = NodePath("../..")
-
 [node name="DashState" type="Node" parent="FiniteStateMachine" node_paths=PackedStringArray("controller", "move", "run")]
-script = ExtResource("4_sn5km")
+script = ExtResource("3_ym1wr")
 controller = NodePath("../..")
 move = NodePath("../MoveState")
 run = NodePath("../RunState")
 
 [node name="RunState" type="Node" parent="FiniteStateMachine" node_paths=PackedStringArray("controller", "move", "dash")]
-script = ExtResource("5_fb026")
+script = ExtResource("4_2w4oq")
 controller = NodePath("../..")
 move = NodePath("../MoveState")
 dash = NodePath("../DashState")
+
+[connection signal="on_change_state" from="FiniteStateMachine/MoveState" to="FiniteStateMachine" method="_on_move_state_on_change_state"]
+[connection signal="on_change_state" from="FiniteStateMachine/DashState" to="FiniteStateMachine" method="_on_dash_state_on_change_state"]
+[connection signal="on_change_state" from="FiniteStateMachine/RunState" to="FiniteStateMachine" method="_on_run_state_on_change_state"]

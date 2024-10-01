@@ -1,9 +1,11 @@
-[gd_scene load_steps=8 format=3 uid="uid://bdlbr1d4epu11"]
+[gd_scene load_steps=10 format=3 uid="uid://bdlbr1d4epu11"]
 
 [ext_resource type="Script" path="res://Player/StateMachine/finite_state_machine.gd" id="1_cb5ng"]
+[ext_resource type="Script" path="res://Player/player.gd" id="1_wga2p"]
 [ext_resource type="Script" path="res://Player/StateMachine/move.gd" id="2_ido2b"]
 [ext_resource type="Script" path="res://Player/StateMachine/dash.gd" id="3_ym1wr"]
 [ext_resource type="Script" path="res://Player/StateMachine/run.gd" id="4_2w4oq"]
+[ext_resource type="PackedScene" uid="uid://d4n28vuote3lh" path="res://Player/Stats/healthbar.tscn" id="6_gc2rd"]
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_ekxad"]
 
@@ -12,6 +14,7 @@
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_01j77"]
 
 [node name="Player" type="CharacterBody3D"]
+script = ExtResource("1_wga2p")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
 mesh = SubResource("CapsuleMesh_ekxad")
@@ -44,6 +47,14 @@ script = ExtResource("4_2w4oq")
 controller = NodePath("../..")
 move = NodePath("../MoveState")
 dash = NodePath("../DashState")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="Healthbar" parent="CanvasLayer" instance=ExtResource("6_gc2rd")]
+
+[node name="HealingTimer" type="Timer" parent="."]
+
+[node name="RecoveringTimer" type="Timer" parent="."]
 
 [connection signal="on_change_state" from="FiniteStateMachine/MoveState" to="FiniteStateMachine" method="_on_move_state_on_change_state"]
 [connection signal="on_change_state" from="FiniteStateMachine/DashState" to="FiniteStateMachine" method="_on_dash_state_on_change_state"]

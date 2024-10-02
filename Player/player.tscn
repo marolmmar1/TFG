@@ -5,7 +5,7 @@
 [ext_resource type="Script" path="res://Player/StateMachine/move.gd" id="2_ido2b"]
 [ext_resource type="Script" path="res://Player/StateMachine/dash.gd" id="3_ym1wr"]
 [ext_resource type="Script" path="res://Player/StateMachine/run.gd" id="4_2w4oq"]
-[ext_resource type="PackedScene" uid="uid://d4n28vuote3lh" path="res://Player/Stats/healthbar.tscn" id="6_gc2rd"]
+[ext_resource type="PackedScene" uid="uid://cf3vferad8dtw" path="res://UI/ui.tscn" id="6_oe4je"]
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_ekxad"]
 
@@ -48,13 +48,11 @@ controller = NodePath("../..")
 move = NodePath("../MoveState")
 dash = NodePath("../DashState")
 
-[node name="CanvasLayer" type="CanvasLayer" parent="."]
-
-[node name="Healthbar" parent="CanvasLayer" instance=ExtResource("6_gc2rd")]
-
 [node name="HealingTimer" type="Timer" parent="."]
 
 [node name="RecoveringTimer" type="Timer" parent="."]
+
+[node name="UI" parent="." instance=ExtResource("6_oe4je")]
 
 [connection signal="on_change_state" from="FiniteStateMachine/MoveState" to="FiniteStateMachine" method="_on_move_state_on_change_state"]
 [connection signal="on_change_state" from="FiniteStateMachine/DashState" to="FiniteStateMachine" method="_on_dash_state_on_change_state"]

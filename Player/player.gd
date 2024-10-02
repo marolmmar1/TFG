@@ -3,7 +3,7 @@ extends CharacterBody3D
 @onready var health_bar = $CanvasLayer/Healthbar
 @onready var healing_timer = $HealingTimer
 @onready var recovering_timer = $RecoveringTimer
-
+@onready var mana_bar=$UI/Healthbar
 
 @export_category("Provided")
 
@@ -36,11 +36,12 @@ func _ready():
 	recoverable_stamina = max_stamina
 	min_recoverable_stamina=max_stamina*.25
 	mana = max_mana
+	mana_bar.init_health(mana)
 	healing = true
 	recovering = true
 	healing_timer.timeout.connect(func(): recovering=true)
 	recovering_timer.timeout.connect(func(): healing=true)
-	health_bar.init_health(health)
+
 
 func get_damaged(damage: float):
 	healing = false
@@ -73,12 +74,14 @@ func use_mana(effort: float):
 	else:
 		mana=0
 		get_damaged(effort-mana)
+	mana_bar._set_health(mana)
 
 func recover_mana(new_mana):
 	if mana + new_mana<max_mana:
 		mana= mana+new_mana
 	else:
 		mana=max_mana
+	mana_bar._set_health(mana)
 
 func heal(healed_health):
 	if health + healed_health<max_health:
@@ -120,5 +123,5 @@ func _unhandled_input(event):
 		print("auch\n Stamina"+ str(stamina)+"\n R.stamina" +str(recoverable_stamina))
 		use_mana(10.)
 		print("auch\n mana"+ str(mana))
-		recover_mana(10.)
+		#recover_mana(10.)
 		print("cool\n mana"+ str(mana))

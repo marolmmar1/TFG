@@ -1,9 +1,11 @@
 extends CharacterBody3D
+class_name Player
 
-@onready var health_bar = $CanvasLayer/Healthbar
 @onready var healing_timer = $HealingTimer
 @onready var recovering_timer = $RecoveringTimer
-@onready var mana_bar=$UI/Healthbar
+@onready var mana_bar=$UI/ManaBar
+@onready var health_bar = $UI/HealthBar
+@onready var stamina_bar = $UI/StaminaBar
 
 @export_category("Provided")
 
@@ -32,8 +34,10 @@ var healing = true
 func _ready():
 	health = max_health
 	recoverable_health = max_health
+	health_bar.init_health(health)
 	stamina = max_stamina
 	recoverable_stamina = max_stamina
+	stamina_bar.init_health(stamina)
 	min_recoverable_stamina=max_stamina*.25
 	mana = max_mana
 	mana_bar.init_health(mana)
@@ -50,9 +54,10 @@ func get_damaged(damage: float):
 		health = health -damage
 		recoverable_health = recoverable_health - damage*wound
 	else:
-		health = health-damage
-		recoverable_health = health - damage*wound
+		recoverable_health = health 
+		get_damaged(damage)
 	if health <= 0:
+		health = 0
 		die()
 
 func get_tired(effort: float):
@@ -74,14 +79,12 @@ func use_mana(effort: float):
 	else:
 		mana=0
 		get_damaged(effort-mana)
-	mana_bar._set_health(mana)
 
 func recover_mana(new_mana):
 	if mana + new_mana<max_mana:
 		mana= mana+new_mana
 	else:
 		mana=max_mana
-	mana_bar._set_health(mana)
 
 func heal(healed_health):
 	if health + healed_health<max_health:
@@ -109,6 +112,11 @@ func _process(delta):
 			else:
 				recoverable_stamina = max_stamina
 			stamina=recoverable_stamina
+	health_bar._set_health(health)
+	health_bar._set_recoverable_health(recoverable_health)
+	mana_bar._set_health(mana)
+	stamina_bar._set_health(stamina)
+	stamina_bar._set_recoverable_health(recoverable_stamina)
 	
 
 

@@ -1,14 +1,14 @@
 extends State
 
-
 @export_category("Provided")
 @export var animator: AnimatableBody3D
-@export var controller: CharacterBody3D
+@export var controller: Player
 @export var move: Node
 @export var run: Node
 
 @export_category("Main")
 @export var DASH_VELOCITY = 3
+@export var DASH_COST = 10
 
 @export_category("DEBUG")
 
@@ -22,6 +22,10 @@ func _physics_process(delta):
 	
 
 func enter_state(state, event = null):
+	if controller.stamina - DASH_COST>=0:
+		controller.get_tired(DASH_COST)
+	else:
+		controller.get_tired(controller.stamina)
 	super(state)
 	controller.velocity.x = controller.velocity.x * DASH_VELOCITY
 	controller.velocity.z = controller.velocity.z * DASH_VELOCITY

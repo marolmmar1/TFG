@@ -1,6 +1,8 @@
-[gd_scene load_steps=2 format=3 uid="uid://cf3vferad8dtw"]
+[gd_scene load_steps=4 format=3 uid="uid://cf3vferad8dtw"]
 
-[ext_resource type="PackedScene" uid="uid://d4n28vuote3lh" path="res://UI/Stats/healthbar.tscn" id="1_qprah"]
+[ext_resource type="PackedScene" uid="uid://d4n28vuote3lh" path="res://UI/Stats/manabar.tscn" id="1_qprah"]
+[ext_resource type="PackedScene" uid="uid://b6y0a8pfe514p" path="res://UI/Stats/Healthbar.tscn" id="2_031sc"]
+[ext_resource type="PackedScene" uid="uid://cnp6xosdld1o" path="res://UI/Stats/stamina_bar.tscn" id="3_6484x"]
 
 [node name="UI" type="Control"]
 layout_mode = 3
@@ -10,5 +12,23 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Healthbar" parent="." instance=ExtResource("1_qprah")]
+[node name="ManaBar" parent="." instance=ExtResource("1_qprah")]
 layout_mode = 0
+offset_left = 1.0
+offset_top = 74.0
+offset_right = 241.0
+offset_bottom = 101.0
+
+[node name="HealthBar" parent="." instance=ExtResource("2_031sc")]
+layout_mode = 0
+offset_left = 1.0
+offset_top = 1.0
+offset_right = 241.0
+offset_bottom = 28.0
+
+[node name="StaminaBar" parent="." instance=ExtResource("3_6484x")]
+layout_mode = 0
+offset_left = 1.0
+offset_top = 36.0
+offset_right = 241.0
+offset_bottom = 63.0

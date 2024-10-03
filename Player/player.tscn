@@ -1,7 +1,8 @@
-[gd_scene load_steps=8 format=3 uid="uid://bdlbr1d4epu11"]
+[gd_scene load_steps=9 format=3 uid="uid://bdlbr1d4epu11"]
 
 [ext_resource type="Script" path="res://Player/StateMachine/finite_state_machine.gd" id="1_cb5ng"]
 [ext_resource type="Script" path="res://Player/StateMachine/move.gd" id="2_ido2b"]
+[ext_resource type="Script" path="res://Player/StateMachine/attack_state.gd" id="3_46x1y"]
 [ext_resource type="Script" path="res://Player/StateMachine/dash.gd" id="3_ym1wr"]
 [ext_resource type="Script" path="res://Player/StateMachine/run.gd" id="4_2w4oq"]
 
@@ -21,6 +22,9 @@ surface_material_override/0 = SubResource("StandardMaterial3D_bxykb")
 shape = SubResource("CapsuleShape3D_01j77")
 
 [node name="Weapon holder" type="Node3D" parent="."]
+
+[node name="Camera target" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.28921, 1.95917)
 
 [node name="FiniteStateMachine" type="Node" parent="." node_paths=PackedStringArray("player", "state")]
 script = ExtResource("1_cb5ng")
@@ -45,6 +49,11 @@ controller = NodePath("../..")
 move = NodePath("../MoveState")
 dash = NodePath("../DashState")
 
+[node name="AttackState" type="Node" parent="FiniteStateMachine" node_paths=PackedStringArray("controller")]
+script = ExtResource("3_46x1y")
+controller = NodePath("../..")
+
 [connection signal="on_change_state" from="FiniteStateMachine/MoveState" to="FiniteStateMachine" method="_on_move_state_on_change_state"]
 [connection signal="on_change_state" from="FiniteStateMachine/DashState" to="FiniteStateMachine" method="_on_dash_state_on_change_state"]
 [connection signal="on_change_state" from="FiniteStateMachine/RunState" to="FiniteStateMachine" method="_on_run_state_on_change_state"]
+[connection signal="on_change_state" from="FiniteStateMachine/AttackState" to="FiniteStateMachine" method="_on_attack_state_on_change_state"]

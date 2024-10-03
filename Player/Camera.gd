@@ -79,6 +79,9 @@ func _unhandled_input(event):
 
 func _process(delta):
 
+	if locked_on_target and locked_on_target.global_position.distance_to(player.global_position) > max_enemy_distance:
+		switch_lock_on()
+
 	if camera_target:
 		if locked_on_target:
 			var camera_offset = locked_on_target.global_position * Vector3(1, 0, 1) - camera_target.global_position

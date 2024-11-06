@@ -1,0 +1,50 @@
+[gd_scene load_steps=8 format=3 uid="uid://2frl55nmwyj"]
+
+[ext_resource type="PackedScene" uid="uid://bmg6ep2aalmt4" path="res://Player/Weapons/LongSword/LongSword.blend" id="1_vf01f"]
+
+[sub_resource type="AnimationNodeAdd2" id="AnimationNodeAdd2_blw2u"]
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_c51dk"]
+animation = &"Sweep"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_dsm5i"]
+animation = &"SweepEffect"
+
+[sub_resource type="AnimationNodeTimeScale" id="AnimationNodeTimeScale_t86e2"]
+
+[sub_resource type="AnimationNodeTimeSeek" id="AnimationNodeTimeSeek_w7g7j"]
+
+[sub_resource type="AnimationNodeBlendTree" id="AnimationNodeBlendTree_hehhh"]
+graph_offset = Vector2(54.0454, -80.751)
+nodes/Add2/node = SubResource("AnimationNodeAdd2_blw2u")
+nodes/Add2/position = Vector2(400, -100)
+"nodes/Animation 3/node" = SubResource("AnimationNodeAnimation_c51dk")
+"nodes/Animation 3/position" = Vector2(160, -100)
+"nodes/Animation 4/node" = SubResource("AnimationNodeAnimation_dsm5i")
+"nodes/Animation 4/position" = Vector2(160, 120)
+nodes/TimeScale/node = SubResource("AnimationNodeTimeScale_t86e2")
+nodes/TimeScale/position = Vector2(740, -40)
+nodes/TimeSeek/node = SubResource("AnimationNodeTimeSeek_w7g7j")
+nodes/TimeSeek/position = Vector2(580, -40)
+nodes/output/position = Vector2(900, 0)
+node_connections = [&"Add2", 0, &"Animation 3", &"Add2", 1, &"Animation 4", &"TimeScale", 0, &"TimeSeek", &"TimeSeek", 0, &"Add2", &"output", 0, &"TimeScale"]
+
+[node name="LongSword" instance=ExtResource("1_vf01f")]
+
+[node name="Skeleton3D" parent="Armature" index="0"]
+bones/1/rotation = Quaternion(0, 0, -0.000566912, 1)
+bones/2/rotation = Quaternion(0, 0, -0.00117481, 0.999999)
+bones/3/rotation = Quaternion(0, 0, -0.00155769, 0.999999)
+bones/4/rotation = Quaternion(0, 0, -0.00278794, 0.999996)
+bones/5/rotation = Quaternion(0, 0, -0.00313024, 0.999995)
+bones/6/rotation = Quaternion(0, 0, -0.00136855, 0.999999)
+
+[node name="AnimationTree" type="AnimationTree" parent="." index="2"]
+tree_root = SubResource("AnimationNodeBlendTree_hehhh")
+anim_player = NodePath("../AnimationPlayer")
+parameters/Add2/add_amount = 1.0
+parameters/TimeScale/scale = 0.0
+parameters/TimeSeek/seek_request = -1.0
+
+[node name="AnimationPlayer" parent="." index="3"]
+speed_scale = 0.0

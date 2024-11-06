@@ -1,4 +1,14 @@
-[gd_scene load_steps=4 format=3 uid="uid://bdlbr1d4epu11"]
+[gd_scene load_steps=17 format=3 uid="uid://bdlbr1d4epu11"]
+
+[ext_resource type="Script" path="res://Player/StateMachine/finite_state_machine.gd" id="1_cb5ng"]
+[ext_resource type="Script" path="res://Player/player.gd" id="1_wga2p"]
+[ext_resource type="PackedScene" uid="uid://2frl55nmwyj" path="res://Player/Weapons/LongSword/LongSword.tscn" id="2_gka5x"]
+[ext_resource type="Script" path="res://Player/StateMachine/move.gd" id="2_ido2b"]
+[ext_resource type="Script" path="res://Player/StateMachine/attack_state.gd" id="3_46x1y"]
+[ext_resource type="Script" path="res://Player/WeaponAnimator.gd" id="3_ag78a"]
+[ext_resource type="Script" path="res://Player/StateMachine/dash.gd" id="3_ym1wr"]
+[ext_resource type="Script" path="res://Player/StateMachine/run.gd" id="4_2w4oq"]
+[ext_resource type="PackedScene" uid="uid://cf3vferad8dtw" path="res://UI/ui.tscn" id="6_oe4je"]
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_ekxad"]
 
@@ -6,7 +16,135 @@
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_01j77"]
 
+[sub_resource type="Animation" id="Animation_7agq3"]
+resource_name = "Idle"
+length = 0.1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Weapon holder/Weapon holder anim:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(-0.0302382, 0.350832, 1.09513)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Weapon holder/Weapon holder anim:quaternion")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Quaternion(0.0073771, 0.840133, 0.541729, 0.0255413)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Weapon holder/Weapon holder anim/AnimationPlayer:weapon_blend")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [0.0]
+}
+
+[sub_resource type="Animation" id="Animation_7gi2v"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Weapon holder/Weapon holder anim:quaternion")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Quaternion(0.00737709, 0.840133, 0.541729, 0.0255413)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Weapon holder/Weapon holder anim:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector3(-0.0302382, 0.350832, 1.09513)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Weapon holder/Weapon holder anim/AnimationPlayer:weapon_blend")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [0.0]
+}
+
+[sub_resource type="Animation" id="Animation_obur3"]
+resource_name = "SweepAttack"
+length = 0.5
+step = 0.01
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Weapon holder/Weapon holder anim:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.02, 0.04, 0.06, 0.08, 0.11, 0.14, 0.16, 0.18, 0.2, 0.22, 0.24, 0.26, 0.28, 0.29, 0.3, 0.31, 0.32, 0.33, 0.34, 0.35, 0.36, 0.37, 0.38, 0.39, 0.4, 0.41, 0.42, 0.43, 0.44, 0.45, 0.46, 0.47, 0.48, 0.49, 0.5),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [Vector3(1.05919, 0.350832, 0.138141), Vector3(1.07437, 0.350832, -0.0832258), Vector3(1.07943, 0.350832, -0.157015), Vector3(1.11516, 0.350832, -0.20932), Vector3(1.09293, 0.350832, -0.487138), Vector3(-0.500906, 0.350832, -0.999171), Vector3(-1.05114, 0.350832, 0.332305), Vector3(-0.955509, 0.350832, 0.430056), Vector3(-0.930505, 0.350832, 0.496733), Vector3(-0.89422, 0.350832, 0.554184), Vector3(-0.857935, 0.350832, 0.611635), Vector3(-0.821651, 0.350832, 0.669087), Vector3(-0.785366, 0.350832, 0.726538), Vector3(-0.749081, 0.350832, 0.783989), Vector3(-0.746303, 0.350832, 0.787693), Vector3(-0.743525, 0.350832, 0.791398), Vector3(-0.740746, 0.350832, 0.795102), Vector3(-0.737968, 0.350832, 0.798806), Vector3(-0.73519, 0.350832, 0.80251), Vector3(-0.732412, 0.350832, 0.806215), Vector3(-0.729634, 0.350832, 0.809919), Vector3(-0.726856, 0.350832, 0.813623), Vector3(-0.724077, 0.350832, 0.817327), Vector3(-0.721299, 0.350832, 0.821032), Vector3(-0.718521, 0.350832, 0.824736), Vector3(-0.715743, 0.350832, 0.82844), Vector3(-0.719077, 0.350832, 0.823995), Vector3(-0.722411, 0.350832, 0.81955), Vector3(-0.725744, 0.350832, 0.815105), Vector3(-0.729078, 0.350832, 0.81066), Vector3(-0.732412, 0.350832, 0.806215), Vector3(-0.735746, 0.350832, 0.801769), Vector3(-0.73908, 0.350832, 0.797324), Vector3(-0.742413, 0.350832, 0.792879), Vector3(-0.745747, 0.350832, 0.788434), Vector3(-0.749081, 0.350832, 0.783989)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Weapon holder/Weapon holder anim:quaternion")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.02, 0.04, 0.06, 0.08, 0.11, 0.14, 0.16, 0.18, 0.2, 0.22, 0.24, 0.26, 0.28, 0.29, 0.3, 0.31, 0.32, 0.33, 0.34, 0.35, 0.36, 0.37, 0.38, 0.39, 0.4, 0.41, 0.42, 0.43, 0.44, 0.45, 0.46, 0.47, 0.48, 0.49, 0.5),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [Quaternion(0.357617, 0.613926, 0.607848, -0.354578), Quaternion(0.429956, 0.56662, 0.543608, -0.445613), Quaternion(0.452235, 0.548294, 0.519723, -0.474073), Quaternion(-0.470291, -0.534231, -0.488366, 0.504898), Quaternion(-0.537109, -0.454016, -0.413751, 0.578095), Quaternion(-0.677527, 0.194454, 0.202379, 0.679844), Quaternion(-0.434112, 0.553057, 0.558164, 0.4406), Quaternion(-0.395056, 0.584007, 0.586815, 0.39814), Quaternion(-0.336569, 0.619711, 0.622207, 0.339909), Quaternion(-0.301985, 0.637398, 0.639707, 0.305457), Quaternion(-0.266494, 0.653171, 0.655287, 0.270088), Quaternion(-0.230203, 0.666983, 0.6689, 0.233908), Quaternion(-0.193222, 0.678793, 0.680504, 0.197026), Quaternion(-0.15566, 0.688566, 0.690066, 0.159552), Quaternion(-0.153907, 0.688969, 0.690459, 0.157803), Quaternion(-0.152153, 0.689367, 0.690847, 0.156053), Quaternion(-0.150398, 0.689761, 0.691231, 0.154302), Quaternion(-0.148643, 0.690151, 0.691611, 0.152549), Quaternion(-0.146886, 0.690536, 0.691986, 0.150796), Quaternion(-0.145128, 0.690917, 0.692357, 0.149042), Quaternion(-0.143372, 0.691294, 0.692722, 0.147284), Quaternion(-0.141612, 0.691665, 0.693085, 0.145529), Quaternion(-0.139851, 0.692033, 0.693442, 0.143773), Quaternion(-0.138089, 0.692395, 0.693795, 0.142015), Quaternion(-0.136327, 0.692753, 0.694144, 0.140257), Quaternion(-0.134563, 0.693107, 0.694488, 0.138498), Quaternion(-0.136679, 0.692682, 0.694075, 0.14061), Quaternion(-0.138793, 0.69225, 0.693655, 0.14272), Quaternion(-0.140906, 0.691812, 0.693229, 0.144829), Quaternion(-0.143018, 0.691368, 0.692796, 0.146936), Quaternion(-0.145128, 0.690917, 0.692357, 0.149042), Quaternion(-0.147237, 0.690459, 0.691912, 0.151147), Quaternion(-0.149345, 0.689995, 0.69146, 0.15325), Quaternion(-0.151451, 0.689525, 0.691001, 0.155352), Quaternion(-0.153556, 0.689049, 0.690537, 0.157453), Quaternion(-0.15566, 0.688566, 0.690066, 0.159552)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Weapon holder/Weapon holder anim/AnimationPlayer:weapon_blend")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 0.06, 0.08, 0.11, 0.14, 0.16, 0.18),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1, 1),
+"update": 1,
+"values": [0.0, 0.1, 0.2, 0.5, 1.0, 0.3, 0.0]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_dbqou"]
+_data = {
+"Idle": SubResource("Animation_7agq3"),
+"RESET": SubResource("Animation_7gi2v"),
+"SweepAttack": SubResource("Animation_obur3")
+}
+
 [node name="Player" type="CharacterBody3D"]
+script = ExtResource("1_wga2p")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
 mesh = SubResource("CapsuleMesh_ekxad")
@@ -16,3 +154,55 @@ surface_material_override/0 = SubResource("StandardMaterial3D_bxykb")
 shape = SubResource("CapsuleShape3D_01j77")
 
 [node name="Weapon holder" type="Node3D" parent="."]
+
+[node name="Weapon holder anim" type="Node3D" parent="Weapon holder"]
+transform = Transform3D(-0.998587, -0.0152774, 0.0509089, 0.0400684, 0.412951, 0.909872, -0.0349234, 0.910625, -0.411755, -0.0302382, 0.350832, 1.09513)
+rotation_edit_mode = 1
+
+[node name="LongSword" parent="Weapon holder/Weapon holder anim" instance=ExtResource("2_gka5x")]
+transform = Transform3D(1, 0, -2.32831e-10, -2.98023e-08, 1, 0, -2.32831e-10, 0, 1, -0.100681, -0.0543338, 0.00117567)
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Weapon holder/Weapon holder anim" node_paths=PackedStringArray("weapon")]
+root_node = NodePath("../../..")
+libraries = {
+"": SubResource("AnimationLibrary_dbqou")
+}
+autoplay = "Idle"
+script = ExtResource("3_ag78a")
+weapon = NodePath("../LongSword")
+weapon_main_anim = "Sweep"
+
+[node name="Camera target" type="Node3D" parent="."]
+transform = Transform3D(0.456602, 0, 0, 0, 0.187833, -0.416178, 0, 0.416178, 0.187833, 0, 5.71142, 2.21883)
+
+[node name="FiniteStateMachine" type="Node" parent="." node_paths=PackedStringArray("player", "state")]
+script = ExtResource("1_cb5ng")
+player = NodePath("..")
+state = NodePath("MoveState")
+
+[node name="MoveState" type="Node" parent="FiniteStateMachine" node_paths=PackedStringArray("controller", "dash", "run")]
+script = ExtResource("2_ido2b")
+controller = NodePath("../..")
+dash = NodePath("../DashState")
+run = NodePath("../RunState")
+
+[node name="DashState" type="Node" parent="FiniteStateMachine" node_paths=PackedStringArray("controller", "move", "run")]
+script = ExtResource("3_ym1wr")
+controller = NodePath("../..")
+move = NodePath("../MoveState")
+run = NodePath("../RunState")
+
+[node name="RunState" type="Node" parent="FiniteStateMachine" node_paths=PackedStringArray("controller", "move", "dash")]
+script = ExtResource("4_2w4oq")
+controller = NodePath("../..")
+move = NodePath("../MoveState")
+dash = NodePath("../DashState")
+
+[node name="AttackState" type="Node" parent="FiniteStateMachine"]
+script = ExtResource("3_46x1y")
+
+[node name="HealingTimer" type="Timer" parent="."]
+
+[node name="RecoveringTimer" type="Timer" parent="."]
+
+[node name="UI" parent="." instance=ExtResource("6_oe4je")]

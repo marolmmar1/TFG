@@ -26,16 +26,18 @@ shape = SubResource("WorldBoundaryShape3D_ok2v2")
 [node name="Enemies" type="Node" parent="."]
 
 [node name="EnemyBase" parent="Enemies" instance=ExtResource("1_w0hyu")]
-transform = Transform3D(0.455765, 0, 0, 0, 0.455765, 0, 0, 0, 0.455765, -1.38249, 0.32796, -1.9867)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.38249, 0.702864, -1.9867)
 
 [node name="EnemyBase2" parent="Enemies" instance=ExtResource("1_w0hyu")]
-transform = Transform3D(0.455765, 0, 0, 0, 0.455765, 0, 0, 0, 0.455765, 2.73031, 0.260331, -3.13719)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.73031, 0.635235, -3.13719)
 
 [node name="EnemyBase3" parent="Enemies" instance=ExtResource("1_w0hyu")]
-transform = Transform3D(0.455765, 0, 0, 0, 0.455765, 0, 0, 0, 0.455765, 1.95002, 0.260331, 1.29823)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.95002, 0.635235, 1.29823)
 
 [node name="Camera" parent="." node_paths=PackedStringArray("player") instance=ExtResource("2_axo3v")]
 player = NodePath("../Player")
+speed = 7.0
+max_camera_offset = 1.75
 max_enemy_distance = 10.0
 
 [node name="Player" parent="." instance=ExtResource("3_utwhp")]

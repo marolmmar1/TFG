@@ -28,6 +28,8 @@ var recovering = true
 var healing = true
 
 
+#DEBUG
+var debug_draw = null
 
 func _ready():
 	health = max_health
@@ -41,6 +43,10 @@ func _ready():
 	recovering = true
 	healing_timer.timeout.connect(func(): recovering=true)
 	recovering_timer.timeout.connect(func(): healing=true)
+
+	#DEBUG
+	debug_draw = Draw3D.new()
+	get_tree().root.get_child(0).add_child(debug_draw)
 
 
 func get_damaged(damage: float):
@@ -109,6 +115,13 @@ func _process(delta):
 			else:
 				recoverable_stamina = max_stamina
 			stamina=recoverable_stamina
+
+	#DEBUG
+	if debug_draw:
+		print("aaa")
+		debug_draw.clear()
+		debug_draw.draw_line([self.global_position, self.global_position + Vector3(0, 0, -2)], Color.PURPLE)
+
 	
 
 

@@ -12,16 +12,10 @@ extends Node
 
 func _ready():
 	change_state(state)
+	for child in get_children():
+		if child is State:
+			child.on_change_state.connect(change_state)
 
 func change_state(new_state: State, event=null):
 	new_state.enter_state(new_state, event)
 	state = new_state
-
-func _on_move_state_on_change_state(next_state, event=null):
-	change_state(next_state, event)
-
-func _on_dash_state_on_change_state(next_state, event=null):
-	change_state(next_state, event)
-
-func _on_run_state_on_change_state(next_state, event=null):
-	change_state(next_state, event)

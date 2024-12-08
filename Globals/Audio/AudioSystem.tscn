@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://y7ofkqo2tm37"]
+
+[ext_resource type="Script" path="res://Globals/Audio/audio_system.gd" id="1_f1psa"]
+
+[node name="AudioSystem" type="Node"]
+script = ExtResource("1_f1psa")
+
+[connection signal="on_audio_player_enter" from="." to="." method="add_audio_player"]

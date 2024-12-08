@@ -2,6 +2,20 @@
 
 extends AnimationPlayer
 
+const ANIM_DICT = {
+	Weapon.WeaponAnimType.SWEEP: ["SweepAttack", "SweepAttack", "SweepAttack"]
+}
+
+signal on_attack_anim_free
+signal on_attack_anim_finished
+
+func attack_anim_set_free() -> void:
+	on_attack_anim_free.emit()
+
+func attack_anim_set_finished() -> void:
+	on_attack_anim_finished.emit()
+
+@export_category("Main")
 @export var weapon_blend: float = 0.0:
 	set(value):
 		if not anim_length:
@@ -18,3 +32,8 @@ var anim_length: float
 func _ready() -> void:
 	weapon_anim_tree = weapon.get_node("AnimationTree")
 	anim_length = weapon_anim_tree.get_animation(weapon_main_anim).length
+
+func start_weapon_anim(anim_type: Weapon.WeaponAnimType, combo_count: int) -> void:
+	var anim_name = ANIM_DICT[anim_type][combo_count - 1]
+	stop()
+	play(anim_name)

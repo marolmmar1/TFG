@@ -4,13 +4,16 @@ extends State
 @export_category("Provided")
 @export var animator: AnimatableBody3D
 @export var controller: CharacterBody3D
-@export var dash: Node
-@export var run: Node
 
 @export_category("Main")
 @export var SPEED = 5.0
 
 @export_category("DEBUG")
+
+
+@onready var dash: Node = $"../DashState"
+@onready var run: Node = $"../RunState"
+@onready var attack: Node = $"../AttackState"
 
 # Get the gravity from the project settings to be synced with RigidBody nodes.
 var gravity = ProjectSettings.get_setting("physics/3d/default_gravity")
@@ -35,7 +38,12 @@ func _physics_process(delta):
 	controller.move_and_slide()
 
 func _unhandled_input(event):
-	if event.is_action_pressed("dash") and controller.is_on_floor() and  abs(controller.velocity.x)+ abs(controller.velocity.z)> 0 :
+	if event.is_action_pressed("dash") and controller.is_on_floor() and abs(controller.velocity.x) + abs(controller.velocity.z) > 0 :
 		exit_state(dash, event)
-	if event.is_action_pressed("run") and controller.is_on_floor() and  abs(controller.velocity.x)+ abs(controller.velocity.z)> 0:
+	if event.is_action_pressed("run") and controller.is_on_floor() and abs(controller.velocity.x) + abs(controller.velocity.z) > 0:
 		exit_state(run, event)
+	if event.is_action_pressed("melee_primary") or event.is_action_pressed("ranged_primary") \
+		# or event.is_action_pressed("melee_secondary") or event.is_action_pressed("ranged_secondary") \
+		:
+			
+		exit_state(attack, event)

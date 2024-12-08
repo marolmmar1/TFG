@@ -11,4 +11,4 @@ func enter_state(state, event = null) -> void:
 
 func exit_state(new_state:State, event = null) ->void:
 	self.process_mode = Node.PROCESS_MODE_DISABLED
-	on_change_state.emit(new_state)
+	on_change_state.emit(new_state, event)

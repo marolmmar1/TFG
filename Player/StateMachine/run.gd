@@ -4,14 +4,14 @@ extends State
 @export_category("Provided")
 @export var animator: AnimatableBody3D
 @export var controller: CharacterBody3D
-@export var move: Node
-@export var dash: Node
 
 @export_category("Main")
 @export var RUN_VELOCITY = 0.5
 
 @export_category("DEBUG")
 
+@onready var move: Node = $"../MoveState"
+@onready var dash: Node = $"../DashState"
 
 
 func _physics_process(delta):
@@ -24,7 +24,7 @@ func _physics_process(delta):
 	controller.move_and_slide()
 
 func _unhandled_input(event):
-	if event.is_action_pressed("dash") and controller.is_on_floor() and  abs(controller.velocity.x)+ abs(controller.velocity.z)> 0:
+	if event.is_action_pressed("dash") and controller.is_on_floor() and abs(controller.velocity.x) + abs(controller.velocity.z) > 0:
 		exit_state(dash, event)
-	if event.is_action_released("run") or controller.is_on_floor()==false or  abs(controller.velocity.x)+ abs(controller.velocity.z)== 0:
+	if event.is_action_released("run") or controller.is_on_floor() == false or abs(controller.velocity.x) + abs(controller.velocity.z) == 0:
 		exit_state(move, event)

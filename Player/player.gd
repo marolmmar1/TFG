@@ -6,10 +6,22 @@ extends CharacterBody3D
 @onready var mana_bar=$UI/Healthbar
 
 @export_category("Provided")
+@export var melee_weapon : Weapon = null: 
+	get: return melee_weapon 
+	set(value): 
+		if value.weapon_type == Weapon.WeaponType.MELEE:
+			melee_weapon = value
+@export var ranged_weapon : Weapon = null:
+	get: return ranged_weapon 
+	set(value): 
+		if value.weapon_type == Weapon.WeaponType.RANGED:
+			ranged_weapon = value
+
 
 @export_category("Main")
 
 @export_category("DEBUG")
+
 
 var exaustion = .30
 var wound = .3
@@ -118,7 +130,6 @@ func _process(delta):
 
 	#DEBUG
 	if debug_draw:
-		print("aaa")
 		debug_draw.clear()
 		debug_draw.draw_line([self.global_position, self.global_position + Vector3(0, 0, -2)], Color.PURPLE)
 

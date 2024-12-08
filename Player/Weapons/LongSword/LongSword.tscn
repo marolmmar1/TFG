@@ -1,6 +1,8 @@
-[gd_scene load_steps=8 format=3 uid="uid://2frl55nmwyj"]
+[gd_scene load_steps=10 format=3 uid="uid://2frl55nmwyj"]
 
 [ext_resource type="PackedScene" uid="uid://bmg6ep2aalmt4" path="res://Player/Weapons/LongSword/LongSword.blend" id="1_vf01f"]
+[ext_resource type="Script" path="res://Player/Weapons/weapon.gd" id="2_xkw26"]
+[ext_resource type="PackedScene" uid="uid://bopumqwuigbeu" path="res://Attacks/Attack.tscn" id="3_rsr4i"]
 
 [sub_resource type="AnimationNodeAdd2" id="AnimationNodeAdd2_blw2u"]
 
@@ -30,6 +32,8 @@ nodes/output/position = Vector2(900, 0)
 node_connections = [&"Add2", 0, &"Animation 3", &"Add2", 1, &"Animation 4", &"TimeScale", 0, &"TimeSeek", &"TimeSeek", 0, &"Add2", &"output", 0, &"TimeScale"]
 
 [node name="LongSword" instance=ExtResource("1_vf01f")]
+script = ExtResource("2_xkw26")
+attack = ExtResource("3_rsr4i")
 
 [node name="Skeleton3D" parent="Armature" index="0"]
 bones/1/rotation = Quaternion(0, 0, -0.000566912, 1)
@@ -38,6 +42,13 @@ bones/3/rotation = Quaternion(0, 0, -0.00155769, 0.999999)
 bones/4/rotation = Quaternion(0, 0, -0.00278794, 0.999996)
 bones/5/rotation = Quaternion(0, 0, -0.00313024, 0.999995)
 bones/6/rotation = Quaternion(0, 0, -0.00136855, 0.999999)
+
+[node name="Skeleton3D" parent="Armature_001" index="0"]
+bones/0/scale = Vector3(0.00206411, 1, 1)
+bones/2/position = Vector3(0.572606, 0, 0)
+bones/3/position = Vector3(0.577187, 0, 0)
+bones/5/position = Vector3(0.565996, 0, 0)
+bones/7/position = Vector3(0.564819, 0, 0)
 
 [node name="AnimationTree" type="AnimationTree" parent="." index="2"]
 tree_root = SubResource("AnimationNodeBlendTree_hehhh")

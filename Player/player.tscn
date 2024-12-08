@@ -1,13 +1,15 @@
-[gd_scene load_steps=17 format=3 uid="uid://bdlbr1d4epu11"]
+[gd_scene load_steps=19 format=3 uid="uid://bdlbr1d4epu11"]
 
 [ext_resource type="Script" path="res://Player/StateMachine/finite_state_machine.gd" id="1_cb5ng"]
 [ext_resource type="Script" path="res://Player/player.gd" id="1_wga2p"]
 [ext_resource type="PackedScene" uid="uid://2frl55nmwyj" path="res://Player/Weapons/LongSword/LongSword.tscn" id="2_gka5x"]
 [ext_resource type="Script" path="res://Player/StateMachine/move.gd" id="2_ido2b"]
 [ext_resource type="Script" path="res://Player/StateMachine/attack_state.gd" id="3_46x1y"]
-[ext_resource type="Script" path="res://Player/WeaponAnimator.gd" id="3_ag78a"]
+[ext_resource type="Script" path="res://Player/weapon_animator.gd" id="3_ag78a"]
 [ext_resource type="Script" path="res://Player/StateMachine/dash.gd" id="3_ym1wr"]
 [ext_resource type="Script" path="res://Player/StateMachine/run.gd" id="4_2w4oq"]
+[ext_resource type="Script" path="res://Globals/Audio/audio_player.gd" id="4_pjdei"]
+[ext_resource type="AudioStream" uid="uid://l86s8doxpp8u" path="res://Player/Weapons/swoosh.wav" id="5_446ek"]
 [ext_resource type="PackedScene" uid="uid://cf3vferad8dtw" path="res://UI/ui.tscn" id="6_oe4je"]
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_ekxad"]
@@ -135,6 +137,37 @@ tracks/2/keys = {
 "update": 1,
 "values": [0.0, 0.1, 0.2, 0.5, 1.0, 0.3, 0.0]
 }
+tracks/3/type = "method"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("Weapon holder/Weapon holder anim/AudioPlayer")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"values": [{
+"args": [],
+"method": &"play_audio"
+}]
+}
+tracks/4/type = "method"
+tracks/4/imported = false
+tracks/4/enabled = true
+tracks/4/path = NodePath("Weapon holder/Weapon holder anim/AnimationPlayer")
+tracks/4/interp = 1
+tracks/4/loop_wrap = true
+tracks/4/keys = {
+"times": PackedFloat32Array(0.26, 0.5),
+"transitions": PackedFloat32Array(1, 1),
+"values": [{
+"args": [],
+"method": &"attack_anim_set_free"
+}, {
+"args": [],
+"method": &"attack_anim_set_finished"
+}]
+}
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_dbqou"]
 _data = {
@@ -143,8 +176,9 @@ _data = {
 "SweepAttack": SubResource("Animation_obur3")
 }
 
-[node name="Player" type="CharacterBody3D"]
+[node name="Player" type="CharacterBody3D" node_paths=PackedStringArray("melee_weapon")]
 script = ExtResource("1_wga2p")
+melee_weapon = NodePath("Weapon holder/Weapon holder anim/LongSword")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
 mesh = SubResource("CapsuleMesh_ekxad")
@@ -172,6 +206,10 @@ script = ExtResource("3_ag78a")
 weapon = NodePath("../LongSword")
 weapon_main_anim = "Sweep"
 
+[node name="AudioPlayer" type="Node" parent="Weapon holder/Weapon holder anim"]
+script = ExtResource("4_pjdei")
+stream = ExtResource("5_446ek")
+
 [node name="Camera target" type="Node3D" parent="."]
 transform = Transform3D(0.456602, 0, 0, 0, 0.187833, -0.416178, 0, 0.416178, 0.187833, 0, 5.71142, 2.21883)
 
@@ -180,29 +218,28 @@ script = ExtResource("1_cb5ng")
 player = NodePath("..")
 state = NodePath("MoveState")
 
-[node name="MoveState" type="Node" parent="FiniteStateMachine" node_paths=PackedStringArray("controller", "dash", "run")]
+[node name="MoveState" type="Node" parent="FiniteStateMachine" node_paths=PackedStringArray("controller")]
 script = ExtResource("2_ido2b")
 controller = NodePath("../..")
-dash = NodePath("../DashState")
-run = NodePath("../RunState")
 
-[node name="DashState" type="Node" parent="FiniteStateMachine" node_paths=PackedStringArray("controller", "move", "run")]
+[node name="DashState" type="Node" parent="FiniteStateMachine" node_paths=PackedStringArray("controller")]
 script = ExtResource("3_ym1wr")
 controller = NodePath("../..")
-move = NodePath("../MoveState")
-run = NodePath("../RunState")
 
-[node name="RunState" type="Node" parent="FiniteStateMachine" node_paths=PackedStringArray("controller", "move", "dash")]
+[node name="RunState" type="Node" parent="FiniteStateMachine" node_paths=PackedStringArray("controller")]
 script = ExtResource("4_2w4oq")
 controller = NodePath("../..")
-move = NodePath("../MoveState")
-dash = NodePath("../DashState")
 
-[node name="AttackState" type="Node" parent="FiniteStateMachine"]
+[node name="AttackState" type="Node" parent="FiniteStateMachine" node_paths=PackedStringArray("controller")]
 script = ExtResource("3_46x1y")
+controller = NodePath("../..")
 
 [node name="HealingTimer" type="Timer" parent="."]
 
 [node name="RecoveringTimer" type="Timer" parent="."]
 
 [node name="UI" parent="." instance=ExtResource("6_oe4je")]
+
+[connection signal="on_attack_anim_finished" from="Weapon holder/Weapon holder anim/AnimationPlayer" to="FiniteStateMachine/AttackState" method="on_attack_anim_finished"]
+[connection signal="on_attack_anim_free" from="Weapon holder/Weapon holder anim/AnimationPlayer" to="FiniteStateMachine/AttackState" method="on_attack_anim_free"]
+[connection signal="on_attack_anim_start" from="FiniteStateMachine/AttackState" to="Weapon holder/Weapon holder anim/AnimationPlayer" method="start_weapon_anim"]

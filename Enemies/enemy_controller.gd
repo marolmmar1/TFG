@@ -7,6 +7,9 @@ extends CharacterBody3D
 @export_category("Main")
 @export var camera_shake := 0.1
 @export var camera_shake_duration := 0.05
+@export var hurt_sound: AudioStream
+@export var death_sound: AudioStream
+@export var health := 30.0
 
 func _ready():
 	self.add_to_group("Targetables")
@@ -16,11 +19,19 @@ func _ready():
 	damageable.on_damaged.connect(take_damage)
 	
 func take_damage(source_pos: Vector3, weapon_source: Weapon):
-
-	EventSystem.main_game_bus.on_camera_shake.emit(camera_shake, camera_shake_duration)
-	$AudioPlayer.play_audio()
-
-	animator.play("Hitted")
+	health -= weapon_source.damage
+	print("health: ", health)
+	if health <= 0.0:
+		EventSystem.main_game_bus.on_camera_shake.emit(camera_shake, camera_shake_duration)
+		$AudioPlayer.stream = death_sound
+		$AudioPlayer.play_audio()
+		animator.play("Death")
+		
+	else:	
+		EventSystem.main_game_bus.on_camera_shake.emit(camera_shake, camera_shake_duration)
+		$AudioPlayer.stream = hurt_sound
+		$AudioPlayer.play_audio()
+		animator.play("Hitted")
 
 	look_at(Vector3(source_pos.x, global_position.y, source_pos.z), Vector3.UP)
 	velocity = (global_position - source_pos).normalized() * Vector3(weapon_source.knockback, 0, weapon_source.knockback)

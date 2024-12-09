@@ -17,6 +17,6 @@ func _on_body_entered(body: Node3D):
 	if body is CharacterBody3D:
 		var damageable = body.get_node("Damageable") as Damageable
 		if damageable:
-			damageable.on_damaged.emit(source_pos, weapon_source)
+			damageable.get_damaged(source_pos, weapon_source)
 			self.process_mode = Node.PROCESS_MODE_DISABLED
 			visible = false

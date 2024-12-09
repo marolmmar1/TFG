@@ -8,6 +8,7 @@ class_name Weapon
 @export var weapon_anim_type: WeaponAnimType
 @export var max_combo_count := 3
 @export var knockback := 10.0
+@export var damage := 10.0
 
 @export_category("Provided")
 @export var player: CharacterBody3D

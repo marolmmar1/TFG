@@ -2,7 +2,7 @@ extends Node
 
 signal on_audio_player_enter(audio_player)
 
-@export var audio_minimum_offset: float = 0.35
+@export var audio_minimum_offset: float = 0.2
 
 var free_audio_stream_players: Array[AudioStreamPlayer] = []
 var used_audio_stream_players: Array[AudioStreamPlayer] = []

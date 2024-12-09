@@ -20,6 +20,8 @@ var camera_target: Node3D
 
 @export_category("DEBUG")
 
+#FIXME move all this to a child
+
 var debug_draw = null
 
 @export var switch_target_debug : bool = false : set = switch_target_debug_func #DEBUG
@@ -99,3 +101,4 @@ func _process(delta):
 	for target in possible_targets:
 		if target and target != locked_on_target:
 			debug_draw.draw_line([target.global_position, self.global_position - Vector3(0, 0.1, 0)], Color.YELLOW)
+

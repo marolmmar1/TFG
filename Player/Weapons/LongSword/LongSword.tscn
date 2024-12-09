@@ -33,6 +33,7 @@ node_connections = [&"Add2", 0, &"Animation 3", &"Add2", 1, &"Animation 4", &"Ti
 
 [node name="LongSword" instance=ExtResource("1_vf01f")]
 script = ExtResource("2_xkw26")
+attack_instance_points = Array[Vector4]([Vector4(-1.5, 0, -1, 1.5), Vector4(0, 0, -2, 1.5), Vector4(1.5, 0, -1, 1.5), Vector4(-2, 0, 0.5, 1), Vector4(2, 0, 0.5, 1)])
 attack = ExtResource("3_rsr4i")
 
 [node name="Skeleton3D" parent="Armature" index="0"]

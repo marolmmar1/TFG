@@ -1,6 +1,6 @@
 [gd_scene load_steps=9 format=3 uid="uid://b3d68ym3ec1db"]
 
-[ext_resource type="Script" path="res://Player/camera.gd" id="1_iydw4"]
+[ext_resource type="Script" path="res://Player/Camera/camera.gd" id="1_iydw4"]
 [ext_resource type="PackedScene" uid="uid://bdlbr1d4epu11" path="res://Player/player.tscn" id="2_klvgl"]
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_klqdp"]

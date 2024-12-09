@@ -1,7 +1,7 @@
 [gd_scene load_steps=6 format=3 uid="uid://im3a857g68pb"]
 
 [ext_resource type="PackedScene" uid="uid://fbvujkq78l25" path="res://Enemies/EnemyBase.tscn" id="1_w0hyu"]
-[ext_resource type="PackedScene" uid="uid://d4nbfuwq6n6jj" path="res://Player/Camera.tscn" id="2_axo3v"]
+[ext_resource type="PackedScene" uid="uid://d4nbfuwq6n6jj" path="res://Player/Camera/Camera.tscn" id="2_axo3v"]
 [ext_resource type="PackedScene" uid="uid://bdlbr1d4epu11" path="res://Player/player.tscn" id="3_utwhp"]
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_vytvr"]
@@ -35,10 +35,10 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.73031, 0.635235, -3.13719)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.95002, 0.635235, 1.29823)
 
 [node name="Camera" parent="." node_paths=PackedStringArray("player") instance=ExtResource("2_axo3v")]
-player = NodePath("../Player")
 speed = 7.0
 max_camera_offset = 1.75
 max_enemy_distance = 10.0
+player = NodePath("../Player")
 
 [node name="Player" parent="." instance=ExtResource("3_utwhp")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.309826, 0.968837, 0)

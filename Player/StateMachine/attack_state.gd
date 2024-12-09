@@ -29,8 +29,7 @@ func attack(event):
 			return
 
 		combo_status = "ongoing"
-		controller.melee_weapon.perform_primary(controller)
-		on_attack_anim_start.emit(controller.melee_weapon.weapon_anim_type, combo_count)
+		on_attack_anim_start.emit(controller.melee_weapon, combo_count)
 
 	# elif event.is_action_pressed("melee_secondary"):
 	# 	controller.melee_weapon.perform_secondary(controller)
@@ -40,8 +39,7 @@ func attack(event):
 			return
 
 		combo_status = "ongoing"
-		controller.ranged_weapon.perform_primary(controller)
-		on_attack_anim_start.emit(controller.ranged_weapon.weapon_anim_type, combo_count)
+		on_attack_anim_start.emit(controller.ranged_weapon, combo_count)
 
 	# elif event.is_action_pressed("ranged_secondary"):
 	# 	controller.ranged_weapon.perform_secondary(controller)
@@ -60,7 +58,7 @@ func on_attack_anim_finished() -> void:
 	if Input.is_action_pressed("run") and controller.is_on_floor() and abs(controller.velocity.x) + abs(controller.velocity.z) > 0:
 		exit_state(run)
 	else:
-		exit_state(move)
+		exit_state(move)	
 
 func _unhandled_input(event):
 	if event.is_action_pressed("melee_primary") or event.is_action_pressed("ranged_primary") \

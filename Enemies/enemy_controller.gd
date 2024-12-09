@@ -26,6 +26,7 @@ func take_damage(source_pos: Vector3, weapon_source: Weapon):
 		$AudioPlayer.stream = death_sound
 		$AudioPlayer.play_audio()
 		animator.play("Death")
+		EventSystem.main_game_bus.on_enemy_exit.emit(self)
 		
 	else:	
 		EventSystem.main_game_bus.on_camera_shake.emit(camera_shake, camera_shake_duration)

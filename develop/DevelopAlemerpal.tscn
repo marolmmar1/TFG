@@ -35,9 +35,9 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.73031, 0.635235, -3.13719)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.95002, 0.635235, 1.29823)
 
 [node name="Camera" parent="." node_paths=PackedStringArray("player") instance=ExtResource("2_axo3v")]
+offset_from_player = null
 speed = 7.0
 max_camera_offset = 1.75
-max_enemy_distance = 10.0
 player = NodePath("../Player")
 
 [node name="Player" parent="." instance=ExtResource("3_utwhp")]

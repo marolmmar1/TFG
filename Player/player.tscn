@@ -1,7 +1,8 @@
-[gd_scene load_steps=19 format=3 uid="uid://bdlbr1d4epu11"]
+[gd_scene load_steps=20 format=3 uid="uid://bdlbr1d4epu11"]
 
 [ext_resource type="Script" path="res://Player/StateMachine/finite_state_machine.gd" id="1_cb5ng"]
 [ext_resource type="Script" path="res://Player/player.gd" id="1_wga2p"]
+[ext_resource type="Script" path="res://Player/lock_on_system.gd" id="2_0wgl2"]
 [ext_resource type="PackedScene" uid="uid://2frl55nmwyj" path="res://Player/Weapons/LongSword/LongSword.tscn" id="2_gka5x"]
 [ext_resource type="Script" path="res://Player/StateMachine/move.gd" id="2_ido2b"]
 [ext_resource type="Script" path="res://Player/StateMachine/attack_state.gd" id="3_46x1y"]
@@ -182,6 +183,9 @@ _data = {
 [node name="Player" type="CharacterBody3D" node_paths=PackedStringArray("melee_weapon")]
 script = ExtResource("1_wga2p")
 melee_weapon = NodePath("Weapon holder/Weapon holder anim/LongSword")
+
+[node name="Lock on system" type="Node" parent="."]
+script = ExtResource("2_0wgl2")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
 mesh = SubResource("CapsuleMesh_ekxad")

@@ -22,6 +22,8 @@ extends CharacterBody3D
 
 @export_category("DEBUG")
 
+var locked_on_target: Node3D: 
+	get: return $"Lock on system".locked_on_target
 
 var exaustion = .30
 var wound = .3
@@ -131,7 +133,7 @@ func _process(delta):
 	#DEBUG
 	if debug_draw:
 		debug_draw.clear()
-		debug_draw.draw_line([self.global_position, self.global_position + Vector3(0, 0, -2)], Color.PURPLE)
+		debug_draw.draw_line([self.position, self.position + self.transform.basis * Vector3(0, 0, -2)], Color.PURPLE)
 
 	
 

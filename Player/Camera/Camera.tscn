@@ -6,9 +6,7 @@
 [node name="Camera3D" type="Camera3D"]
 transform = Transform3D(1, 0, 0, 0, 0.352119, 0.935955, 0, -0.935955, 0.352119, -0.314225, 2.64278, 1.74231)
 script = ExtResource("1_lakuf")
-speed = null
-max_camera_offset = null
-max_enemy_distance = null
+offset_from_player = Vector3(0, 5.711, 2.219)
 switch_target_debug = null
 switch_lock_on_debug = null
 

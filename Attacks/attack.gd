@@ -8,9 +8,11 @@ enum AttackType {MELEE, RANGED}
 @export_category("Main")
 @export var lifetime := 0.1
 
-var source_pos: Vector3 = self.global_position
+var source_pos: Vector3
 
-func _ready() -> void:
+func init() -> void:
+	if not source_pos:
+		source_pos = global_position
 	get_tree().create_timer(lifetime).timeout.connect(queue_free)
 
 func _on_body_entered(body: Node3D):

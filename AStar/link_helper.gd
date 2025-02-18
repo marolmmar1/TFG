@@ -135,15 +135,16 @@ func are_intersection_or_tunnel_gate_or_tunnel_end_connected(node_a: Vector2i, n
 
 	return true
 
-func link_platform_and_wall_nodes(astar_nodes, platform_nodes, wall_nodes):
+func link_platform_and_wall_nodes(astar_nodes, platform_nodes, platform_wall_nodes, wall_nodes):
 	# Combine platform nodes and wall nodes into a single list
-	var all_nodes = platform_nodes + wall_nodes
+	var all_nodes = platform_nodes + platform_wall_nodes + wall_nodes
 
 	for i in range(all_nodes.size()):
 		var node_a = all_nodes[i]
 		for j in range(i + 1, all_nodes.size()):
 			var node_b = all_nodes[j]
-			if tmhelper.get_adjacent_cells(node_a).has(node_b):
+			if tmhelper.get_adjacent_cells(node_a).has(node_b) and \
+				(wall_nodes.has(node_a) or wall_nodes.has(node_b)):
 				# Add a bidirectional connection
 				astar_nodes[node_a].append(Edge.new(node_a, node_b, Edge.MovementType.SWITCH_CLIMBING))
 				astar_nodes[node_b].append(Edge.new(node_b, node_a, Edge.MovementType.SWITCH_CLIMBING))

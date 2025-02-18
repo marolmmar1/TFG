@@ -46,7 +46,7 @@ func _ready():
 	link_helper.link_platform_nodes(astar_nodes, platform_nodes, platform_wall_nodes)
 	link_helper.link_wall_nodes(astar_nodes, wall_nodes, platform_wall_nodes, wall_corner_nodes)
 	link_helper.link_intersection_and_tunnel_gate_nodes(astar_nodes, intersection_nodes, tunnel_gate_nodes, tunnel_end_nodes)
-	link_helper.link_platform_and_wall_nodes(astar_nodes, platform_nodes, wall_nodes)
+	link_helper.link_platform_and_wall_nodes(astar_nodes, platform_nodes, platform_wall_nodes, wall_nodes)
 	link_helper.link_tunnel_gate_nodes(astar_nodes, tunnel_gate_nodes, platform_nodes, wall_nodes, platform_wall_nodes)
 	link_helper.link_platform_nodes_by_jump(astar_nodes, platform_nodes, vertical_jump_dist, horizontal_jump_dist)
 
@@ -103,9 +103,11 @@ func calculate_platform_fall_nodes():
 
 		if fall_node_left != null:
 			platform_fall_nodes.append(fall_node_left)
+			astar_nodes[fall_node_left] = []
 			astar_nodes[node].append(Edge.new(node, fall_node_left, Edge.MovementType.FALL))  # One-directional edge
 		if fall_node_right != null:
 			platform_fall_nodes.append(fall_node_right)
+			astar_nodes[fall_node_right] = []
 			astar_nodes[node].append(Edge.new(node, fall_node_right, Edge.MovementType.FALL))  # One-directional edge
 
 
@@ -131,6 +133,10 @@ func purge_astar_nodes():
 
 
 #DEBUG
+var astar_on_going = []
+var astar_target
+var astar_path = []
+
 func _draw():
 		
 	for node in platform_nodes:
@@ -202,3 +208,13 @@ func _draw():
 				draw_line(world_position_b, arrowhead1, Color(0, 1, 1), 2)
 				draw_line(world_position_b, arrowhead2, Color(0, 1, 1), 2)
 
+	if astar_target:
+		draw_circle(astar_target, 10, Color(0, 1, 0))
+	
+	for i in astar_on_going:
+		draw_circle(i, 10, Color(1, 0, 0))
+
+	for edge in astar_path:
+		var world_position_a = tmhelper.to_world_position(edge.from)
+		var world_position_b = tmhelper.to_world_position(edge.to)
+		draw_line(world_position_a, world_position_b, Color(0, 0, 0), 2)

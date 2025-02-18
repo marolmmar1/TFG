@@ -1,10 +1,20 @@
-[gd_scene load_steps=8 format=3 uid="uid://ccf6t4ko0ds42"]
+[gd_scene load_steps=19 format=3 uid="uid://ccf6t4ko0ds42"]
 
 [ext_resource type="Texture2D" uid="uid://eujin7w1yov" path="res://Assets/kenney_pico-8-platformer/Default/Tilemap/tilemap_packed.png" id="1_4dpsh"]
 [ext_resource type="Script" path="res://AStar/tile_map_helper.gd" id="3_5fu47"]
 [ext_resource type="Script" path="res://AStar/a_star.gd" id="3_qpv5a"]
 [ext_resource type="Script" path="res://AStar/nodes_helper.gd" id="4_ajdy2"]
 [ext_resource type="Script" path="res://AStar/link_helper.gd" id="5_2xpg2"]
+[ext_resource type="Script" path="res://Creatures/ground_creature_controller.gd" id="6_6yccm"]
+[ext_resource type="Texture2D" uid="uid://dagii0va0jdne" path="res://Assets/kenney_pico-8-platformer/Transparent/Tiles/tile_0073.png" id="6_tqb5n"]
+[ext_resource type="Texture2D" uid="uid://2l44j7m7c03b" path="res://icon.svg" id="6_vlhar"]
+[ext_resource type="Script" path="res://Creatures/ground_creature.gd" id="6_yqe6f"]
+[ext_resource type="Script" path="res://Creatures/ground_creature_ai.gd" id="8_cu1ky"]
+[ext_resource type="Script" path="res://Creatures/States/walk_state.gd" id="10_1dhbc"]
+[ext_resource type="Script" path="res://Creatures/States/state.gd" id="10_3h3ol"]
+[ext_resource type="Script" path="res://Creatures/States/fall_state.gd" id="11_k430i"]
+[ext_resource type="Script" path="res://Creatures/States/climb_state.gd" id="13_eqle6"]
+[ext_resource type="Script" path="res://Creatures/States/switch_climbing.gd" id="14_wpcrk"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_5okw5"]
 texture = ExtResource("1_4dpsh")
@@ -273,9 +283,13 @@ custom_data_layer_1/name = "Tunnel gate"
 custom_data_layer_1/type = 1
 sources/5 = SubResource("TileSetAtlasSource_5okw5")
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_2owua"]
+radius = 18.0278
+
 [node name="Bioma" type="Node2D"]
 
 [node name="TileMap" type="TileMap" parent="."]
+texture_filter = 1
 position = Vector2(-32, 0)
 scale = Vector2(4, 4)
 tile_set = SubResource("TileSet_h5w5i")
@@ -295,3 +309,59 @@ script = ExtResource("4_ajdy2")
 
 [node name="LinkHelper" type="Node" parent="AStar"]
 script = ExtResource("5_2xpg2")
+
+[node name="DebugTarget" type="Node2D" parent="."]
+position = Vector2(852, 234)
+
+[node name="Sprite2D" type="Sprite2D" parent="DebugTarget"]
+texture_filter = 1
+position = Vector2(0, 8)
+scale = Vector2(2, 2)
+texture = ExtResource("6_tqb5n")
+
+[node name="Creature" type="CharacterBody2D" parent="." node_paths=PackedStringArray("astar")]
+position = Vector2(58, 586)
+script = ExtResource("6_yqe6f")
+astar = NodePath("../AStar")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Creature"]
+shape = SubResource("CircleShape2D_2owua")
+
+[node name="Sprite2D" type="Sprite2D" parent="Creature"]
+scale = Vector2(0.28125, 0.28125)
+texture = ExtResource("6_vlhar")
+
+[node name="Controller" type="Node" parent="Creature"]
+script = ExtResource("6_6yccm")
+
+[node name="Walk" type="Node" parent="Creature/Controller"]
+script = ExtResource("10_1dhbc")
+
+[node name="Fall" type="Node" parent="Creature/Controller"]
+script = ExtResource("11_k430i")
+
+[node name="Idle" type="Node" parent="Creature/Controller"]
+script = ExtResource("10_3h3ol")
+
+[node name="IdleWall" type="Node" parent="Creature/Controller"]
+script = ExtResource("10_3h3ol")
+
+[node name="Climb" type="Node" parent="Creature/Controller"]
+script = ExtResource("13_eqle6")
+
+[node name="SwitchClimbing" type="Node" parent="Creature/Controller"]
+script = ExtResource("14_wpcrk")
+max_threshold = null
+min_threshold = null
+stop_time_1 = null
+move_time = null
+stop_time_2 = null
+
+[node name="AI" type="Node2D" parent="Creature" node_paths=PackedStringArray("target", "astar_node")]
+script = ExtResource("8_cu1ky")
+target = NodePath("../../DebugTarget")
+astar_node = NodePath("../../AStar")
+tile_size = null
+
+[node name="AITimer" type="Timer" parent="Creature"]
+one_shot = true

@@ -20,4 +20,3 @@ func createMap():
 			var face  = FACE.instance()
 			face.position = tileMap.map_to_world(above) + Vector2(cell_size/2)
 			pass
-

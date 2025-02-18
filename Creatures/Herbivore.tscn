@@ -1,0 +1,24 @@
+[gd_scene load_steps=5 format=3 uid="uid://c0m7sxs32dquq"]
+
+[ext_resource type="Texture2D" uid="uid://2l44j7m7c03b" path="res://icon.svg" id="1_1wp7v"]
+[ext_resource type="Script" path="res://Creatures/herbivore.gd" id="1_8u5y0"]
+[ext_resource type="PackedScene" uid="uid://26k08pnfpsh8" path="res://Creatures/Healthbar.tscn" id="3_t0l7i"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_2bwxj"]
+size = Vector2(124, 122)
+
+[node name="Herbivore" type="CharacterBody2D"]
+script = ExtResource("1_8u5y0")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("1_1wp7v")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(-1, 0)
+shape = SubResource("RectangleShape2D_2bwxj")
+
+[node name="Healthbar" parent="." instance=ExtResource("3_t0l7i")]
+offset_left = -63.0
+offset_top = 73.0
+offset_right = 67.0
+offset_bottom = 83.0

@@ -1,0 +1,49 @@
+[gd_scene load_steps=6 format=3 uid="uid://26k08pnfpsh8"]
+
+[ext_resource type="Script" path="res://Creatures/healthbar.gd" id="1_kq6w5"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_xloch"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_2l6jw"]
+bg_color = Color(0.931306, 0.522628, 0.395592, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_37xpc"]
+bg_color = Color(0.0928156, 0.0771584, 0.0703407, 1)
+expand_margin_left = 1.0
+expand_margin_top = 1.0
+expand_margin_right = 1.0
+expand_margin_bottom = 1.0
+shadow_color = Color(0, 0, 0, 0.27451)
+shadow_offset = Vector2(0, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_3x5qk"]
+bg_color = Color(1, 1, 1, 1)
+
+[node name="Healthbar" type="ProgressBar"]
+z_index = 1
+offset_right = 143.0
+offset_bottom = 4.0
+theme_override_styles/background = SubResource("StyleBoxEmpty_xloch")
+theme_override_styles/fill = SubResource("StyleBoxFlat_2l6jw")
+value = 60.0
+show_percentage = false
+script = ExtResource("1_kq6w5")
+
+[node name="Damagebar" type="ProgressBar" parent="."]
+z_index = -1
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/background = SubResource("StyleBoxFlat_37xpc")
+theme_override_styles/fill = SubResource("StyleBoxFlat_3x5qk")
+value = 80.0
+show_percentage = false
+
+[node name="Timer" type="Timer" parent="."]
+wait_time = 0.4
+one_shot = true
+
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]

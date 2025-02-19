@@ -1,12 +1,9 @@
 extends Marker2D
 
-@export var creature: PackedScene
+@onready var biome = get_parent()
+@export var cr_route: PackedScene
+@onready var creature = load(cr_route.resource_path)
 
-# Called when the node enters the scene tree for the first time.
 func _ready():
-	pass # Replace with function body.
-
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta):
-	pass
+	var herb = creature.instantiate()
+	biome.add_child.call_deferred(herb)

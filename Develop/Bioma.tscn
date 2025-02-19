@@ -3,7 +3,7 @@
 [ext_resource type="Texture2D" uid="uid://eujin7w1yov" path="res://Assets/kenney_pico-8-platformer/Default/Tilemap/tilemap_packed.png" id="1_4dpsh"]
 [ext_resource type="Script" path="res://AStar/Pathfinder.gd" id="2_u62r2"]
 [ext_resource type="Script" path="res://Creatures/spawnpoint.gd" id="3_h5uts"]
-[ext_resource type="PackedScene" uid="uid://c0m7sxs32dquq" path="res://Creatures/Herbivore.tscn" id="4_77668"]
+[ext_resource type="PackedScene" uid="uid://c0m7sxs32dquq" path="res://Creatures/Herbivore.tscn" id="4_q8und"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_5okw5"]
 texture = ExtResource("1_4dpsh")
@@ -221,4 +221,4 @@ script = ExtResource("2_u62r2")
 [node name="Spawnpoint" type="Marker2D" parent="."]
 position = Vector2(579, 230)
 script = ExtResource("3_h5uts")
-creature = ExtResource("4_77668")
+cr_route = ExtResource("4_q8und")

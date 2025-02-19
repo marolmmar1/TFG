@@ -1,7 +1,8 @@
 extends Marker2D
 
+@onready var biome = get_parent()
 @export var creature: PackedScene
 
-# Called when the node enters the scene tree for the first time.
 func _ready():
-	creature.instantiate()
+	var herb = creature.instantiate()
+	biome.add_child.call_deferred(herb)

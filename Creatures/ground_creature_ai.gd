@@ -3,7 +3,7 @@ extends Node2D
 @export_category("Debug") #DEBUG
 @export var target: Node2D
 @export var astar_node: Node2D
-@export var tile_size: int = 15
+@export var detect_node_dist: int = 5
 
 var astar_graph
 var controller
@@ -143,7 +143,7 @@ func _process(delta: float) -> void:
 		astar_node.astar_path = path
 		astar_node.queue_redraw()
 
-		if path_index < path.size() and path[path_index].to == get_closest_node(controller.position, tile_size):
+		if path_index < path.size() and path[path_index].to == get_closest_node(controller.position, detect_node_dist):
 			path_index += 1
 
 			calculate_movement()
@@ -163,8 +163,14 @@ func calculate_movement():
 			walk(next_node)
 		Edge.MovementType.CLIMB:
 			climb(next_node)
+		Edge.MovementType.CRAWL:
+			crawl(next_node)
 		Edge.MovementType.SWITCH_CLIMBING:
-			switch_climbing(next_node)
+			switch_climbing(next_node, path[path_index].from)
+		Edge.MovementType.SWITCH_CRAWL_WALK:
+			switch_crawl_walk(next_node, path[path_index].from)
+		Edge.MovementType.SWITCH_CRAWL_CLIMB:
+			switch_crawl_climb(next_node, path[path_index].from)
 
 
 func walk(next_node):
@@ -179,5 +185,23 @@ func climb(next_node):
 	else:
 		controller.queue_change_state(controller.climb_state, {"direction": Vector2.UP})
 
-func switch_climbing(next_node):
-	controller.queue_change_state(controller.switch_climbing_state, {"target node": astar_graph.tmhelper.to_world_position(next_node)})
+func crawl(next_node):
+	if astar_graph.tmhelper.to_world_position(next_node).y > controller.position.y:
+		controller.queue_change_state(controller.crawl_state, {"direction": Vector2.DOWN})
+	elif astar_graph.tmhelper.to_world_position(next_node).y < controller.position.y:
+		controller.queue_change_state(controller.crawl_state, {"direction": Vector2.UP})
+	elif astar_graph.tmhelper.to_world_position(next_node).x > controller.position.x:
+		controller.queue_change_state(controller.crawl_state, {"direction": Vector2.RIGHT})
+	else:
+		controller.queue_change_state(controller.crawl_state, {"direction": Vector2.LEFT})
+
+func switch_climbing(next_node, source_node):
+	controller.queue_change_state(controller.switch_climbing_state, {"target node": astar_graph.tmhelper.to_world_position(next_node), "source node": astar_graph.tmhelper.to_world_position(source_node)})
+
+func switch_crawl_walk(next_node, source_node):
+	controller.queue_change_state(controller.switch_crawl_walk_state, {"target node": astar_graph.tmhelper.to_world_position(next_node), "source node": astar_graph.tmhelper.to_world_position(source_node), \
+	"current state": "crawl" if controller.current_state == controller.crawl_state else "walk"})
+
+func switch_crawl_climb(next_node, source_node):
+	controller.queue_change_state(controller.switch_crawl_climb_state, {"target node": astar_graph.tmhelper.to_world_position(next_node), "source node": astar_graph.tmhelper.to_world_position(source_node), \
+	"current state": "crawl" if controller.current_state == controller.crawl_state else "climb"})

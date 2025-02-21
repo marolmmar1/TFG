@@ -162,9 +162,13 @@ func link_tunnel_gate_nodes(astar_nodes, tunnel_gate_nodes, platform_nodes, wall
 				(platform_nodes.has(node_a) or platform_nodes.has(node_b) or \
 				wall_nodes.has(node_a) or wall_nodes.has(node_b) or \
 				platform_wall_nodes.has(node_a) or platform_wall_nodes.has(node_b)):
-				# Add a bidirectional connection
-				astar_nodes[node_a].append(Edge.new(node_a, node_b, Edge.MovementType.SWITCH_AND_CRAWL))
-				astar_nodes[node_b].append(Edge.new(node_b, node_a, Edge.MovementType.SWITCH_AND_CRAWL))
+				# Add a bidirectional connection depending on the source node
+				if wall_nodes.has(node_b):
+					astar_nodes[node_a].append(Edge.new(node_a, node_b, Edge.MovementType.SWITCH_CRAWL_CLIMB))
+					astar_nodes[node_b].append(Edge.new(node_b, node_a, Edge.MovementType.SWITCH_CRAWL_CLIMB))
+				else:
+					astar_nodes[node_a].append(Edge.new(node_a, node_b, Edge.MovementType.SWITCH_CRAWL_WALK))
+					astar_nodes[node_b].append(Edge.new(node_b, node_a, Edge.MovementType.SWITCH_CRAWL_WALK))
 
 func link_platform_nodes_by_jump(astar_nodes, platform_nodes, vertical_jump_dist, horizontal_jump_dist):
 

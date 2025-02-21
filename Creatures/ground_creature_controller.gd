@@ -6,15 +6,21 @@ extends Node
 @export var jump_force: float = -200.0
 
 @onready var idle_state = $Idle
-@onready var idle_wall_state = $IdleWall
+@onready var idle_climb_state = $IdleClimb
+@onready var idle_crawl_state = $IdleCrawl
 @onready var fall_state = $Fall
 @onready var walk_state = $Walk
 @onready var climb_state = $Climb
+@onready var crawl_state = $Crawl
 @onready var switch_climbing_state = $SwitchClimbing
+@onready var switch_crawl_walk_state = $SwitchCrawlWalk
+@onready var switch_crawl_climb_state = $SwitchCrawlClimb
 
 var controller: CharacterBody2D
 var current_state: State
-var queued_state = []
+var current_vars = {}
+var queued_state: State
+var queued_vars = {}
 
 var position:
 	get:
@@ -27,26 +33,34 @@ func init(_controller: CharacterBody2D):
 
 	# idle_state.init(controller)
 	# idle_state.on_change_state.connect(change_state)
-	# idle_wall_state.init(controller)
-	# idle_wall_state.on_change_state.connect(change_state)
+	# idle_climb_state.init(controller)
+	# idle_climb_state.on_change_state.connect(change_state)
+	# idle_crawl_state.init(controller)
+	# idle_crawl_state.on_change_state.connect(change_state)
 	fall_state.init(controller)
 	fall_state.on_change_state.connect(change_state)
 	walk_state.init(controller)
 	walk_state.on_change_state.connect(change_state)
 	climb_state.init(controller)
 	climb_state.on_change_state.connect(change_state)
+	crawl_state.init(controller)
+	crawl_state.on_change_state.connect(change_state)
 	switch_climbing_state.init(controller)
 	switch_climbing_state.on_change_state.connect(change_state)
+	switch_crawl_walk_state.init(controller)
+	switch_crawl_walk_state.on_change_state.connect(change_state)
+	switch_crawl_climb_state.init(controller)
+	switch_crawl_climb_state.on_change_state.connect(change_state)
 
 
 func _physics_process(delta: float):
 	if not controller:
 		return
 
-	if queued_state and not current_state.locked and queued_state[0].check_conditions(queued_state[1]):
+	if queued_state and not current_state.locked and queued_state.check_conditions(queued_vars):
 		current_state.exit()
-		current_state = queued_state[0]
-		current_state.enter(queued_state[1])
+		current_state = queued_state
+		current_state.enter(queued_vars)
 
 	if current_state:
 		print(current_state.name)
@@ -63,15 +77,20 @@ func _physics_process(delta: float):
 
 func change_state(_state, vars):
 
-	if queued_state and queued_state[0].check_conditions(queued_state[1]): #Just to avoid possible state flickering
+	if queued_state and queued_state.check_conditions(queued_vars): #Just to avoid possible state flickering
 		current_state.exit()
-		current_state = queued_state[0]
-		current_state.enter(queued_state[1])
+		current_state = queued_state
+		current_state.enter(queued_vars)
 
 	if _state.check_conditions(vars):
 		current_state.exit()
 		current_state = _state
 		current_state.enter(vars)
 
-func queue_change_state(_state, vars):
-	queued_state = [_state, vars]
+func queue_change_state(state, vars):
+	
+	if queued_state == state and queued_vars == vars:
+		return
+
+	queued_state = state
+	queued_vars = vars

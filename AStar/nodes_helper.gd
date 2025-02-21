@@ -73,15 +73,15 @@ func is_platform_wall_node(cell: Vector2i) -> bool:
 	return has_above_left_non_terrain or has_above_right_non_terrain
 
 func is_wall_node(cell: Vector2i) -> bool:
-	# Check if there is terrain on either the left or right side
+
 	var left = cell + Vector2i(-1, 0)
 	var right = cell + Vector2i(1, 0)
 
 	var has_left_terrain = tmhelper.is_terrain(left)
 	var has_right_terrain = tmhelper.is_terrain(right)
 
-	# Must have terrain on either the left or right side, but not both
-	if not (has_left_terrain or has_right_terrain) or (has_left_terrain and has_right_terrain):
+	# Must have terrain on either the left or right side
+	if not (has_left_terrain or has_right_terrain):
 		return false
 
 	# Check if there is terrain on the side below or above (left or right) and non terrain in the other direction
@@ -94,6 +94,15 @@ func is_wall_node(cell: Vector2i) -> bool:
 		var below_right = cell + Vector2i(1, 1)
 		var above_right = cell + Vector2i(1, -1)
 		if tmhelper.is_terrain(below_right) and tmhelper.is_terrain(above_right):
+			return false
+
+	# Check if there is terrain on the left and right side and also below or above those sides
+	if has_left_terrain and has_right_terrain:
+		var below_left = cell + Vector2i(-1, 1)
+		var above_left = cell + Vector2i(-1, -1)
+		var below_right = cell + Vector2i(1, 1)
+		var above_right = cell + Vector2i(1, -1)
+		if (tmhelper.is_terrain(below_left) or tmhelper.is_terrain(above_left)) and (tmhelper.is_terrain(below_right) or tmhelper.is_terrain(above_right)):
 			return false
 	
 	return true

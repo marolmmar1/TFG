@@ -62,17 +62,18 @@ func are_walls_connected(node_a: Vector2i, node_b: Vector2i) -> bool:
 	var direction = Vector2i(0, 1 if node_b.y > node_a.y else -1)
 
 	# Check all tiles between node_a and node_b
+	# We allow a small amount of inconsistency for floating platforms and such
+	var accumulated_inconsistency = 0
 	var current = node_a + direction
 	while current != node_b:
 		# Check if the current tile itself is terrain
 		if tmhelper.is_terrain(current):
 			return false  # Terrain in the straight line between nodes
 
-		# Check if the side (left or right) has terrain consistently
+		# Determine the side with terrain (left or right)
 		var left = current + Vector2i(-1, 0)
 		var right = current + Vector2i(1, 0)
 
-		# Determine the side with terrain (left or right)
 		var has_left_terrain = tmhelper.is_terrain(left) or tmhelper.is_tunnel_gate_node(left)
 		var has_right_terrain = tmhelper.is_terrain(right) or tmhelper.is_tunnel_gate_node(right)
 
@@ -91,9 +92,13 @@ func are_walls_connected(node_a: Vector2i, node_b: Vector2i) -> bool:
 
 			if (has_left_terrain and not (node_a_has_left_terrain and node_b_has_left_terrain)) or \
 			   (has_right_terrain and not (node_a_has_right_terrain and node_b_has_right_terrain)):
-				return false  # Terrain side is not consistent
+				accumulated_inconsistency += 1
+				if accumulated_inconsistency > 1:
+					return false  # Terrain side is not consistent
 		else:
-			return false  # No consistent terrain side
+			accumulated_inconsistency += 1
+			if accumulated_inconsistency > 1:
+				return false  # Terrain side is not consistent
 
 		current += direction
 

@@ -316,7 +316,7 @@ script = ExtResource("4_ajdy2")
 script = ExtResource("5_2xpg2")
 
 [node name="DebugTarget" type="Node2D" parent="."]
-position = Vector2(849, 234)
+position = Vector2(304, 232)
 
 [node name="Sprite2D" type="Sprite2D" parent="DebugTarget"]
 texture_filter = 1

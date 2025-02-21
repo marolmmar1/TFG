@@ -150,6 +150,12 @@ func link_platform_and_wall_nodes(astar_nodes, platform_nodes, platform_wall_nod
 			var node_b = all_nodes[j]
 			if tmhelper.get_adjacent_cells(node_a).has(node_b) and \
 				(wall_nodes.has(node_a) or wall_nodes.has(node_b)):
+					
+				# Check if there's at least two terrain tiles below the highest node
+				var highest_node = node_a if node_a.y < node_b.y else node_b
+				if not (tmhelper.is_terrain(highest_node + Vector2i(0, 1)) and tmhelper.is_terrain(highest_node + Vector2i(0, 1) * 2)):
+					continue
+				
 				# Add a bidirectional connection
 				astar_nodes[node_a].append(Edge.new(node_a, node_b, Edge.MovementType.SWITCH_CLIMBING))
 				astar_nodes[node_b].append(Edge.new(node_b, node_a, Edge.MovementType.SWITCH_CLIMBING))

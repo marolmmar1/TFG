@@ -1,20 +1,21 @@
 extends Node2D
 
-@export_category("Debug") #DEBUG
-@export var target: Node2D
-@export var astar_node: Node2D
 @export var detect_node_dist: float = 5
 @export var unnecessary_jump_threshold: float = 25.0
 
-var astar_graph
+var astar_graph: Node2D
 var controller
 var path = []
 var path_index = 0
+#DEBUG
+var target
 
 
-func init(_astar, _controller):
+func init(_astar, _controller, target):
 	self.astar_graph = _astar
 	self.controller = _controller
+	#DEBUG
+	self.target = target
 
 
 func get_closest_node(point: Vector2, threshold: float):
@@ -52,7 +53,7 @@ func astar(current_node: Vector2i, target_node: Vector2i) -> Array:
 
 		# #DEBUG
 		# await get_tree().create_timer(0.25).timeout
-		# astar_node.queue_redraw()
+		# astar_graph.queue_redraw()
 
 		var lowest_cost_node = null
 		var lowest_cost = INF
@@ -102,7 +103,7 @@ func get_neighbors(node: Vector2i) -> Array:
 	var neighbors = []
 
 	# #DEBUG
-	# astar_node.astar_on_going.append(astar_graph.tmhelper.to_world_position(node))
+	# astar_graph.astar_on_going.append(astar_graph.tmhelper.to_world_position(node))
 	
 	for edge in astar_graph.astar_nodes[node]:
 		neighbors.append(edge.to)
@@ -130,8 +131,8 @@ func tick():
 		var target_node = get_closest_node(target.position, 1000)
 
 		# #DEBUG
-		# astar_node.astar_target = astar_graph.tmhelper.to_world_position(target_node)
-		# astar_node.queue_redraw()
+		# astar_graph.astar_target = astar_graph.tmhelper.to_world_position(target_node)
+		# astar_graph.queue_redraw()
 
 		path_index = 0
 		path = astar(current_node, target_node)
@@ -141,8 +142,8 @@ func _process(delta: float) -> void:
 	if path:
 
 		#DEBUG
-		astar_node.astar_path = path
-		astar_node.queue_redraw()
+		astar_graph.astar_path = path
+		astar_graph.queue_redraw()
 
 		if path_index < path.size() and path[path_index].to == get_closest_node(controller.position, detect_node_dist):
 			path_index += 1

@@ -296,7 +296,6 @@ position = Vector2(0, 8)
 scale = Vector2(2, 2)
 texture = ExtResource("6_tqb5n")
 
-[node name="Creature" parent="." node_paths=PackedStringArray("astar", "target") instance=ExtResource("7_t4mvu")]
+[node name="Creature" parent="." node_paths=PackedStringArray("target") instance=ExtResource("7_t4mvu")]
 position = Vector2(765, 233)
-astar = NodePath("")
 target = NodePath("../DebugTarget")

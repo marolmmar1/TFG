@@ -5,11 +5,11 @@ extends State
 @onready var idle_state = $"../Idle"
 
 func check_conditions(vars) -> bool:
-	return not controller.is_on_floor()
+	return not controller.check_is_on_floor()
 
 func tick(delta):
 
-	if controller.is_on_floor():
+	if controller.check_is_on_floor():
 		on_change_state.emit(idle_state, {})
 
 	controller.velocity.y += gravity * delta

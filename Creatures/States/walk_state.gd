@@ -4,16 +4,20 @@ extends State
 
 @onready var fall_state = $"../Fall"
 
+var target_node
+
 func enter(vars):
-	controller.velocity.x = vars["direction"].x * speed
-	controller.velocity.y = 0.1
+	target_node = vars["target node"]
 
 func check_conditions(vars) -> bool:
-	return controller.is_on_floor()
+	return controller.check_is_on_floor()
 
 func tick(delta):
 
-	if not controller.is_on_floor():
-		on_change_state.emit(fall_state, {})
+	controller.velocity.x = (target_node - controller.position).normalized().x * speed
+	controller.velocity.y = 0
 
 	controller.move_and_slide()
+
+	if not controller.check_is_on_floor():
+		on_change_state.emit(fall_state, {})

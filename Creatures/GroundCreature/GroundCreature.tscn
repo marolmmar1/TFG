@@ -15,7 +15,7 @@
 [ext_resource type="Script" path="res://Creatures/GroundCreature/ground_creature_ai.gd" id="13_nlyld"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_2owua"]
-radius = 18.0278
+radius = 13.4509
 
 [node name="Creature" type="CharacterBody2D"]
 position = Vector2(714, 237)
@@ -24,11 +24,46 @@ collision_layer = 3
 collision_mask = 3
 script = ExtResource("1_8im78")
 
+[node name="Raycasts" type="Node2D" parent="."]
+
+[node name="DownRaycast" type="RayCast2D" parent="Raycasts"]
+target_position = Vector2(0, 25)
+collision_mask = 3
+
+[node name="RightRaycast" type="RayCast2D" parent="Raycasts"]
+target_position = Vector2(25, 0)
+collision_mask = 3
+
+[node name="LeftRaycast" type="RayCast2D" parent="Raycasts"]
+target_position = Vector2(-25, 0)
+collision_mask = 3
+
+[node name="UpRaycast" type="RayCast2D" parent="Raycasts"]
+target_position = Vector2(0, -25)
+collision_mask = 3
+
+[node name="DLRaycast" type="RayCast2D" parent="Raycasts"]
+target_position = Vector2(-25, 25)
+collision_mask = 3
+
+[node name="DRRaycast" type="RayCast2D" parent="Raycasts"]
+target_position = Vector2(25, 25)
+collision_mask = 3
+
+[node name="ULRaycast" type="RayCast2D" parent="Raycasts"]
+target_position = Vector2(-25, -25)
+collision_mask = 3
+
+[node name="URRaycast" type="RayCast2D" parent="Raycasts"]
+target_position = Vector2(25, -25)
+collision_mask = 3
+
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape2D_2owua")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
-scale = Vector2(0.28125, 0.28125)
+modulate = Color(1, 1, 1, 0.45098)
+scale = Vector2(0.209308, 0.209308)
 texture = ExtResource("2_7cq72")
 
 [node name="Controller" type="Node" parent="."]

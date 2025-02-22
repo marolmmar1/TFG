@@ -55,7 +55,6 @@ func init(_controller: CharacterBody2D):
 	jump_state.init(controller)
 	jump_state.on_change_state.connect(change_state)
 
-
 func _physics_process(delta: float):
 	if not controller:
 		return

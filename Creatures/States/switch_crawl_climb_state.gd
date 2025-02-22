@@ -35,7 +35,7 @@ func enter(vars):
 
 
 func check_conditions(vars) -> bool:
-	if not (controller.is_on_wall() or controller.is_on_floor()):
+	if not (controller.check_is_on_wall() or controller.check_is_on_floor()):
 		return false
 	
 	var _target_node = vars["target node"] as Vector2
@@ -68,11 +68,9 @@ func tick(delta):
 		else:
 			# Animation complete
 			if final_state == idle_crawl_state:
-				controller.set_collision_layer_value(2, false) # Disable collision with tunnel gates while crawling
-				controller.set_collision_mask_value(2, false)
+				controller.set_collision_for_tunnel(false)
 			else:
-				controller.set_collision_layer_value(2, true) # Enable collision when out of tunnel
-				controller.set_collision_mask_value(2, true)
+				controller.set_collision_for_tunnel(true)
 
 			controller.position = target_node
 			completed = true
@@ -80,7 +78,7 @@ func tick(delta):
 	else:
 		#Fix position
 
-		if final_state == idle_climb_state and not controller.is_on_wall():
+		if final_state == idle_climb_state and not controller.check_is_on_wall():
 			controller.velocity.x = fix_pos_speed if (target_node.x - source_node.x) < 0 else -fix_pos_speed
 			controller.move_and_slide()
 

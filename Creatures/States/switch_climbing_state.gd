@@ -30,7 +30,7 @@ func enter(vars):
 
 
 func check_conditions(vars) -> bool:
-	if not (controller.is_on_wall() or controller.is_on_floor()):
+	if not (controller.check_is_on_wall() or controller.check_is_on_floor()):
 		return false
 	
 	var _target_node = vars["target node"] as Vector2
@@ -48,7 +48,7 @@ func tick(delta):
 
 		if anim_time < 0.1: # Time to get into position
 			# Sprite anim
-			if controller.is_on_wall():
+			if controller.check_is_on_wall():
 				controller.velocity = Vector2(0, source_node.y - controller.position.y).normalized() * fix_pos_speed
 			else:
 				controller.velocity = Vector2(source_node.x - controller.position.x, 0).normalized() * fix_pos_speed
@@ -69,10 +69,10 @@ func tick(delta):
 	else:
 		#Fix position
 
-		if final_state == idle_climb_state and not controller.is_on_wall():
+		if final_state == idle_climb_state and not controller.check_is_on_wall():
 			controller.velocity.x = fix_pos_speed if (target_node.x - source_node.x) < 0 else -fix_pos_speed
 			controller.move_and_slide()
-		elif final_state == idle_state and not controller.is_on_floor():
+		elif final_state == idle_state and not controller.check_is_on_floor():
 			controller.velocity.y = fix_pos_speed
 			controller.move_and_slide()
 

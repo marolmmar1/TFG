@@ -10,18 +10,19 @@ var target_node
 func enter(vars):
 	target_node = vars["target node"]
 
-	assert(controller.is_on_wall())
-	wall_dir = -controller.get_slide_collision(0).get_normal()
+	assert(controller.check_is_on_wall())
+	wall_dir = controller.get_wall_dir()
 
 
 func check_conditions(vars) -> bool:
-	return controller.is_on_wall()
+	return controller.check_is_on_wall()
 
 func tick(delta):
-	controller.velocity.x = wall_dir.x * 0.1
+	
 	controller.velocity.y = (target_node - controller.position).normalized().y * speed
-
-	if not controller.is_on_wall():
-		on_change_state.emit(fall_state, {})
+	controller.velocity.x = 0
 
 	controller.move_and_slide()
+
+	if not controller.check_is_on_wall():
+		on_change_state.emit(fall_state, {})

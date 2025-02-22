@@ -5,8 +5,10 @@ extends State
 
 @onready var fall_state = $"../Fall"
 
+var gravity
+
 func enter(vars):
-	var gravity = fall_state.gravity
+	gravity = fall_state.gravity
 	var target_node = vars["target node"] as Vector2
 
 	# We know that the max v point is target_node.y + v_jump_offset
@@ -29,12 +31,9 @@ func enter(vars):
 
 	var v0y = -sqrt(max_height * 2 * gravity)
 
-	# Look, I'm not a mathematician. I don't remember how parabolas or quadratic equations work.
-	# I don't know how this is working and why it needs a + or a - in different situations.
-	# I just know it does, and that after A LOT of trial and error, it's working properly. So don't touch it too much.
 	var t_total
 	if target_node.y > controller.position.y:
-		t_total = (-v0y + sqrt(v0y * v0y - 2 * -gravity * dist_y)) / gravity
+		t_total = (-v0y + sqrt(v0y * v0y - 2 * -gravity * dist_y)) / gravity #TODO Doesn't work. Probably not important but I'd be good to fix
 	else:
 		t_total = (-v0y + sqrt(v0y * v0y - 2 * -gravity * -dist_y)) / gravity
 
@@ -43,17 +42,22 @@ func enter(vars):
 
 	var v0x = dist_x / t_total
 
-	# print("dist_y: ", dist_y)
-	# print("dist_x: ", dist_x)
-	# print("v0y: ", v0y)
-	# print("t_total: ", t_total)
-	# print("v0x: ", v0x)
+	print("dist_y: ", dist_y)
+	print("dist_x: ", dist_x)
+	print("v0y: ", v0y)
+	print("t_total: ", t_total)
+	print("v0x: ", v0x)
 
 	controller.velocity = Vector2(v0x, v0y)
 
+
+func tick(delta):
+	controller.velocity.y += gravity * delta
 	controller.move_and_slide()
 
-	on_change_state.emit(fall_state, {})
+	if not controller.check_is_on_floor():
+		on_change_state.emit(fall_state, {})
+
 
 func check_conditions(vars) -> bool:
-	return controller.is_on_floor()
+	return controller.check_is_on_floor()

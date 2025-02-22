@@ -1,6 +1,6 @@
 extends Node2D
 
-@export var detect_node_dist: float = 5
+@export var detect_node_dist: float = 10.0
 @export var unnecessary_jump_threshold: float = 25.0
 
 var astar_graph: Node2D
@@ -175,23 +175,13 @@ func calculate_movement():
 
 
 func walk(next_node):
-	if astar_graph.tmhelper.to_world_position(next_node).x > controller.position.x:
-		controller.queue_change_state(controller.walk_state, {"direction": Vector2.RIGHT})
-	else:
-		controller.queue_change_state(controller.walk_state, {"direction": Vector2.LEFT})
+	controller.queue_change_state(controller.walk_state, {"target node": astar_graph.tmhelper.to_world_position(next_node)})
 
 func climb(next_node):
 	controller.queue_change_state(controller.climb_state, {"target node": astar_graph.tmhelper.to_world_position(next_node)})
 
 func crawl(next_node):
-	if astar_graph.tmhelper.to_world_position(next_node).y > controller.position.y:
-		controller.queue_change_state(controller.crawl_state, {"direction": Vector2.DOWN})
-	elif astar_graph.tmhelper.to_world_position(next_node).y < controller.position.y:
-		controller.queue_change_state(controller.crawl_state, {"direction": Vector2.UP})
-	elif astar_graph.tmhelper.to_world_position(next_node).x > controller.position.x:
-		controller.queue_change_state(controller.crawl_state, {"direction": Vector2.RIGHT})
-	else:
-		controller.queue_change_state(controller.crawl_state, {"direction": Vector2.LEFT})
+	controller.queue_change_state(controller.crawl_state, {"target node": astar_graph.tmhelper.to_world_position(next_node)})
 
 func switch_climbing(next_node, source_node):
 	controller.queue_change_state(controller.switch_climbing_state, {"target node": astar_graph.tmhelper.to_world_position(next_node), "source node": astar_graph.tmhelper.to_world_position(source_node)})

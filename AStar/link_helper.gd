@@ -214,7 +214,7 @@ func are_platforms_connected_by_jump(node_a: Vector2i, node_b: Vector2i, vertica
 		abs(node_b.y - node_a.y) > vertical_jump_dist or 
 		abs(node_b.x - node_a.x) > horizontal_jump_dist or 
 		(abs(node_b.y - node_a.y) > vertical_jump_dist/2 and abs(node_b.x - node_a.x) > horizontal_jump_dist/2)
-		): # Wrong
+		):
 
 		return false
 

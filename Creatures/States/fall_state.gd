@@ -1,6 +1,6 @@
 extends State
 
-@export var gravity: float = 750
+@export var gravity: float = 800
 
 @onready var idle_state = $"../Idle"
 

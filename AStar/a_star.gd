@@ -1,8 +1,8 @@
 extends Node2D
 
 @export var tilemap: TileMap
-@export var vertical_jump_dist: int = 3
 @export var horizontal_jump_dist: int = 4
+@export var vertical_jump_dist: int = 3
 
 var tmhelper
 var nodes_helper

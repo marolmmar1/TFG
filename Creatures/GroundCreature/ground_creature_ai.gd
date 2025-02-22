@@ -1,22 +1,24 @@
 extends Node2D
 
-@export_category("Debug") #DEBUG
-@export var target: Node2D
-@export var astar_node: Node2D
-@export var tile_size: int = 15
+@export var detect_node_dist: float = 5
+@export var unnecessary_jump_threshold: float = 25.0
 
-var astar_graph
+var astar_graph: Node2D
 var controller
 var path = []
 var path_index = 0
+#DEBUG
+var target
 
 
-func init(_astar, _controller):
+func init(_astar, _controller, target):
 	self.astar_graph = _astar
 	self.controller = _controller
+	#DEBUG
+	self.target = target
 
 
-func get_closest_node(point: Vector2, threshold: int):
+func get_closest_node(point: Vector2, threshold: float):
 	var closest_point = null
 	var closest_dist = INF
 	for node in astar_graph.astar_nodes:
@@ -51,7 +53,7 @@ func astar(current_node: Vector2i, target_node: Vector2i) -> Array:
 
 		# #DEBUG
 		# await get_tree().create_timer(0.25).timeout
-		# astar_node.queue_redraw()
+		# astar_graph.queue_redraw()
 
 		var lowest_cost_node = null
 		var lowest_cost = INF
@@ -101,7 +103,7 @@ func get_neighbors(node: Vector2i) -> Array:
 	var neighbors = []
 
 	# #DEBUG
-	# astar_node.astar_on_going.append(astar_graph.tmhelper.to_world_position(node))
+	# astar_graph.astar_on_going.append(astar_graph.tmhelper.to_world_position(node))
 	
 	for edge in astar_graph.astar_nodes[node]:
 		neighbors.append(edge.to)
@@ -129,30 +131,27 @@ func tick():
 		var target_node = get_closest_node(target.position, 1000)
 
 		# #DEBUG
-		# astar_node.astar_target = astar_graph.tmhelper.to_world_position(target_node)
-		# astar_node.queue_redraw()
+		# astar_graph.astar_target = astar_graph.tmhelper.to_world_position(target_node)
+		# astar_graph.queue_redraw()
 
 		path_index = 0
 		path = astar(current_node, target_node)
-	
+
 
 func _process(delta: float) -> void:
 	if path:
 
 		#DEBUG
-		astar_node.astar_path = path
-		astar_node.queue_redraw()
+		astar_graph.astar_path = path
+		astar_graph.queue_redraw()
 
-		if path_index < path.size() and path[path_index].to == get_closest_node(controller.position, tile_size):
+		if path_index < path.size() and path[path_index].to == get_closest_node(controller.position, detect_node_dist):
 			path_index += 1
 
-			calculate_movement()
-
-		elif path_index == 0:
-			calculate_movement()
-
+		calculate_movement()
 
 		#TODO check if out of edge's bounding box by thickness
+		# Disable for some seconds if jumping
 
 
 func calculate_movement():	
@@ -163,8 +162,16 @@ func calculate_movement():
 			walk(next_node)
 		Edge.MovementType.CLIMB:
 			climb(next_node)
+		Edge.MovementType.CRAWL:
+			crawl(next_node)
 		Edge.MovementType.SWITCH_CLIMBING:
-			switch_climbing(next_node)
+			switch_climbing(next_node, path[path_index].from)
+		Edge.MovementType.SWITCH_CRAWL_WALK:
+			switch_crawl_walk(next_node, path[path_index].from)
+		Edge.MovementType.SWITCH_CRAWL_CLIMB:
+			switch_crawl_climb(next_node, path[path_index].from)
+		Edge.MovementType.JUMP:
+			jump(next_node)
 
 
 func walk(next_node):
@@ -174,10 +181,32 @@ func walk(next_node):
 		controller.queue_change_state(controller.walk_state, {"direction": Vector2.LEFT})
 
 func climb(next_node):
-	if astar_graph.tmhelper.to_world_position(next_node).y > controller.position.y:
-		controller.queue_change_state(controller.climb_state, {"direction": Vector2.DOWN})
-	else:
-		controller.queue_change_state(controller.climb_state, {"direction": Vector2.UP})
+	controller.queue_change_state(controller.climb_state, {"target node": astar_graph.tmhelper.to_world_position(next_node)})
 
-func switch_climbing(next_node):
-	controller.queue_change_state(controller.switch_climbing_state, {"target node": astar_graph.tmhelper.to_world_position(next_node)})
+func crawl(next_node):
+	if astar_graph.tmhelper.to_world_position(next_node).y > controller.position.y:
+		controller.queue_change_state(controller.crawl_state, {"direction": Vector2.DOWN})
+	elif astar_graph.tmhelper.to_world_position(next_node).y < controller.position.y:
+		controller.queue_change_state(controller.crawl_state, {"direction": Vector2.UP})
+	elif astar_graph.tmhelper.to_world_position(next_node).x > controller.position.x:
+		controller.queue_change_state(controller.crawl_state, {"direction": Vector2.RIGHT})
+	else:
+		controller.queue_change_state(controller.crawl_state, {"direction": Vector2.LEFT})
+
+func switch_climbing(next_node, source_node):
+	controller.queue_change_state(controller.switch_climbing_state, {"target node": astar_graph.tmhelper.to_world_position(next_node), "source node": astar_graph.tmhelper.to_world_position(source_node)})
+
+func switch_crawl_walk(next_node, source_node):
+	controller.queue_change_state(controller.switch_crawl_walk_state, {"target node": astar_graph.tmhelper.to_world_position(next_node), "source node": astar_graph.tmhelper.to_world_position(source_node), \
+	"current state": "crawl" if controller.current_state == controller.crawl_state else "walk"})
+
+func switch_crawl_climb(next_node, source_node):
+	controller.queue_change_state(controller.switch_crawl_climb_state, {"target node": astar_graph.tmhelper.to_world_position(next_node), "source node": astar_graph.tmhelper.to_world_position(source_node), \
+	"current state": "crawl" if controller.current_state == controller.crawl_state else "climb"})
+
+func jump(next_node):
+	if controller.position.distance_to(astar_graph.tmhelper.to_world_position(next_node)) < unnecessary_jump_threshold:
+		walk(next_node) #TODO maybe we need to check for climbing too?
+	elif controller.current_state != controller.fall_state:
+		controller.queue_change_state(controller.jump_state, {"target node": astar_graph.tmhelper.to_world_position(next_node)})
+	#TODO IMPORTANT Add alternative movement here, and probably add the same behaviour to switching movements once we figure it out

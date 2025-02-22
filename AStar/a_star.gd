@@ -1,8 +1,8 @@
 extends Node2D
 
 @export var tilemap: TileMap
-@export var vertical_jump_dist: int = 3
 @export var horizontal_jump_dist: int = 4
+@export var vertical_jump_dist: int = 3
 
 var tmhelper
 var nodes_helper
@@ -186,8 +186,10 @@ func _draw():
 					color = Color(0.5, 0.5, 1)
 				Edge.MovementType.SWITCH_CLIMBING:
 					color = Color(1, 1, 1)
-				Edge.MovementType.SWITCH_AND_CRAWL:
+				Edge.MovementType.SWITCH_CRAWL_WALK:
 					color = Color(1, 0, 1)
+				Edge.MovementType.SWITCH_CRAWL_CLIMB:
+					color = Color(1, 0, 0.5)
 			draw_line(world_position_a, world_position_b, color, 2)
 
 			if edge.movement_type == Edge.MovementType.FALL:

@@ -6,6 +6,9 @@ extends CharacterBody2D
 @export_category("Provided")
 @export var astar: Node2D
 
+@export_category("Debug")
+@export var target: Node2D
+
 @onready var controller = $Controller
 @onready var ai = $AI
 @onready var ai_timer: Timer = $AITimer
@@ -13,7 +16,7 @@ extends CharacterBody2D
 func _ready() -> void:
 
 	controller.init(self)
-	ai.init(astar, controller)
+	ai.init(astar, controller, target)
 
 	# ai_timer.wait_time = ai_time
 	# ai_timer.timeout.connect(ai_tick)

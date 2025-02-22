@@ -1,0 +1,74 @@
+[gd_scene load_steps=15 format=3 uid="uid://dahmo14t7kdaw"]
+
+[ext_resource type="Script" path="res://Creatures/GroundCreature/ground_creature.gd" id="1_8im78"]
+[ext_resource type="Texture2D" uid="uid://2l44j7m7c03b" path="res://icon.svg" id="2_7cq72"]
+[ext_resource type="Script" path="res://Creatures/GroundCreature/ground_creature_controller.gd" id="3_2relg"]
+[ext_resource type="Script" path="res://Creatures/States/walk_state.gd" id="4_illsp"]
+[ext_resource type="Script" path="res://Creatures/States/fall_state.gd" id="5_d1aoj"]
+[ext_resource type="Script" path="res://Creatures/States/climb_state.gd" id="6_ab7tr"]
+[ext_resource type="Script" path="res://Creatures/States/crawl_state.gd" id="7_qc4mj"]
+[ext_resource type="Script" path="res://Creatures/States/state.gd" id="8_jug00"]
+[ext_resource type="Script" path="res://Creatures/States/switch_climbing_state.gd" id="9_674qo"]
+[ext_resource type="Script" path="res://Creatures/States/switch_crawl_walk_state.gd" id="10_oasad"]
+[ext_resource type="Script" path="res://Creatures/States/switch_crawl_climb_state.gd" id="11_odbyq"]
+[ext_resource type="Script" path="res://Creatures/States/jump_state.gd" id="12_fu1oo"]
+[ext_resource type="Script" path="res://Creatures/GroundCreature/ground_creature_ai.gd" id="13_nlyld"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_2owua"]
+radius = 18.0278
+
+[node name="Creature" type="CharacterBody2D"]
+position = Vector2(714, 237)
+scale = Vector2(0.821159, 0.821159)
+collision_layer = 3
+collision_mask = 3
+script = ExtResource("1_8im78")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_2owua")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+scale = Vector2(0.28125, 0.28125)
+texture = ExtResource("2_7cq72")
+
+[node name="Controller" type="Node" parent="."]
+script = ExtResource("3_2relg")
+
+[node name="Walk" type="Node" parent="Controller"]
+script = ExtResource("4_illsp")
+
+[node name="Fall" type="Node" parent="Controller"]
+script = ExtResource("5_d1aoj")
+
+[node name="Climb" type="Node" parent="Controller"]
+script = ExtResource("6_ab7tr")
+
+[node name="Crawl" type="Node" parent="Controller"]
+script = ExtResource("7_qc4mj")
+
+[node name="Idle" type="Node" parent="Controller"]
+script = ExtResource("8_jug00")
+
+[node name="IdleClimb" type="Node" parent="Controller"]
+script = ExtResource("8_jug00")
+
+[node name="IdleCrawl" type="Node" parent="Controller"]
+script = ExtResource("8_jug00")
+
+[node name="SwitchClimbing" type="Node" parent="Controller"]
+script = ExtResource("9_674qo")
+
+[node name="SwitchCrawlWalk" type="Node" parent="Controller"]
+script = ExtResource("10_oasad")
+
+[node name="SwitchCrawlClimb" type="Node" parent="Controller"]
+script = ExtResource("11_odbyq")
+
+[node name="Jump" type="Node" parent="Controller"]
+script = ExtResource("12_fu1oo")
+
+[node name="AI" type="Node2D" parent="."]
+script = ExtResource("13_nlyld")
+
+[node name="AITimer" type="Timer" parent="."]
+one_shot = true

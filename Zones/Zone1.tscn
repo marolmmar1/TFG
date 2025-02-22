@@ -320,7 +320,7 @@ scale = Vector2(2, 2)
 texture = ExtResource("6_4dqa8")
 
 [node name="Creature" type="CharacterBody2D" parent="." node_paths=PackedStringArray("astar")]
-position = Vector2(58, 586)
+position = Vector2(752, 261)
 script = ExtResource("7_xviuh")
 astar = NodePath("../AStar")
 
@@ -361,7 +361,6 @@ stop_time_2 = null
 script = ExtResource("15_oo231")
 target = NodePath("../../DebugTarget")
 astar_node = NodePath("../../AStar")
-tile_size = null
 
 [node name="AITimer" type="Timer" parent="Creature"]
 one_shot = true

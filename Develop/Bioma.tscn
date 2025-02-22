@@ -361,7 +361,6 @@ stop_time_2 = null
 script = ExtResource("8_cu1ky")
 target = NodePath("../../DebugTarget")
 astar_node = NodePath("../../AStar")
-tile_size = null
 
 [node name="AITimer" type="Timer" parent="Creature"]
 one_shot = true

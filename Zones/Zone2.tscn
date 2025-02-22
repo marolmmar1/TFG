@@ -311,7 +311,7 @@ script = ExtResource("4_p8gtn")
 script = ExtResource("5_af6qd")
 
 [node name="DebugTarget" type="Node2D" parent="."]
-position = Vector2(910, 491)
+position = Vector2(600, 591)
 
 [node name="Sprite2D" type="Sprite2D" parent="DebugTarget"]
 texture_filter = 1
@@ -320,7 +320,7 @@ scale = Vector2(2, 2)
 texture = ExtResource("6_1ylac")
 
 [node name="Creature" type="CharacterBody2D" parent="." node_paths=PackedStringArray("astar")]
-position = Vector2(379, 491)
+position = Vector2(290, 585)
 script = ExtResource("7_320c7")
 astar = NodePath("../AStar")
 
@@ -361,7 +361,6 @@ stop_time_2 = null
 script = ExtResource("15_abrwi")
 target = NodePath("../../DebugTarget")
 astar_node = NodePath("../../AStar")
-tile_size = null
 
 [node name="AITimer" type="Timer" parent="Creature"]
 one_shot = true

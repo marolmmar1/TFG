@@ -1,6 +1,7 @@
 extends Node
 
 var tilemap: TileMap
+@onready var _raycast: RayCast2D = $"../RayCast2D"
 
 func is_terrain(cell):
 
@@ -40,3 +41,12 @@ func get_adjacent_cells(cell):
 
 func to_world_position(cell):
 	return tilemap.to_global(tilemap.map_to_local(cell));
+
+func raycast(from, to):
+	_raycast.target_position = to_world_position(to) - to_world_position(from)
+	_raycast.position = to_world_position(from)
+	_raycast.enabled = true
+	_raycast.force_update_transform()
+	_raycast.force_raycast_update()
+	var result = _raycast.get_collider()
+	return result

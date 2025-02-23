@@ -83,5 +83,6 @@ func _process(delta: float) -> void:
 	ai_tick()
 
 func ai_tick():
-	ai.tick()
+	# ai.tick()
+	await ai.tick() #DEBUG
 	# ai_timer.start()

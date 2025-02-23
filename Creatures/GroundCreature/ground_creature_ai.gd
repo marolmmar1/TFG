@@ -52,8 +52,8 @@ func astar(current_node: Vector2i, target_node: Vector2i) -> Array:
 	while pending.size() > 0: #TODO prevent infinite loop and split process through ticks
 
 		# #DEBUG
-		# await get_tree().create_timer(0.25).timeout
-		# astar_graph.queue_redraw()
+		# await get_tree().create_timer(15.25).timeout
+		astar_graph.queue_redraw()
 
 		var lowest_cost_node = null
 		var lowest_cost = INF
@@ -134,8 +134,11 @@ func tick():
 		# astar_graph.astar_target = astar_graph.tmhelper.to_world_position(target_node)
 		# astar_graph.queue_redraw()
 
+		if current_node == null or target_node == null:
+			return
+
 		path_index = 0
-		path = astar(current_node, target_node)
+		path = await astar(current_node, target_node) #DEBUG
 
 
 func _process(delta: float) -> void:
@@ -172,6 +175,8 @@ func calculate_movement():
 			switch_crawl_climb(next_node, path[path_index].from)
 		Edge.MovementType.JUMP:
 			jump(next_node)
+		Edge.MovementType.FALL:
+			fall()
 
 
 func walk(next_node):
@@ -196,7 +201,10 @@ func switch_crawl_climb(next_node, source_node):
 
 func jump(next_node):
 	if controller.position.distance_to(astar_graph.tmhelper.to_world_position(next_node)) < unnecessary_jump_threshold:
-		walk(next_node) #TODO maybe we need to check for climbing too?
+		walk(next_node) #TODO maybe we need to check for climbing too?	
 	elif controller.current_state != controller.fall_state:
 		controller.queue_change_state(controller.jump_state, {"target node": astar_graph.tmhelper.to_world_position(next_node)})
 	#TODO IMPORTANT Add alternative movement here, and probably add the same behaviour to switching movements once we figure it out
+
+func fall():
+	controller.queue_change_state(controller.fall_state, {})

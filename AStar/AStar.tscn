@@ -5,9 +5,8 @@
 [ext_resource type="Script" path="res://AStar/nodes_helper.gd" id="3_txqkn"]
 [ext_resource type="Script" path="res://AStar/link_helper.gd" id="4_sgoau"]
 
-[node name="AStar" type="Node2D" node_paths=PackedStringArray("tilemap")]
+[node name="AStar" type="Node2D"]
 script = ExtResource("1_k4lbb")
-tilemap = NodePath("")
 
 [node name="TileMapHelper" type="Node" parent="."]
 script = ExtResource("2_4l024")
@@ -17,3 +16,6 @@ script = ExtResource("3_txqkn")
 
 [node name="LinkHelper" type="Node" parent="."]
 script = ExtResource("4_sgoau")
+
+[node name="RayCast2D" type="RayCast2D" parent="."]
+collision_mask = 3

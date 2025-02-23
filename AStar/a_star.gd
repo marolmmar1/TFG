@@ -3,6 +3,7 @@ extends Node2D
 @export var tilemap: TileMap
 @export var horizontal_jump_dist: int = 4
 @export var vertical_jump_dist: int = 3
+@export var max_fall_height: int = 15
 
 var tmhelper
 var nodes_helper
@@ -13,6 +14,7 @@ var astar_nodes = {}
 var platform_nodes = []
 var platform_wall_nodes = []
 var wall_nodes = []
+var wall_grab_nodes = []
 var wall_corner_nodes = []
 var intersection_nodes = []
 var tunnel_gate_nodes = []
@@ -20,6 +22,9 @@ var tunnel_end_nodes = []
 var platform_fall_nodes = []
 
 func _ready():
+	# Godot needs a frame to set up the tilemap collisions in memory
+	await get_tree().process_frame
+
 	tmhelper = $TileMapHelper
 	tmhelper.tilemap = tilemap
 
@@ -34,21 +39,23 @@ func _ready():
 	calculate_platform_wall_nodes()
 	calculate_platform_nodes()
 	calculate_wall_nodes()
+	calculate_wall_grab_nodes()
 	calculate_wall_corner_nodes()
 	calculate_intersection_nodes()
 	calculate_tunnel_gate_nodes()
 	calculate_tunnel_end_nodes()
 
-	purge_astar_nodes()
-
+	purge_and_fill_astar_nodes()
+	# (This one requires to have all non-movement nodes purged)
 	calculate_platform_fall_nodes()
 
-	link_helper.link_platform_nodes(astar_nodes, platform_nodes, platform_wall_nodes)
-	link_helper.link_wall_nodes(astar_nodes, wall_nodes, platform_wall_nodes, wall_corner_nodes)
+	link_helper.link_platform_nodes(astar_nodes, platform_nodes, platform_wall_nodes, platform_fall_nodes)
+	link_helper.link_wall_nodes(astar_nodes, wall_nodes, platform_wall_nodes, wall_corner_nodes, wall_grab_nodes)
 	link_helper.link_intersection_and_tunnel_gate_nodes(astar_nodes, intersection_nodes, tunnel_gate_nodes, tunnel_end_nodes)
-	link_helper.link_platform_and_wall_nodes(astar_nodes, platform_nodes, platform_wall_nodes, wall_nodes)
+	link_helper.link_platform_and_wall_nodes(astar_nodes, platform_nodes, wall_nodes, wall_grab_nodes)
 	link_helper.link_tunnel_gate_nodes(astar_nodes, tunnel_gate_nodes, platform_nodes, wall_nodes, platform_wall_nodes)
-	link_helper.link_platform_nodes_by_jump(astar_nodes, platform_nodes, vertical_jump_dist, horizontal_jump_dist)
+	link_helper.link_nodes_by_jump(astar_nodes, platform_nodes, wall_grab_nodes, platform_fall_nodes, vertical_jump_dist, horizontal_jump_dist, max_fall_height)
+	link_helper.link_nodes_by_fall(astar_nodes, platform_nodes, wall_grab_nodes, platform_wall_nodes, platform_fall_nodes, max_fall_height)
 
 	queue_redraw()
 
@@ -75,6 +82,12 @@ func calculate_wall_nodes():
 		if nodes_helper.is_wall_node(node):
 			wall_nodes.append(node)
 
+func calculate_wall_grab_nodes():
+	for node in astar_nodes:
+		if nodes_helper.is_wall_grab_node(node):
+			wall_nodes.erase(node)
+			wall_grab_nodes.append(node)
+
 func calculate_wall_corner_nodes():
 	for node in astar_nodes:
 		if nodes_helper.is_wall_corner_node(node):
@@ -98,21 +111,19 @@ func calculate_tunnel_end_nodes():
 func calculate_platform_fall_nodes():
 	for node in platform_nodes:
 		# Check left and right for fall nodes
-		var fall_node_left = nodes_helper.find_fall_node(astar_nodes, platform_nodes, node, Vector2i(-1, 0))
-		var fall_node_right = nodes_helper.find_fall_node(astar_nodes, platform_nodes, node, Vector2i(1, 0))
+		var fall_node_left = nodes_helper.find_fall_node(astar_nodes, node, Vector2i(-1, 0), max_fall_height)
+		var fall_node_right = nodes_helper.find_fall_node(astar_nodes, node, Vector2i(1, 0), max_fall_height)
 
 		if fall_node_left != null:
 			platform_fall_nodes.append(fall_node_left)
-			astar_nodes[fall_node_left] = []
-			astar_nodes[node].append(Edge.new(node, fall_node_left, Edge.MovementType.FALL))  # One-directional edge
 		if fall_node_right != null:
 			platform_fall_nodes.append(fall_node_right)
-			astar_nodes[fall_node_right] = []
-			astar_nodes[node].append(Edge.new(node, fall_node_right, Edge.MovementType.FALL))  # One-directional edge
+
+	for node in platform_fall_nodes:
+		astar_nodes[node] = []
 
 
-
-func purge_astar_nodes():
+func purge_and_fill_astar_nodes():
 
 	astar_nodes.clear()
 
@@ -122,6 +133,8 @@ func purge_astar_nodes():
 		astar_nodes[node] = []
 	for node in wall_nodes:
 		astar_nodes[node] = []
+	for node in wall_grab_nodes:
+		astar_nodes[node] = []
 	for node in wall_corner_nodes:
 		astar_nodes[node] = []
 	for node in intersection_nodes:
@@ -130,7 +143,7 @@ func purge_astar_nodes():
 		astar_nodes[node] = []
 	for node in tunnel_end_nodes:
 		astar_nodes[node] = []
-
+	
 
 #DEBUG
 var astar_on_going = []
@@ -150,6 +163,10 @@ func _draw():
 	for node in wall_nodes:
 		var world_position = tmhelper.to_world_position(node)
 		draw_circle(world_position, 5, Color(1, 1, 0))
+
+	for node in wall_grab_nodes:
+		var world_position = tmhelper.to_world_position(node)
+		draw_circle(world_position, 5, Color(0.5, 0.5, 0.5))
 
 	for node in wall_corner_nodes:
 		var world_position = tmhelper.to_world_position(node)
@@ -192,15 +209,6 @@ func _draw():
 					color = Color(1, 0, 0.5)
 			draw_line(world_position_a, world_position_b, color, 2)
 
-			if edge.movement_type == Edge.MovementType.FALL:
-				draw_line(world_position_a, world_position_b, Color(1, 0, 0), 2)
-
-				var direction = (world_position_b - world_position_a).normalized()
-				var arrowhead1 = world_position_b - direction * 10 + direction.rotated(PI / 2) * 5
-				var arrowhead2 = world_position_b - direction * 10 - direction.rotated(PI / 2) * 5
-				draw_line(world_position_b, arrowhead1, Color(1, 0, 0), 2)
-				draw_line(world_position_b, arrowhead2, Color(1, 0, 0), 2)
-
 			if edge.movement_type == Edge.MovementType.JUMP:
 				draw_line(world_position_a, world_position_b, Color(0, 1, 1), 2)
 
@@ -209,6 +217,15 @@ func _draw():
 				var arrowhead2 = world_position_b - direction * 10 - direction.rotated(PI / 2) * 5
 				draw_line(world_position_b, arrowhead1, Color(0, 1, 1), 2)
 				draw_line(world_position_b, arrowhead2, Color(0, 1, 1), 2)
+
+			if edge.movement_type == Edge.MovementType.FALL:
+				draw_line(world_position_a, world_position_b, Color(1, 0, 0), 2)
+
+				var direction = (world_position_b - world_position_a).normalized()
+				var arrowhead1 = world_position_b - direction * 10 + direction.rotated(PI / 2) * 5
+				var arrowhead2 = world_position_b - direction * 10 - direction.rotated(PI / 2) * 5
+				draw_line(world_position_b, arrowhead1, Color(1, 0, 0), 2)
+				draw_line(world_position_b, arrowhead2, Color(1, 0, 0), 2)
 
 	if astar_target:
 		draw_circle(astar_target, 10, Color(0, 1, 0))

@@ -1,6 +1,6 @@
 extends Node2D
 
-@export var detect_node_dist: float = 10.0
+@export var detect_node_dist: float = 5.0
 @export var unnecessary_jump_threshold: float = 25.0
 
 var astar_graph: Node2D

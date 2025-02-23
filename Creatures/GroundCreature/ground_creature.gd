@@ -57,6 +57,19 @@ func check_is_on_tunnel() -> bool:
 
 	return false
 
+func check_corner(corner: Vector2i) -> bool:
+	if corner == Vector2i(1, 1):
+		return dr_raycast.is_colliding()
+	elif corner == Vector2i(-1, 1):
+		return dl_raycast.is_colliding()
+	elif corner == Vector2i(1, -1):
+		return ur_raycast.is_colliding()
+	elif corner == Vector2i(-1, -1):
+		return ul_raycast.is_colliding()
+	else:
+		return false
+	
+
 func get_wall_dir() -> Vector2: #TODO do something if both
 	if left_raycast.is_colliding():
 		return Vector2.LEFT

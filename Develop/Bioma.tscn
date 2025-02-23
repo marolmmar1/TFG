@@ -18,11 +18,9 @@ layer_0/tile_data = PackedInt32Array(1245186, 262149, 2, 1245187, 262149, 2, 124
 
 [node name="AStar" parent="." node_paths=PackedStringArray("tilemap") instance=ExtResource("2_hqvih")]
 tilemap = NodePath("../TileMap")
-horizontal_jump_dist = 4
-vertical_jump_dist = 3
 
 [node name="DebugTarget" type="Node2D" parent="."]
-position = Vector2(1106, 229)
+position = Vector2(815, 585)
 
 [node name="Sprite2D" type="Sprite2D" parent="DebugTarget"]
 texture_filter = 1

@@ -1,6 +1,7 @@
 extends State
 
 @export var speed: float = 65.0
+@export var fix_speed: float = 5.0
 
 @onready var fall_state = $"../Fall"
 
@@ -20,7 +21,7 @@ func check_conditions(vars) -> bool:
 func tick(delta):
 	
 	controller.velocity.y = (target_node - controller.position).normalized().y * speed
-	controller.velocity.x = 0
+	controller.velocity.x = (target_node - controller.position).normalized().x * fix_speed
 
 	controller.move_and_slide()
 

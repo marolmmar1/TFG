@@ -1,6 +1,7 @@
 extends Node2D
 
 @export var tilemap: TileMap
+@export var doors: Node2D
 @export var horizontal_jump_dist: int = 4
 @export var vertical_jump_dist: int = 3
 @export var max_fall_height: int = 15
@@ -27,6 +28,7 @@ func _ready():
 
 	tmhelper = $TileMapHelper
 	tmhelper.tilemap = tilemap
+	tmhelper.doors = doors
 
 	nodes_helper = $NodesHelper
 	nodes_helper.tmhelper = tmhelper
@@ -56,6 +58,8 @@ func _ready():
 	link_helper.link_tunnel_gate_nodes(astar_nodes, tunnel_gate_nodes, platform_nodes, wall_nodes, platform_wall_nodes)
 	link_helper.link_nodes_by_jump(astar_nodes, platform_nodes, wall_grab_nodes, platform_fall_nodes, vertical_jump_dist, horizontal_jump_dist, max_fall_height)
 	link_helper.link_nodes_by_fall(astar_nodes, platform_nodes, wall_grab_nodes, platform_wall_nodes, platform_fall_nodes, max_fall_height)
+
+	delete_isolated_nodes()
 
 	queue_redraw()
 
@@ -144,6 +148,59 @@ func purge_and_fill_astar_nodes():
 	for node in tunnel_end_nodes:
 		astar_nodes[node] = []
 	
+
+# Delete nodes if not connected to an exit node
+func delete_isolated_nodes():
+	var exits = []
+	for node in astar_nodes:
+		if tmhelper.is_exit(node):
+			exits.append(node)
+
+	var to_delete = []
+
+	for node in astar_nodes:
+		if exits.has(node):
+			continue
+
+		var connected = dfs(node, astar_nodes)
+		var ok = false
+		for exit in exits:
+			if connected.has(exit):
+				ok = true
+				break
+				
+		if not ok:
+			to_delete.append(node)
+		
+	# Avoid array resize during iteration
+	for node in to_delete:
+		astar_nodes.erase(node)
+		
+		platform_nodes.erase(node)
+		platform_wall_nodes.erase(node)
+		wall_nodes.erase(node)
+		wall_grab_nodes.erase(node)
+		wall_corner_nodes.erase(node)
+		intersection_nodes.erase(node)
+		tunnel_gate_nodes.erase(node)
+		tunnel_end_nodes.erase(node)
+		platform_fall_nodes.erase(node)
+
+
+# Depth-first search to find all connected nodes
+func dfs(start_node, nodes):
+	var visited = []
+	var stack = [start_node]
+	while stack.size() > 0:
+		var node = stack.pop_back()
+		if visited.has(node):
+			continue
+		visited.append(node)
+		for edge in nodes[node]:
+			if not visited.has(edge.to):
+				stack.append(edge.to)
+	return visited
+
 
 #DEBUG
 var astar_on_going = []

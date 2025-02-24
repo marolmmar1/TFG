@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3 uid="uid://dahmo14t7kdaw"]
+[gd_scene load_steps=16 format=3 uid="uid://dahmo14t7kdaw"]
 
 [ext_resource type="Script" path="res://Creatures/GroundCreature/ground_creature.gd" id="1_8im78"]
 [ext_resource type="Texture2D" uid="uid://2l44j7m7c03b" path="res://icon.svg" id="2_7cq72"]
@@ -13,6 +13,7 @@
 [ext_resource type="Script" path="res://Creatures/States/switch_crawl_climb_state.gd" id="11_odbyq"]
 [ext_resource type="Script" path="res://Creatures/States/jump_state.gd" id="12_fu1oo"]
 [ext_resource type="Script" path="res://Creatures/GroundCreature/ground_creature_ai.gd" id="13_nlyld"]
+[ext_resource type="Script" path="res://Creatures/States/stun_state.gd" id="13_yh820"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_2owua"]
 radius = 13.4509
@@ -68,6 +69,9 @@ texture = ExtResource("2_7cq72")
 
 [node name="Controller" type="Node" parent="."]
 script = ExtResource("3_2relg")
+stun_height = null
+damage_height = null
+default_stun_time = null
 
 [node name="Walk" type="Node" parent="Controller"]
 script = ExtResource("4_illsp")
@@ -101,6 +105,9 @@ script = ExtResource("11_odbyq")
 
 [node name="Jump" type="Node" parent="Controller"]
 script = ExtResource("12_fu1oo")
+
+[node name="Stunned" type="Node" parent="Controller"]
+script = ExtResource("13_yh820")
 
 [node name="AI" type="Node2D" parent="."]
 script = ExtResource("13_nlyld")

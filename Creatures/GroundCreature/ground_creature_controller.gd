@@ -1,9 +1,8 @@
 extends Node
 
-@export var speed: float = 100.0
-@export var climb_speed: float = 80.0
-@export var gravity: float = 500.0
-@export var jump_force: float = -200.0
+@export var stun_height: float = 350
+@export var damage_height: float = 550
+@export var default_stun_time: float = 1.5
 
 @onready var idle_state = $Idle
 @onready var idle_climb_state = $IdleClimb
@@ -16,8 +15,11 @@ extends Node
 @onready var switch_crawl_walk_state = $SwitchCrawlWalk
 @onready var switch_crawl_climb_state = $SwitchCrawlClimb
 @onready var jump_state = $Jump
+@onready var stun_state = $Stunned
 
 var controller: CharacterBody2D
+var last_vel
+var gravity
 var current_state: State
 var current_vars = {}
 var queued_state: State
@@ -54,6 +56,10 @@ func init(_controller: CharacterBody2D):
 	switch_crawl_climb_state.on_change_state.connect(change_state)
 	jump_state.init(controller)
 	jump_state.on_change_state.connect(change_state)
+	stun_state.init(controller)
+	stun_state.on_change_state.connect(change_state)
+
+	gravity = fall_state.gravity
 
 func _physics_process(delta: float):
 	if not controller:
@@ -74,6 +80,32 @@ func _physics_process(delta: float):
 			current_state = idle_state
 			idle_state.enter({})
 			print(current_state.name)
+	
+
+	# Fall damage or stun
+	if controller.get_slide_collision_count() > 0:
+		if not gravity:
+			return
+
+		# v = sqrt(2 * g * h)
+		if last_vel.length() > sqrt(2 * gravity * damage_height):
+			current_state = stun_state
+			stun_state.enter({"stun time": default_stun_time})
+			print("damage")
+		
+		elif last_vel.length() > sqrt(2 * gravity * stun_height):
+			current_state = stun_state
+			stun_state.enter({"stun time": default_stun_time})
+			print("stun")
+
+			# TODO: Apply damage
+			# TODO account for normal direction on impact
+
+			# TODO not sure how to handle collision with innert moving objects. Maybe the object should call the creature, maybe we should be checking here 
+			# through a node interface			
+
+
+	last_vel = controller.velocity
 
 
 func change_state(_state, vars):

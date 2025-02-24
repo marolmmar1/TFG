@@ -1,6 +1,7 @@
 extends Node
 
 var tilemap: TileMap
+var doors: Node2D
 @onready var _raycast: RayCast2D = $"../RayCast2D"
 
 func is_terrain(cell):
@@ -23,6 +24,37 @@ func is_adjacent_to_terrain(cell):
 		if is_terrain(adjacent_cell):
 			return true
 	return false
+
+func is_exit(cell: Vector2i) -> bool:
+	var areas = get_areas_at_point(to_world_position(cell))
+	for i in doors.get_children():
+		if i in areas:
+			return true
+		
+	return false
+
+# https://www.reddit.com/r/godot/comments/1701wjw/deleted_by_user/
+func get_areas_at_point(point:Vector2)->Array[Area2D]:  
+	var areaArray:Array[Area2D]  
+
+	var directSpace = tilemap.get_world_2d().direct_space_state  
+  
+	var pointParameters := PhysicsPointQueryParameters2D.new()  
+ 
+	pointParameters.collide_with_areas = true  
+	pointParameters.collide_with_bodies = false
+	pointParameters.position = point    
+
+	var collisions = directSpace.intersect_point(pointParameters)    
+
+	for collisionDict in collisions:    
+		var collider:Node2D = collisionDict["collider"]  
+
+		if collider is Area2D:  
+			areaArray.append(collider)                
+
+	return areaArray  
+
 
 func get_adjacent_cells(cell):
 

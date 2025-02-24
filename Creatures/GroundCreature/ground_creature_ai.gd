@@ -168,11 +168,11 @@ func calculate_movement():
 		Edge.MovementType.CRAWL:
 			crawl(next_node)
 		Edge.MovementType.SWITCH_CLIMBING:
-			switch_climbing(next_node, path[path_index].from)
+			switch_climbing(next_node)
 		Edge.MovementType.SWITCH_CRAWL_WALK:
-			switch_crawl_walk(next_node, path[path_index].from)
+			switch_crawl_walk(next_node)
 		Edge.MovementType.SWITCH_CRAWL_CLIMB:
-			switch_crawl_climb(next_node, path[path_index].from)
+			switch_crawl_climb(next_node)
 		Edge.MovementType.JUMP:
 			jump(next_node)
 		Edge.MovementType.FALL:
@@ -188,16 +188,14 @@ func climb(next_node):
 func crawl(next_node):
 	controller.queue_change_state(controller.crawl_state, {"target node": astar_graph.tmhelper.to_world_position(next_node)})
 
-func switch_climbing(next_node, source_node):
-	controller.queue_change_state(controller.switch_climbing_state, {"target node": astar_graph.tmhelper.to_world_position(next_node), "source node": astar_graph.tmhelper.to_world_position(source_node)})
+func switch_climbing(next_node):
+	controller.queue_change_state(controller.switch_climbing_state, {"target node": astar_graph.tmhelper.to_world_position(next_node)})
 
-func switch_crawl_walk(next_node, source_node):
-	controller.queue_change_state(controller.switch_crawl_walk_state, {"target node": astar_graph.tmhelper.to_world_position(next_node), "source node": astar_graph.tmhelper.to_world_position(source_node), \
-	"current state": "crawl" if controller.current_state == controller.crawl_state else "walk"})
+func switch_crawl_walk(next_node):
+	controller.queue_change_state(controller.switch_crawl_walk_state, {"target node": astar_graph.tmhelper.to_world_position(next_node)})
 
-func switch_crawl_climb(next_node, source_node):
-	controller.queue_change_state(controller.switch_crawl_climb_state, {"target node": astar_graph.tmhelper.to_world_position(next_node), "source node": astar_graph.tmhelper.to_world_position(source_node), \
-	"current state": "crawl" if controller.current_state == controller.crawl_state else "climb"})
+func switch_crawl_climb(next_node):
+	controller.queue_change_state(controller.switch_crawl_climb_state, {"target node": astar_graph.tmhelper.to_world_position(next_node)})
 
 func jump(next_node):
 	if controller.position.distance_to(astar_graph.tmhelper.to_world_position(next_node)) < unnecessary_jump_threshold:

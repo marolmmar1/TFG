@@ -18,7 +18,7 @@ func tick(delta):
 	controller.velocity.x = (target_node - controller.position).normalized().x * speed
 	controller.velocity.y = (target_node - controller.position).normalized().y * fix_speed
 
-
+	controller.move_and_slide()
 
 	if not controller.check_is_on_floor():
 		on_change_state.emit(fall_state, {})

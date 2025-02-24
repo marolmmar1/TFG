@@ -1,7 +1,7 @@
 [gd_scene load_steps=9 format=3 uid="uid://dpsy1i5641cyo"]
 
 [ext_resource type="Texture2D" uid="uid://eujin7w1yov" path="res://Assets/kenney_pico-8-platformer/Default/Tilemap/tilemap_packed.png" id="1_cjmbg"]
-[ext_resource type="Script" path="res://Zones/Biome.gd" id="1_t0dsr"]
+[ext_resource type="Script" path="res://Zones/Zone.gd" id="1_t0dsr"]
 [ext_resource type="PackedScene" uid="uid://ci6e23n678kxs" path="res://AStar/AStar.tscn" id="2_ejaiy"]
 [ext_resource type="Texture2D" uid="uid://dagii0va0jdne" path="res://Assets/kenney_pico-8-platformer/Transparent/Tiles/tile_0073.png" id="3_iiaei"]
 [ext_resource type="PackedScene" uid="uid://dahmo14t7kdaw" path="res://Creatures/GroundCreature/GroundCreature.tscn" id="4_lo7a5"]
@@ -276,7 +276,7 @@ custom_data_layer_1/name = "Tunnel gate"
 custom_data_layer_1/type = 1
 sources/5 = SubResource("TileSetAtlasSource_5okw5")
 
-[node name="Bioma" type="Node2D"]
+[node name="Zone1" type="Node2D"]
 script = ExtResource("1_t0dsr")
 
 [node name="TileMap" type="TileMap" parent="."]
@@ -301,7 +301,7 @@ scale = Vector2(2, 2)
 texture = ExtResource("3_iiaei")
 
 [node name="Creature" parent="." node_paths=PackedStringArray("astar", "target") instance=ExtResource("4_lo7a5")]
-position = Vector2(211, 524)
+position = Vector2(756, 234)
 astar = NodePath("../AStar")
 target = NodePath("../DebugTarget")
 

@@ -11,17 +11,23 @@ script = ExtResource("1_hygwc")
 
 [node name="Zone2" parent="Biome" instance=ExtResource("1_y11xm")]
 
+[node name="Door1" parent="Biome/Zone2/Doors" index="0" node_paths=PackedStringArray("other_side")]
+other_side = NodePath("../../../Zone1/Doors/Door2")
+
 [node name="Door2" parent="Biome/Zone2/Doors" index="1" node_paths=PackedStringArray("other_side")]
 other_side = NodePath("../Door1")
 
 [node name="Zone1" parent="Biome" instance=ExtResource("2_2nkom")]
 
 [node name="Creature" parent="Biome/Zone1" index="3"]
-position = Vector2(265, 423)
+position = Vector2(261, 419)
 
 [node name="Door1" parent="Biome/Zone1/Doors" index="0" node_paths=PackedStringArray("other_side")]
-position = Vector2(267, 499)
+position = Vector2(256, 499)
 other_side = NodePath("../../../Zone2/Doors/Door2")
+
+[node name="Door2" parent="Biome/Zone1/Doors" index="1" node_paths=PackedStringArray("other_side")]
+other_side = NodePath("../../../Zone2/Doors/Door1")
 
 [connection signal="on_creature_changes_zone" from="Biome/Zone2/Doors/Door2" to="Biome" method="_on_door_2_on_creature_changes_zone"]
 

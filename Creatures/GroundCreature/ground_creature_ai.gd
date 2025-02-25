@@ -13,11 +13,11 @@ var path_index = 0
 var target
 
 
-func init(_astar, _controller, target):
+func init(_astar, _controller, _target):
 	self.astar_graph = _astar
 	self.controller = _controller
 	#DEBUG
-	self.target = target
+	self.target = _target
 
 	astar_ai.astar_graph = astar_graph
 
@@ -44,6 +44,10 @@ func get_closest_node(point: Vector2, threshold: float):
 #TODO pass to higher AI
 func tick():
 	if not path and not astar_ai.calculating_astar:
+
+		if not astar_graph.astar_nodes:
+			return
+
 		var current_node = get_closest_node(controller.position, 1000)
 		var target_node = get_closest_node(target.position, 1000)
 

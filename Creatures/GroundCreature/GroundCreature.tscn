@@ -70,9 +70,6 @@ texture = ExtResource("2_7cq72")
 
 [node name="Controller" type="Node" parent="."]
 script = ExtResource("3_2relg")
-stun_height = null
-damage_height = null
-default_stun_time = null
 
 [node name="Walk" type="Node" parent="Controller"]
 script = ExtResource("4_illsp")

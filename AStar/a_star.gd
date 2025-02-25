@@ -156,6 +156,8 @@ func delete_isolated_nodes():
 		if tmhelper.is_exit(node):
 			exits.append(node)
 
+	assert(exits.size() > 0, "No exit nodes found")
+
 	var to_delete = []
 
 	for node in astar_nodes:

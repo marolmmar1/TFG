@@ -1,7 +1,5 @@
 extends Node
 
-@export var detect_node_dist: float = 5.0
-@export var unnecessary_jump_threshold: float = 25.0
 @export var jump_reliability_cost_mult: float = 1.5 #HACK possibly variables for the genetic algorithm variation lately
 @export var fall_reliability_cost_mult: float = 1.25
 
@@ -65,7 +63,8 @@ func astar(current_node: Vector2i, target_node: Vector2i) -> Array:
 
 		# #DEBUG
 		astar_graph.astar_on_going.append(astar_graph.tmhelper.to_world_position(lowest_cost_node.node))
-		print("cost: ", lowest_cost_node.cost)
+		print("parent cost: ", lowest_cost_node.parent.cost if lowest_cost_node.parent else 0)
+		print("cost: ", lowest_cost_node.cost - lowest_cost_node.parent.cost if lowest_cost_node.parent else lowest_cost_node.cost)
 		print("heuristic: ", node_heuristic(lowest_cost_node, AstarAINode.new(target_node, null, 0)))
 		print("total: ", lowest_cost_node.cost + node_heuristic(lowest_cost_node, AstarAINode.new(target_node, null, 0)), "\n")
 
@@ -106,8 +105,7 @@ func get_neighbors(node: Vector2i) -> Array:
 func node_heuristic(from: AstarAINode, to: AstarAINode) -> float:
 	var dist = astar_graph.tmhelper.to_world_position(from.node).distance_to(astar_graph.tmhelper.to_world_position(to.node))
 	
-	# Divide by speed to put it in the same scale as movement cost. At first sight I don't think the actual dividing speed is important, we just want to lower the value
-	return dist / walk_speed
+	return dist
 
 
 func node_cost(from: AstarAINode, to: AstarAINode) -> float:
@@ -128,18 +126,19 @@ func node_cost(from: AstarAINode, to: AstarAINode) -> float:
 func speed_cost(edge: Edge) -> float:
 	var dist = astar_graph.tmhelper.to_world_position(edge.from).distance_to(astar_graph.tmhelper.to_world_position(edge.to))
 	# v = d / t, t = d / v
+	#HACK we need a reference speed though I'm not sure where to get it from
 	if edge.movement_type == Edge.MovementType.WALK:
-		return dist / walk_speed
+		return dist / walk_speed * 100
 	elif edge.movement_type == Edge.MovementType.CLIMB:
-		return dist / climb_speed
+		return dist / climb_speed * 100
 	elif edge.movement_type == Edge.MovementType.CRAWL:
-		return dist / crawl_speed
+		return dist / crawl_speed * 100
 	elif edge.movement_type == Edge.MovementType.SWITCH_CLIMBING:
-		return dist / switch_climbing_speed
+		return dist / switch_climbing_speed * 100
 	elif edge.movement_type == Edge.MovementType.SWITCH_CRAWL_WALK:
-		return dist / switch_crawl_walk_speed
+		return dist / switch_crawl_walk_speed * 100
 	elif edge.movement_type == Edge.MovementType.SWITCH_CRAWL_CLIMB:
-		return dist / switch_crawl_climb_speed
+		return dist / switch_crawl_climb_speed * 100
 	
 	return dist
 
@@ -166,3 +165,4 @@ func build_path(start_node: AstarAINode, end_node: AstarAINode) -> Array:
 
 	_path.reverse()
 	return _path
+

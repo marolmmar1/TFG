@@ -24,7 +24,7 @@ tilemap = NodePath("../TileMap")
 doors = NodePath("../Doors")
 
 [node name="DebugTarget" type="Node2D" parent="."]
-position = Vector2(1046, 231)
+position = Vector2(1047, 231)
 
 [node name="Sprite2D" type="Sprite2D" parent="DebugTarget"]
 texture_filter = 1

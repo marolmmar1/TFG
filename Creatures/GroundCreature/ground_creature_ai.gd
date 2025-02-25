@@ -2,6 +2,8 @@ extends Node2D
 
 @export var detect_node_dist: float = 5.0
 @export var unnecessary_jump_threshold: float = 25.0
+@export var jump_reliability_cost_mult: float = 1.5 #HACK possibly variables for the genetic algorithm variation lately
+@export var fall_reliability_cost_mult: float = 1.25
 
 var astar_graph: Node2D
 var controller
@@ -13,6 +15,9 @@ var target
 var walk_speed
 var climb_speed
 var crawl_speed
+var switch_climbing_speed
+var switch_crawl_walk_speed
+var switch_crawl_climb_speed
 
 var calculating_astar = false
 
@@ -26,6 +31,9 @@ func init(_astar, _controller, target):
 	self.walk_speed = controller.find_child("Walk").speed
 	self.climb_speed = controller.find_child("Climb").speed
 	self.crawl_speed = controller.find_child("Crawl").speed
+	self.switch_climbing_speed = controller.find_child("SwitchClimbing").speed
+	self.switch_crawl_walk_speed = controller.find_child("SwitchCrawlWalk").speed
+	self.switch_crawl_climb_speed = controller.find_child("SwitchCrawlClimb").speed
 
 
 func get_closest_node(point: Vector2, threshold: float):
@@ -64,7 +72,7 @@ func astar(current_node: Vector2i, target_node: Vector2i) -> Array:
 	while pending.size() > 0: #TODO prevent infinite loop and split process through ticks
 
 		# #DEBUG
-		await get_tree().create_timer(1.5).timeout
+		await get_tree().create_timer(0.5).timeout
 		astar_graph.queue_redraw()
 
 		var lowest_cost_node = null
@@ -89,7 +97,7 @@ func astar(current_node: Vector2i, target_node: Vector2i) -> Array:
 		astar_graph.astar_on_going.append(astar_graph.tmhelper.to_world_position(lowest_cost_node.node))
 		print("cost: ", lowest_cost_node.cost)
 		print("heuristic: ", node_heuristic(lowest_cost_node, AstarAINode.new(target_node, null, 0)))
-		print("total: ", lowest_cost_node.cost + node_heuristic(lowest_cost_node, AstarAINode.new(target_node, null, 0)))
+		print("total: ", lowest_cost_node.cost + node_heuristic(lowest_cost_node, AstarAINode.new(target_node, null, 0)), "\n")
 
 		var neighbors = get_neighbors(lowest_cost_node.node)
 		for neighbor in neighbors:
@@ -126,7 +134,10 @@ func get_neighbors(node: Vector2i) -> Array:
 
 # Calculate costs
 func node_heuristic(from: AstarAINode, to: AstarAINode) -> float:
-	return astar_graph.tmhelper.to_world_position(from.node).distance_to(astar_graph.tmhelper.to_world_position(to.node))
+	var dist = astar_graph.tmhelper.to_world_position(from.node).distance_to(astar_graph.tmhelper.to_world_position(to.node))
+	
+	# Divide by speed to put it in the same scale as movement cost. At first sight I don't think the actual dividing speed is important, we just want to lower the value
+	return dist / walk_speed
 
 
 func node_cost(from: AstarAINode, to: AstarAINode) -> float:
@@ -139,11 +150,13 @@ func node_cost(from: AstarAINode, to: AstarAINode) -> float:
 	for edge in astar_graph.astar_nodes[from.node]:
 		if edge.to == to.node:
 			movement_cost = speed_cost(edge)
+			movement_cost = reliavility_cost(edge, movement_cost)
+			break
 		
 	return movement_cost + parent_cost
 
 func speed_cost(edge: Edge) -> float:
-	var dist = edge.from.distance_to(edge.to)
+	var dist = astar_graph.tmhelper.to_world_position(edge.from).distance_to(astar_graph.tmhelper.to_world_position(edge.to))
 	# v = d / t, t = d / v
 	if edge.movement_type == Edge.MovementType.WALK:
 		return dist / walk_speed
@@ -151,8 +164,23 @@ func speed_cost(edge: Edge) -> float:
 		return dist / climb_speed
 	elif edge.movement_type == Edge.MovementType.CRAWL:
 		return dist / crawl_speed
+	elif edge.movement_type == Edge.MovementType.SWITCH_CLIMBING:
+		return dist / switch_climbing_speed
+	elif edge.movement_type == Edge.MovementType.SWITCH_CRAWL_WALK:
+		return dist / switch_crawl_walk_speed
+	elif edge.movement_type == Edge.MovementType.SWITCH_CRAWL_CLIMB:
+		return dist / switch_crawl_climb_speed
 	
-	return 1
+	return dist
+
+func reliavility_cost(edge: Edge, cost: float) -> float:
+	# Maybe use exponentials so that the cost changes more with distance
+	if edge.movement_type == Edge.MovementType.JUMP:
+		return cost * jump_reliability_cost_mult
+	elif edge.movement_type == Edge.MovementType.FALL:
+		return cost * fall_reliability_cost_mult
+
+	return cost
 
 
 func build_path(start_node: AstarAINode, end_node: AstarAINode) -> Array:

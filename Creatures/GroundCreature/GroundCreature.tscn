@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3 uid="uid://dahmo14t7kdaw"]
+[gd_scene load_steps=17 format=3 uid="uid://dahmo14t7kdaw"]
 
 [ext_resource type="Script" path="res://Creatures/GroundCreature/ground_creature.gd" id="1_8im78"]
 [ext_resource type="Texture2D" uid="uid://2l44j7m7c03b" path="res://icon.svg" id="2_7cq72"]
@@ -14,6 +14,7 @@
 [ext_resource type="Script" path="res://Creatures/States/jump_state.gd" id="12_fu1oo"]
 [ext_resource type="Script" path="res://Creatures/GroundCreature/ground_creature_ai.gd" id="13_nlyld"]
 [ext_resource type="Script" path="res://Creatures/States/stun_state.gd" id="13_yh820"]
+[ext_resource type="Script" path="res://Creatures/GroundCreature/astar_ai.gd" id="15_moayh"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_2owua"]
 radius = 13.4509
@@ -111,6 +112,9 @@ script = ExtResource("13_yh820")
 
 [node name="AI" type="Node2D" parent="."]
 script = ExtResource("13_nlyld")
+
+[node name="AstarAI" type="Node" parent="AI"]
+script = ExtResource("15_moayh")
 
 [node name="AITimer" type="Timer" parent="."]
 one_shot = true

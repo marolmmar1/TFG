@@ -52,12 +52,12 @@ func link_wall_nodes(astar_nodes, wall_nodes, platform_wall_nodes, wall_corner_n
 		var node_a = all_nodes[i]
 		for j in range(i + 1, all_nodes.size()):
 			var node_b = all_nodes[j]
-			if are_walls_connected(node_a, node_b):
+			if are_walls_connected(node_a, node_b, all_nodes):
 				# Add a bidirectional connection
 				astar_nodes[node_a].append(Edge.new(node_a, node_b, Edge.MovementType.CLIMB))
 				astar_nodes[node_b].append(Edge.new(node_b, node_a, Edge.MovementType.CLIMB))
 
-func are_walls_connected(node_a: Vector2i, node_b: Vector2i) -> bool:
+func are_walls_connected(node_a: Vector2i, node_b: Vector2i, nodes) -> bool:
 	# Check if the nodes are in a vertical straight line
 	if node_a.x != node_b.x:
 		return false  # Not in a vertical line
@@ -73,6 +73,11 @@ func are_walls_connected(node_a: Vector2i, node_b: Vector2i) -> bool:
 		# Check if the current tile itself is terrain
 		if tmhelper.is_terrain(current):
 			return false  # Terrain in the straight line between nodes
+
+		# Check if the current tile already has a node
+		if nodes.has(current):
+			return false
+
 
 		# Determine the side with terrain (left or right)
 		var left = current + Vector2i(-1, 0)
@@ -116,12 +121,12 @@ func link_intersection_and_tunnel_gate_nodes(astar_nodes, intersection_nodes, tu
 		var node_a = all_nodes[i]
 		for j in range(i + 1, all_nodes.size()):
 			var node_b = all_nodes[j]
-			if are_intersection_or_tunnel_gate_or_tunnel_end_connected(node_a, node_b):
+			if are_intersection_or_tunnel_gate_or_tunnel_end_connected(node_a, node_b, all_nodes):
 				# Add a bidirectional connection
 				astar_nodes[node_a].append(Edge.new(node_a, node_b, Edge.MovementType.CRAWL))
 				astar_nodes[node_b].append(Edge.new(node_b, node_a, Edge.MovementType.CRAWL))
 
-func are_intersection_or_tunnel_gate_or_tunnel_end_connected(node_a: Vector2i, node_b: Vector2i) -> bool:
+func are_intersection_or_tunnel_gate_or_tunnel_end_connected(node_a: Vector2i, node_b: Vector2i, nodes) -> bool:
 	# Check if the nodes are in a straight line (horizontal or vertical)
 	if node_a.x != node_b.x and node_a.y != node_b.y:
 		return false  # Not in a straight line
@@ -139,6 +144,10 @@ func are_intersection_or_tunnel_gate_or_tunnel_end_connected(node_a: Vector2i, n
 		# Check if the current tile itself is terrain
 		if tmhelper.is_terrain(current):
 			return false  # Terrain in the straight line between nodes
+		
+		# Check if the current tile already has a node
+		if nodes.has(current):
+			return false
 
 		current += direction
 

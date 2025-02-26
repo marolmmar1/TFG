@@ -38,7 +38,7 @@ func astar(current_node: Vector2i, target_node: Vector2i) -> Array:
 	while pending.size() > 0: #TODO prevent infinite loop and split process through ticks
 
 		# #DEBUG
-		await get_tree().create_timer(0.5).timeout
+		await get_tree().create_timer(0.25).timeout
 		astar_graph.queue_redraw()
 
 		var lowest_cost_node = null

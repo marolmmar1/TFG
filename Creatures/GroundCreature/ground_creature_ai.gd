@@ -13,11 +13,9 @@ var path_index = 0
 var target
 
 
-func init(_astar, _controller, _target):
+func init(_astar, _controller):
 	self.astar_graph = _astar
 	self.controller = _controller
-	#DEBUG
-	self.target = _target
 
 	astar_ai.astar_graph = astar_graph
 
@@ -45,13 +43,17 @@ func get_closest_node(point: Vector2, threshold: float):
 func tick():
 	if not path and not astar_ai.calculating_astar:
 
+		if not target:
+			return
+
 		if not astar_graph.astar_nodes:
 			return
 
 		var current_node = get_closest_node(controller.position, 1000)
-		var target_node = get_closest_node(target.position, 1000)
+		var target_node = get_closest_node(target, 1000)
 
 		# #DEBUG
+		astar_graph.astar_on_going = []
 		astar_graph.astar_target = astar_graph.tmhelper.to_world_position(target_node)
 		astar_graph.queue_redraw()
 
@@ -69,10 +71,15 @@ func _process(delta: float) -> void:
 		astar_graph.astar_path = path
 		astar_graph.queue_redraw()
 
-		if path_index < path.size() and path[path_index].to == get_closest_node(controller.position, detect_node_dist):
+		calculate_movement()
+
+		if path_index < path.size() - 1 and path[path_index].to == get_closest_node(controller.position, detect_node_dist):
 			path_index += 1
 
-		calculate_movement()
+		elif path_index == path.size() - 1 and path[path_index].to == get_closest_node(controller.position, detect_node_dist):
+			target = null
+			print("REACHED GOAL")
+			path = []
 
 		#TODO check if out of edge's bounding box by thickness
 		# Disable for some seconds if jumping
@@ -126,4 +133,4 @@ func jump(next_node):
 	#TODO IMPORTANT Add alternative movement here, and probably add the same behaviour to switching movements once we figure it out
 
 func fall():
-	controller.queue_change_state(controller.fall_state, {})
+	controller.queue_change_state(controller.fall_state, {"should grab": false})

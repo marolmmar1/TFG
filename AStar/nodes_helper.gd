@@ -24,6 +24,7 @@ func is_platform_node(cell: Vector2i, platform_wall_nodes) -> bool:
 	if tmhelper.is_terrain(above):
 		return false
 
+	# Check if there isn't a platform wall node there
 	if platform_wall_nodes.has(cell):
 		return false
 
@@ -284,3 +285,70 @@ func find_fall_node(astar_nodes: Dictionary, start_cell: Vector2i, direction: Ve
 		# Stop if we go out of bounds
 		if not tmhelper.tilemap.get_used_rect().has_point(current):
 			return null
+
+
+func is_mid_platform_node(cell: Vector2i) -> bool:
+	
+	# Check if there is terrain below
+	var below = cell + Vector2i(0, 1)
+	var below_left = cell + Vector2i(-1, 1)
+	var below_right = cell + Vector2i(1, 1)
+
+	var has_below_terrain = tmhelper.is_terrain(below) or tmhelper.is_tunnel_gate_node(below)
+	var has_left_below_terrain = tmhelper.is_terrain(below_left) or tmhelper.is_tunnel_gate_node(below_left)
+	var has_right_below_terrain = tmhelper.is_terrain(below_right) or tmhelper.is_tunnel_gate_node(below_right)
+
+	# Must have terrain on both sides below
+	if not (has_left_below_terrain and has_right_below_terrain and has_below_terrain):
+		return false
+
+	var c = 0
+	for adjacent_cell in tmhelper.get_adjacent_cells(cell):
+		if tmhelper.is_terrain(adjacent_cell):
+			c += 1
+
+	if c > 3:
+		return false
+
+	return true
+
+func is_mid_wall_node(cell: Vector2i) -> bool:
+
+	# Check if there's terrain at any side
+	var left = cell + Vector2i(-1, 0)
+	var right = cell + Vector2i(1, 0)
+
+	if not (tmhelper.is_terrain(left) or tmhelper.is_terrain(right)):
+		return false
+	if tmhelper.is_terrain(left) and tmhelper.is_terrain(right):
+		return false
+
+	if tmhelper.is_terrain(left):
+		var above_left = cell + Vector2i(-1, -1)
+		var below_left = cell + Vector2i(-1, 1)
+		if not (tmhelper.is_terrain(above_left) and tmhelper.is_terrain(below_left)):
+			return false
+
+	if tmhelper.is_terrain(right):
+		var above_right = cell + Vector2i(1, -1)
+		var below_right = cell + Vector2i(1, 1)
+		if not (tmhelper.is_terrain(above_right) and tmhelper.is_terrain(below_right)):
+			return false
+
+	return true
+
+func is_mid_tunnel_node(cell: Vector2i) -> bool:
+
+	# Check if there's terrain
+	var left = cell + Vector2i(-1, 0)
+	var right = cell + Vector2i(1, 0)
+	var above = cell + Vector2i(0, -1)
+	var below = cell + Vector2i(0, 1)
+
+	if tmhelper.is_terrain(left) and tmhelper.is_terrain(right):
+		return true
+	
+	if tmhelper.is_terrain(above) and tmhelper.is_terrain(below):
+		return true
+
+	return false

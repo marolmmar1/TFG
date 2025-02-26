@@ -74,6 +74,12 @@ func get_adjacent_cells(cell):
 func to_world_position(cell):
 	return tilemap.to_global(tilemap.map_to_local(cell));
 
+func to_local_position(cell):
+	#Don't know why
+	var v = (tilemap.to_local(cell)) / (tilemap.scale.x * 2);
+	v = Vector2i(floor(v.x), floor(v.y));
+	return v
+
 func raycast(from, to):
 	_raycast.target_position = to_world_position(to) - to_world_position(from)
 	_raycast.position = to_world_position(from)

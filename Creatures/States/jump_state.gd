@@ -1,6 +1,6 @@
 extends State
 
-@export var jump_distance: Vector2 = Vector2(120, 90) #HACK hardcoded. Tile size * Astar vars
+@export var jump_distance: Vector2 = Vector2(130, 100) #HACK hardcoded. Tile size * Astar vars + some margin
 @export var v_jump_offset: float = 7.5
 
 @onready var fall_state = $"../Fall"
@@ -10,8 +10,6 @@ var gravity
 func enter(vars):
 	gravity = fall_state.gravity
 	var target_node = vars["target node"] as Vector2
-
-	
 
 	# We know that the max v point is target_node.y + v_jump_offset
 	# Formula of the max height of a projectile is max_height = v0y^2 / 2*g

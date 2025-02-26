@@ -22,6 +22,9 @@ var tunnel_gate_nodes = []
 var tunnel_end_nodes = []
 var platform_fall_nodes = []
 
+#DEBUG
+var update_nodes = []
+
 func _ready():
 	# Godot needs a frame to set up the tilemap collisions in memory
 	await get_tree().process_frame
@@ -62,6 +65,75 @@ func _ready():
 	delete_isolated_nodes()
 
 	queue_redraw()
+
+
+func add_node(node_pos, update_radius):
+	var node = tmhelper.to_local_position(node_pos)
+
+	if tmhelper.is_terrain(node) or not tmhelper.is_adjacent_to_terrain(node):
+		return
+
+	if astar_nodes.has(node):
+		pass
+	elif nodes_helper.is_mid_platform_node(node):
+		astar_nodes[node] = []
+		platform_nodes.append(node)
+	elif nodes_helper.is_mid_wall_node(node):
+		astar_nodes[node] = []
+		wall_nodes.append(node)
+	elif nodes_helper.is_mid_tunnel_node(node):
+		astar_nodes[node] = []
+		intersection_nodes.append(node)
+
+
+	update_nodes = []
+	var update_platform_nodes = []
+	var update_platform_wall_nodes = []
+	var update_wall_nodes = []
+	var update_wall_corner_nodes = []
+	var update_wall_grab_nodes = []
+	var update_intersection_nodes = []
+	var update_tunnel_gate_nodes = []
+	var update_tunnel_end_nodes = []
+	var update_platform_fall_nodes = []
+
+	for n in astar_nodes:
+		if n.distance_to(node) <= update_radius:
+			update_nodes.append(n)
+
+			for edge in astar_nodes[n]:
+				if update_nodes.has(edge.to) and not update_nodes.has(edge.from):
+					astar_nodes[n].erase(edge)
+
+			if platform_nodes.has(n):
+				update_platform_nodes.append(n)
+			if platform_wall_nodes.has(n):
+				update_platform_wall_nodes.append(n)
+			if wall_nodes.has(n):
+				update_wall_nodes.append(n)
+			if wall_corner_nodes.has(n):
+				update_wall_corner_nodes.append(n)
+			if wall_grab_nodes.has(n):
+				update_wall_grab_nodes.append(n)
+			if intersection_nodes.has(n):
+				update_intersection_nodes.append(n)
+			if tunnel_gate_nodes.has(n):
+				update_tunnel_gate_nodes.append(n)
+			if tunnel_end_nodes.has(n):
+				update_tunnel_end_nodes.append(n)
+			if platform_fall_nodes.has(n):
+				update_platform_fall_nodes.append(n)
+			
+	link_helper.link_platform_nodes(astar_nodes, update_platform_nodes, update_wall_nodes, update_platform_fall_nodes)
+	link_helper.link_wall_nodes(astar_nodes, update_wall_nodes, update_platform_wall_nodes, update_wall_corner_nodes, update_wall_grab_nodes)
+	link_helper.link_intersection_and_tunnel_gate_nodes(astar_nodes, update_intersection_nodes, update_tunnel_gate_nodes, update_tunnel_end_nodes)
+	link_helper.link_platform_and_wall_nodes(astar_nodes, update_platform_nodes, update_wall_nodes, update_wall_grab_nodes)
+	link_helper.link_tunnel_gate_nodes(astar_nodes, update_tunnel_gate_nodes, update_platform_nodes, update_wall_nodes, update_platform_wall_nodes)
+	link_helper.link_nodes_by_jump(astar_nodes, update_platform_nodes, update_wall_grab_nodes, update_platform_fall_nodes, vertical_jump_dist, horizontal_jump_dist, max_fall_height)
+	link_helper.link_nodes_by_fall(astar_nodes, update_platform_nodes, update_wall_grab_nodes, update_platform_wall_nodes, update_platform_fall_nodes, max_fall_height)
+
+	queue_redraw()
+
 
 func calculate_astar_nodes():
 
@@ -296,3 +368,7 @@ func _draw():
 		var world_position_a = tmhelper.to_world_position(edge.from)
 		var world_position_b = tmhelper.to_world_position(edge.to)
 		draw_line(world_position_a, world_position_b, Color(0, 0, 0), 2)
+
+	for node in update_nodes:
+		var world_position = tmhelper.to_world_position(node)
+		draw_circle(world_position, 2.5, Color(0, 0, 0))

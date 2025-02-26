@@ -9,7 +9,12 @@ extends State
 @onready var idle_crawl_state = $"../IdleCrawl"
 @onready var stunned_state = $"../Stunned"
 
+var should_grab = true
+
 func enter(vars):
+	if vars.has("should grab"):
+		should_grab = vars["should grab"]
+
 	locked = true
 
 func check_conditions(vars) -> bool:
@@ -19,7 +24,8 @@ func tick(delta):
 
 	if controller.check_is_on_floor() or controller.check_is_on_wall() or controller.check_is_on_tunnel():
 
-		controller.velocity -= (controller.velocity.normalized() * drag_force * delta).limit_length(controller.velocity.length())
+		if should_grab:
+			controller.velocity -= (controller.velocity.normalized() * drag_force * delta).limit_length(controller.velocity.length())
 			
 		if controller.velocity.length() < velocity_end_threshold:
 			end_state()

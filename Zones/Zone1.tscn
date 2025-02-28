@@ -1,7 +1,7 @@
 [gd_scene load_steps=6 format=3 uid="uid://cipwk801mq4uv"]
 
 [ext_resource type="TileSet" uid="uid://b4u5e7btrs2ms" path="res://Zones/TestTileset.tres" id="1_jd1wj"]
-[ext_resource type="PackedScene" uid="uid://ci6e23n678kxs" path="res://AStar/AStar.tscn" id="2_1wlk8"]
+[ext_resource type="PackedScene" uid="uid://ci6e23n678kxs" path="res://AStarGraph/AStar.tscn" id="2_1wlk8"]
 [ext_resource type="PackedScene" uid="uid://dahmo14t7kdaw" path="res://Creatures/GroundCreature/GroundCreature.tscn" id="4_5xxh6"]
 [ext_resource type="Script" path="res://Develop/Debug/target_spawner_debugger.gd" id="5_4ovi7"]
 [ext_resource type="PackedScene" uid="uid://dv4c5jsopxrlm" path="res://Zones/Doors/Door.tscn" id="5_hvtut"]

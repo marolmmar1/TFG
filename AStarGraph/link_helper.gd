@@ -2,6 +2,9 @@ extends Node
 
 var tmhelper
 
+func init(_tmhelper):
+	tmhelper = _tmhelper
+
 func link_platform_nodes(astar_nodes, platform_nodes, platform_wall_nodes, platform_fall_nodes):
 
 	var all_nodes = platform_nodes + platform_wall_nodes + platform_fall_nodes
@@ -153,9 +156,9 @@ func are_intersection_or_tunnel_gate_or_tunnel_end_connected(node_a: Vector2i, n
 
 	return true
 
-func link_platform_and_wall_nodes(astar_nodes, platform_nodes, wall_nodes, wall_grab_nodes):
+func link_platform_and_wall_nodes(astar_nodes, platform_nodes, wall_grab_nodes):
 
-	var all_wall_nodes = wall_nodes + wall_grab_nodes
+	var all_wall_nodes = wall_grab_nodes
 
 	for i in range(all_wall_nodes.size()):
 		var node_a = all_wall_nodes[i]
@@ -180,13 +183,11 @@ func link_tunnel_gate_nodes(astar_nodes, tunnel_gate_nodes, platform_nodes, wall
 
 	for i in range(all_nodes.size()):
 		var node_a = all_nodes[i]
-		for j in range(i + 1, all_nodes.size()):
+		for j in range(all_nodes.size()):
 			var node_b = all_nodes[j]
-			if tmhelper.get_adjacent_cells(node_a).has(node_b) and \
-				tunnel_gate_nodes.has(node_a) or tunnel_gate_nodes.has(node_b) and \
-				(platform_nodes.has(node_a) or platform_nodes.has(node_b) or \
-				wall_nodes.has(node_a) or wall_nodes.has(node_b) or \
-				platform_wall_nodes.has(node_a) or platform_wall_nodes.has(node_b)):
+			if tmhelper.get_adjacent_cells(node_a).has(node_b) and tunnel_gate_nodes.has(node_a) and \
+			(platform_nodes.has(node_b) or wall_nodes.has(node_b) or platform_wall_nodes.has(node_b)):
+
 				# Add a bidirectional connection depending on the source node
 				if wall_nodes.has(node_b):
 					astar_nodes[node_a].append(Edge.new(node_a, node_b, Edge.MovementType.SWITCH_CRAWL_CLIMB))
@@ -271,7 +272,7 @@ func are_nodes_connected_by_jump(node_a: Vector2i, node_b: Vector2i, wall_grab_n
 
 	return true
 
-func link_nodes_by_fall(astar_nodes, platform_nodes, wall_grab_nodes, platform_wall_nodes, platform_fall_nodes, max_fall_height):
+func link_nodes_by_fall(astar_nodes, platform_nodes, wall_grab_nodes, platform_wall_nodes, platform_fall_nodes, wall_nodes, max_fall_height):
 	var floor_nodes = platform_nodes + platform_fall_nodes + platform_wall_nodes
 
 	for i in range(wall_grab_nodes.size()):
@@ -290,16 +291,29 @@ func link_nodes_by_fall(astar_nodes, platform_nodes, wall_grab_nodes, platform_w
 			if guard:
 				continue
 
-			if are_nodes_connected_by_fall(node_a, node_b, max_fall_height):
+			if are_nodes_connected_by_fall(node_a, node_b, wall_nodes, max_fall_height):
 				# Add a onedirectional connection
 				astar_nodes[node_a].append(Edge.new(node_a, node_b, Edge.MovementType.FALL))
 
-func are_nodes_connected_by_fall(node_a: Vector2i, node_b: Vector2i, max_fall_height) -> bool:
+func are_nodes_connected_by_fall(node_a: Vector2i, node_b: Vector2i, wall_nodes, max_fall_height) -> bool:
 	
 	if node_a.x != node_b.x or node_a.y >= node_b.y:
 		return false
 
 	if node_b.y - node_a.y > max_fall_height:
 		return false
+
+	# Check all tiles between node_a and node_b
+	var current = node_a + Vector2i.DOWN
+	while current != node_b:
+		# Check if the current tile itself is terrain
+		if tmhelper.is_terrain(current):
+			return false
+
+		# Check if the current tile already has a node
+		if wall_nodes.has(current):
+			return false
+
+		current += Vector2i.DOWN
 
 	return true

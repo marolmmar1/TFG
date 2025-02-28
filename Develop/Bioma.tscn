@@ -1,7 +1,7 @@
 [gd_scene load_steps=6 format=3 uid="uid://ccf6t4ko0ds42"]
 
 [ext_resource type="TileSet" uid="uid://b4u5e7btrs2ms" path="res://Zones/TestTileset.tres" id="1_chf4t"]
-[ext_resource type="PackedScene" uid="uid://ci6e23n678kxs" path="res://AStar/AStar.tscn" id="2_hqvih"]
+[ext_resource type="PackedScene" uid="uid://ci6e23n678kxs" path="res://AStarGraph/AStar.tscn" id="2_hqvih"]
 [ext_resource type="Script" path="res://Develop/Debug/target_spawner_debugger.gd" id="4_3moak"]
 [ext_resource type="PackedScene" uid="uid://dahmo14t7kdaw" path="res://Creatures/GroundCreature/GroundCreature.tscn" id="7_t4mvu"]
 
@@ -30,12 +30,13 @@ position = Vector2(16, 406)
 position = Vector2(0, -52.5)
 shape = SubResource("RectangleShape2D_wgtwq")
 
-[node name="AStar" parent="." node_paths=PackedStringArray("tilemap", "doors") instance=ExtResource("2_hqvih")]
+[node name="AStar" parent="." node_paths=PackedStringArray("creature", "tilemap", "doors") instance=ExtResource("2_hqvih")]
+creature = NodePath("../Creature")
 tilemap = NodePath("../TileMap")
 doors = NodePath("../TileMap/Doors")
 
 [node name="Creature" parent="." node_paths=PackedStringArray("astar") instance=ExtResource("7_t4mvu")]
-position = Vector2(105, 582)
+position = Vector2(612, 236)
 astar = NodePath("../AStar")
 
 [node name="TargetSpawnerDebugger" type="Node2D" parent="." node_paths=PackedStringArray("astar_graph", "creature")]

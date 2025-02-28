@@ -1,0 +1,25 @@
+[gd_scene load_steps=6 format=3 uid="uid://ci6e23n678kxs"]
+
+[ext_resource type="Script" path="res://AStarGraph/a_star_graph.gd" id="1_k4lbb"]
+[ext_resource type="Script" path="res://AStarGraph/tile_map_helper.gd" id="2_4l024"]
+[ext_resource type="Script" path="res://AStarGraph/nodes_helper.gd" id="3_txqkn"]
+[ext_resource type="Script" path="res://AStarGraph/link_helper.gd" id="4_sgoau"]
+[ext_resource type="Script" path="res://AStarGraph/creature_node_monitor.gd" id="5_es240"]
+
+[node name="AStar" type="Node2D"]
+script = ExtResource("1_k4lbb")
+
+[node name="TileMapHelper" type="Node" parent="."]
+script = ExtResource("2_4l024")
+
+[node name="NodesHelper" type="Node" parent="."]
+script = ExtResource("3_txqkn")
+
+[node name="LinkHelper" type="Node" parent="."]
+script = ExtResource("4_sgoau")
+
+[node name="RayCast2D" type="RayCast2D" parent="."]
+collision_mask = 3
+
+[node name="CreatureNodeMonitor" type="Node" parent="."]
+script = ExtResource("5_es240")

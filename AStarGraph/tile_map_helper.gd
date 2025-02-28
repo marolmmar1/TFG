@@ -4,6 +4,10 @@ var tilemap: TileMap
 var doors: Node2D
 @onready var _raycast: RayCast2D = $"../RayCast2D"
 
+func init(_tilemap, _doors):
+	tilemap = _tilemap
+	doors = _doors
+
 func is_terrain(cell):
 
 	var tile_data = tilemap.get_cell_tile_data(0, cell)

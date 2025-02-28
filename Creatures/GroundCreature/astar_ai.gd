@@ -165,4 +165,3 @@ func build_path(start_node: AstarAINode, end_node: AstarAINode) -> Array:
 
 	_path.reverse()
 	return _path
-

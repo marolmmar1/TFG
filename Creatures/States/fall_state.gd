@@ -27,7 +27,10 @@ func tick(delta):
 		if should_grab:
 			controller.velocity -= (controller.velocity.normalized() * drag_force * delta).limit_length(controller.velocity.length())
 			
-		if controller.velocity.length() < velocity_end_threshold:
+			if controller.velocity.length() < velocity_end_threshold:
+				end_state()
+
+		else:
 			end_state()
 	
 	controller.velocity.y += gravity * delta

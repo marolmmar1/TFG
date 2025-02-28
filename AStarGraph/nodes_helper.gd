@@ -2,6 +2,9 @@ extends Node
 
 var tmhelper
 
+func init(_tmhelper):
+	tmhelper = _tmhelper
+
 func is_platform_node(cell: Vector2i, platform_wall_nodes) -> bool:
 	# Check if there is terrain directly below (0, 1)
 	var below = cell + Vector2i(0, 1)

@@ -1,6 +1,6 @@
 extends Node2D
 
-@export var detect_node_dist: float = 5.0
+@export var detect_node_dist: float = 30.0 # Tile size
 @export var unnecessary_jump_threshold: float = 25.0
 
 @onready var astar_ai = $AstarAI
@@ -49,8 +49,8 @@ func tick():
 		if not astar_graph.astar_nodes:
 			return
 
-		var current_node = get_closest_node(controller.position, 1000)
-		var target_node = get_closest_node(target, 1000)
+		var current_node = get_closest_node(controller.position, 30)
+		var target_node = get_closest_node(target, 30)
 
 		# #DEBUG
 		astar_graph.astar_on_going = []

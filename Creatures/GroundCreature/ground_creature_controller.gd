@@ -31,6 +31,8 @@ var position:
 	set(value):
 		assert(false)
 
+signal on_change_state(state)
+
 func init(_controller: CharacterBody2D):
 	self.controller = _controller
 
@@ -75,11 +77,13 @@ func _physics_process(delta: float):
 		if fall_state.check_conditions({}):
 			current_state = fall_state
 			fall_state.enter({})
-			print(current_state.name)
+			# print(current_state.name)
+			on_change_state.emit(current_state)
 		elif idle_state.check_conditions({}):
 			current_state = idle_state
 			idle_state.enter({})
-			print(current_state.name)
+			# print(current_state.name)
+			on_change_state.emit(current_state)
 	
 
 	# Fall damage or stun
@@ -91,12 +95,14 @@ func _physics_process(delta: float):
 		if last_vel.length() > sqrt(2 * gravity * damage_height):
 			current_state = stun_state
 			stun_state.enter({"stun time": default_stun_time})
-			print("damage")
+			# print("damage")
+			on_change_state.emit(current_state)
 		
 		elif last_vel.length() > sqrt(2 * gravity * stun_height):
 			current_state = stun_state
 			stun_state.enter({"stun time": default_stun_time})
-			print("stun")
+			# print("stun")
+			on_change_state.emit(current_state)
 
 			# TODO: Apply damage
 			# TODO account for normal direction on impact
@@ -110,25 +116,27 @@ func _physics_process(delta: float):
 
 func change_state(_state, vars):
 
-	if queued_state and queued_state.check_conditions(queued_vars): #Just to avoid possible state flickering
+	if queued_state and queued_state.check_conditions(queued_vars): # Just to avoid possible state flickering
 		_switch_to_queued_state()
 
 	elif _state.check_conditions(vars):
 		current_state.exit()
 		current_state = _state
 		current_vars = vars
-		print(current_state.name)
+		# print(current_state.name)
 		current_state.enter(current_vars)
+		on_change_state.emit(current_state)
 
 
 func _switch_to_queued_state():
 	current_state.exit()
 	current_state = queued_state
 	current_vars = queued_vars
-	print(current_state.name)
+	# print(current_state.name)
 	queued_state = null
 	queued_vars = {}
 	current_state.enter(current_vars)
+	on_change_state.emit(current_state)
 
 
 func queue_change_state(state, vars):
@@ -138,7 +146,7 @@ func queue_change_state(state, vars):
 	elif current_state == state and current_vars == vars:
 		return
 
-	print("queue_change_state: ", state.name)
+	# print("queue_change_state: ", state.name)
 
 	queued_state = state
 	queued_vars = vars

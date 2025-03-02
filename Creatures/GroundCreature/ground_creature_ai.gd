@@ -1,7 +1,8 @@
 extends Node2D
 
-@export var detect_node_dist: float = 30.0 # Tile size
+@export var detect_node_dist: float = 15.0 # Tile size - tolerance
 @export var unnecessary_jump_threshold: float = 25.0
+@export var bounding_box_margin: float = 20.0
 
 @onready var astar_ai = $AstarAI
 
@@ -9,6 +10,7 @@ var astar_graph: Node2D
 var controller
 var path = []
 var path_index = 0
+var last_dist: float = 100000.0
 #DEBUG
 var target
 
@@ -16,6 +18,8 @@ var target
 func init(_astar, _controller):
 	self.astar_graph = _astar
 	self.controller = _controller
+
+	controller.on_change_state.connect(check_path_progress)
 
 	astar_ai.astar_graph = astar_graph
 
@@ -27,65 +31,119 @@ func init(_astar, _controller):
 	astar_ai.switch_crawl_climb_speed = controller.find_child("SwitchCrawlClimb").speed
 
 
-func get_closest_node(point: Vector2, threshold: float):
-	var closest_point = null
-	var closest_dist = INF
-	for node in astar_graph.astar_nodes:
-		var dist = point.distance_to(astar_graph.tmhelper.to_world_position(node))
-		if dist < closest_dist:
-			closest_dist = dist
-			if closest_dist < threshold:
-				closest_point = node
-	return closest_point
-
-
 #TODO pass to higher AI
 func tick():
-	if not path and not astar_ai.calculating_astar:
+	if not path or path.is_empty():
+		return
+	
+	# Check if we haven't stopped moving towards node
+	# There are cases where we miss the next node by a bit and are still withing the bounding box
+	if abs(controller.position.distance_to(astar_graph.tmhelper.to_world_position(path[path_index].to)) - last_dist) < 0.01:
+		# Recalculate A*
+		calculate_astar()
 
-		if not target:
-			return
-
-		if not astar_graph.astar_nodes:
-			return
-
-		var current_node = get_closest_node(controller.position, 30)
-		var target_node = get_closest_node(target, 30)
-
-		# #DEBUG
-		astar_graph.astar_on_going = []
-		astar_graph.astar_target = astar_graph.tmhelper.to_world_position(target_node)
-		astar_graph.queue_redraw()
-
-		if current_node == null or target_node == null:
-			return
-
-		path_index = 0
-		path = await astar_ai.astar(current_node, target_node) #DEBUG
+	elif path and not path.is_empty():
+		last_dist = controller.position.distance_to(astar_graph.tmhelper.to_world_position(path[path_index].to))
 
 
-func _process(delta: float) -> void:
-	if path:
+func _process(delta):
+	if (not path or path.is_empty()) and not astar_ai.calculating_astar:
+		calculate_astar()
 
-		#DEBUG
-		astar_graph.astar_path = path
-		astar_graph.queue_redraw()
-
+	if path and not path.is_empty():
+		check_path_progress()
 		calculate_movement()
 
-		if path_index < path.size() - 1 and path[path_index].to == get_closest_node(controller.position, detect_node_dist):
-			path_index += 1
 
-		elif path_index == path.size() - 1 and path[path_index].to == get_closest_node(controller.position, detect_node_dist):
-			target = null
-			print("REACHED GOAL")
-			path = []
+func calculate_astar():
 
-		#TODO check if out of edge's bounding box by thickness
+	if not target:
+		return
+	if not astar_graph.astar_nodes:
+		return
+	
+	var current_node = astar_graph.tmhelper.to_local_position(controller.position)
+	var target_node = astar_graph.tmhelper.to_local_position(target)
+
+	if current_node == target_node:
+		target = null
+		print("REACHED GOAL")
+		path = null
+		return
+	
+	# #DEBUG
+	astar_graph.astar_on_going = []
+	astar_graph.astar_target = astar_graph.tmhelper.to_world_position(target_node)
+	astar_graph.queue_redraw()
+
+	if current_node == null or target_node == null:
+		return
+	if not astar_graph.astar_nodes.has(current_node):
+		push_warning("Current node not found in astar graph")
+		return
+
+	path = []
+	path_index = 0
+	last_dist = 100000
+	path = await astar_ai.astar(current_node, target_node) #DEBUG
+
+
+
+func check_path_progress(state = null):
+	if not path:
+		return
+
+	#DEBUG
+	astar_graph.astar_path = path
+	astar_graph.queue_redraw()
+
+	# Check if reached next node and update to next one
+	if path_index < path.size() - 1 and path[path_index].to == astar_graph.tmhelper.to_local_position(controller.position):
+		path_index += 1
+		last_dist = 100000
+
+	elif path_index == path.size() - 1 and path[path_index].to == astar_graph.tmhelper.to_local_position(controller.position):
+		target = null
+		print("REACHED GOAL")
+		path = null
+		last_dist = 100000
+
+	else:
+
+		# Check if out of edge's bounding box by thickness
 		# Disable for some seconds if jumping
+		if controller.current_state == controller.fall_state or controller.current_state == controller.stun_state:
+			return
+		
+		var node_a = astar_graph.tmhelper.to_world_position(path[path_index].from)
+		var node_b = astar_graph.tmhelper.to_world_position(path[path_index].to)
+
+		var bounding_box_center = (node_a + node_b) / 2
+		var bounding_box_rot_1 = (node_a - bounding_box_center).angle()
+		var bounding_box_rot_2 = (node_b - bounding_box_center).angle()
+		# var bounding_box = [node_a, node_a, node_b, node_b]
+		var bounding_box = [node_a + Vector2(bounding_box_margin, -bounding_box_margin).rotated(bounding_box_rot_1), 
+			node_a + Vector2(bounding_box_margin, bounding_box_margin).rotated(bounding_box_rot_1), 
+			node_b + Vector2(bounding_box_margin, -bounding_box_margin).rotated(bounding_box_rot_2),
+			node_b + Vector2(bounding_box_margin, bounding_box_margin).rotated(bounding_box_rot_2)]
+
+		astar_graph.creature_bounding_box = bounding_box #DEBUG
+		astar_graph.bounding_box_center = bounding_box_center
+		astar_graph.queue_redraw()
+
+		if not (controller.position.x < bounding_box.reduce(func(max_vec, vec): return vec if vec.x > max_vec.x else max_vec).x and \
+			controller.position.x > bounding_box.reduce(func(min_vec, vec): return vec if vec.x < min_vec.x else min_vec).x and \
+			controller.position.y < bounding_box.reduce(func(max_vec, vec): return vec if vec.y > max_vec.y else max_vec).y and \
+			controller.position.y > bounding_box.reduce(func(min_vec, vec): return vec if vec.y < min_vec.y else min_vec).y):
+				
+				# Recalculate A*
+				calculate_astar()
 
 
-func calculate_movement():	
+func calculate_movement():
+	if not path:
+		return
+	
 	var next_node = path[path_index].to
 
 	match path[path_index].movement_type:

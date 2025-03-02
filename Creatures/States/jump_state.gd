@@ -2,10 +2,12 @@ extends State
 
 @export var jump_distance: Vector2 = Vector2(130, 100) #HACK hardcoded. Tile size * Astar vars + some margin
 @export var v_jump_offset: float = 7.5
+@export var jump_cooldown: float = 1.5
 
 @onready var fall_state = $"../Fall"
 
 var gravity
+var can_jump := true
 
 func enter(vars):
 	gravity = fall_state.gravity
@@ -50,6 +52,9 @@ func enter(vars):
 
 	controller.velocity = Vector2(v0x, v0y)
 
+	can_jump = false
+	get_tree().create_timer(jump_cooldown).timeout.connect(func(): can_jump = true)
+	
 
 func tick(delta):
 	controller.velocity.y += gravity * delta
@@ -60,4 +65,4 @@ func tick(delta):
 
 
 func check_conditions(vars) -> bool:
-	return controller.check_is_on_floor()
+	return controller.check_is_on_floor() and can_jump

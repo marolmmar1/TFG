@@ -36,7 +36,7 @@ tilemap = NodePath("../TileMap")
 doors = NodePath("../TileMap/Doors")
 
 [node name="Creature" parent="." node_paths=PackedStringArray("astar") instance=ExtResource("7_t4mvu")]
-position = Vector2(612, 236)
+position = Vector2(203, 145)
 astar = NodePath("../AStar")
 
 [node name="TargetSpawnerDebugger" type="Node2D" parent="." node_paths=PackedStringArray("astar_graph", "creature")]

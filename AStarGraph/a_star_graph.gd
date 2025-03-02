@@ -308,6 +308,8 @@ func dfs(start_node, nodes):
 var astar_on_going = []
 var astar_target
 var astar_path = []
+var creature_bounding_box = []
+var bounding_box_center
 
 func _draw():
 		
@@ -400,3 +402,10 @@ func _draw():
 	for node in update_nodes:
 		var world_position = tmhelper.to_world_position(node)
 		draw_circle(world_position, 2.5, Color(0, 0, 0))
+
+	if creature_bounding_box.size() == 4:
+		draw_line(creature_bounding_box[0], creature_bounding_box[1], Color(0.75, 0, 0.75), 2)
+		draw_line(creature_bounding_box[1], creature_bounding_box[2], Color(0.75, 0, 0.75), 2)
+		draw_line(creature_bounding_box[2], creature_bounding_box[3], Color(0.75, 0, 0.75), 2)
+		draw_line(creature_bounding_box[3], creature_bounding_box[0], Color(0.75, 0, 0.75), 2)
+

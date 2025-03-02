@@ -14,6 +14,8 @@ var should_grab = true
 func enter(vars):
 	if vars.has("should grab"):
 		should_grab = vars["should grab"]
+	else:
+		should_grab = true
 
 	locked = true
 
@@ -22,6 +24,9 @@ func check_conditions(vars) -> bool:
 
 func tick(delta):
 
+	if not check_conditions({}):
+		end_state()
+	
 	if controller.check_is_on_floor() or controller.check_is_on_wall() or controller.check_is_on_tunnel():
 
 		if should_grab:
@@ -30,9 +35,6 @@ func tick(delta):
 			if controller.velocity.length() < velocity_end_threshold:
 				end_state()
 
-		else:
-			end_state()
-	
 	controller.velocity.y += gravity * delta
 	controller.move_and_slide()
 

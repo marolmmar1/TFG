@@ -1,7 +1,7 @@
 extends Node
 
-@export var jump_reliability_cost_mult: float = 1.5 #HACK possibly variables for the genetic algorithm variation lately
-@export var fall_reliability_cost_mult: float = 1.25
+@export var jump_reliability_cost_mult: float = 2.0 #HACK possibly variables for the genetic algorithm variation lately
+@export var fall_reliability_cost_mult: float = 1.5
 
 var astar_graph: Node2D
 
@@ -63,10 +63,10 @@ func astar(current_node: Vector2i, target_node: Vector2i) -> Array:
 
 		# #DEBUG
 		astar_graph.astar_on_going.append(astar_graph.tmhelper.to_world_position(lowest_cost_node.node))
-		print("parent cost: ", lowest_cost_node.parent.cost if lowest_cost_node.parent else 0)
-		print("cost: ", lowest_cost_node.cost - lowest_cost_node.parent.cost if lowest_cost_node.parent else lowest_cost_node.cost)
-		print("heuristic: ", node_heuristic(lowest_cost_node, AstarAINode.new(target_node, null, 0)))
-		print("total: ", lowest_cost_node.cost + node_heuristic(lowest_cost_node, AstarAINode.new(target_node, null, 0)), "\n")
+		# print("parent cost: ", lowest_cost_node.parent.cost if lowest_cost_node.parent else 0)
+		# print("cost: ", lowest_cost_node.cost - lowest_cost_node.parent.cost if lowest_cost_node.parent else lowest_cost_node.cost)
+		# print("heuristic: ", node_heuristic(lowest_cost_node, AstarAINode.new(target_node, null, 0)))
+		# print("total: ", lowest_cost_node.cost + node_heuristic(lowest_cost_node, AstarAINode.new(target_node, null, 0)), "\n")
 
 		var neighbors = get_neighbors(lowest_cost_node.node)
 		for neighbor in neighbors:
@@ -142,14 +142,14 @@ func speed_cost(edge: Edge) -> float:
 	
 	return dist
 
-func reliavility_cost(edge: Edge, cost: float) -> float:
+func reliavility_cost(edge: Edge, base_cost: float) -> float:
 	# Maybe use exponentials so that the cost changes more with distance
 	if edge.movement_type == Edge.MovementType.JUMP:
-		return cost * jump_reliability_cost_mult
+		return base_cost * jump_reliability_cost_mult
 	elif edge.movement_type == Edge.MovementType.FALL:
-		return cost * fall_reliability_cost_mult
+		return base_cost * fall_reliability_cost_mult
 
-	return cost
+	return base_cost
 
 
 func build_path(start_node: AstarAINode, end_node: AstarAINode) -> Array:

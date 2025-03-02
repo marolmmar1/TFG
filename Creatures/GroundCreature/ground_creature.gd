@@ -1,7 +1,7 @@
 extends CharacterBody2D
 
 @export_category("Main")
-@export var ai_time = 0.5
+@export var ai_time = 0.1
 @export var raycasts_length = 25
 
 @export_category("Provided")
@@ -40,9 +40,9 @@ func _ready() -> void:
 	ul_raycast.target_position = Vector2(-raycasts_length, -raycasts_length)
 	ur_raycast.target_position = Vector2(raycasts_length, -raycasts_length)
 
-	# ai_timer.wait_time = ai_time
-	# ai_timer.timeout.connect(ai_tick)
-	# ai_timer.start()
+	ai_timer.wait_time = ai_time
+	ai_timer.timeout.connect(ai_tick)
+	ai_timer.start()
 
 func check_is_on_floor() -> bool:
 	return down_raycast.is_colliding()
@@ -95,10 +95,6 @@ func set_collision_for_tunnel(value: bool): # Disable or enable collision with t
 	ur_raycast.set_collision_mask_value(2, value)
 
 
-func _process(delta: float) -> void:
-	ai_tick()
-
 func ai_tick():
-	# ai.tick()
 	await ai.tick() #DEBUG
-	# ai_timer.start()
+	ai_timer.start()

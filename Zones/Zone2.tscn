@@ -290,24 +290,22 @@ layer_0/tile_data = PackedInt32Array(1245186, 262149, 2, 1245187, 262149, 2, 124
 [node name="AStar" parent="." node_paths=PackedStringArray("tilemap") instance=ExtResource("3_jq4uq")]
 tilemap = NodePath("../TileMap")
 
+[node name="Doors" type="Node2D" parent="."]
+
+[node name="Door" parent="Doors" instance=ExtResource("6_rgqjv")]
+position = Vector2(44, 533)
+scale = Vector2(2.72, 5.28)
+
+[node name="ExitSpawn" parent="Doors/Door" index="1"]
+position = Vector2(27.5735, 4.92422)
+
 [node name="DebugTarget" type="Node2D" parent="."]
-position = Vector2(1096, 229)
+position = Vector2(1119, 555)
 
 [node name="Sprite2D" type="Sprite2D" parent="DebugTarget"]
 texture_filter = 1
-position = Vector2(26, 334)
+position = Vector2(0, 8)
 scale = Vector2(2, 2)
 texture = ExtResource("4_d1f3p")
 
-[node name="Doors" type="Node2D" parent="."]
-
-[node name="Door1" parent="Doors" instance=ExtResource("6_rgqjv")]
-position = Vector2(1149, 533)
-scale = Vector2(1.73529, 4.1735)
-
-[node name="Door2" parent="Doors" instance=ExtResource("6_rgqjv")]
-position = Vector2(37, 534)
-scale = Vector2(1.73529, 4.1735)
-
-[connection signal="body_entered" from="Doors/Door1" to="Doors/Door1" method="_on_body_entered"]
-[connection signal="body_entered" from="Doors/Door2" to="Doors/Door2" method="_on_body_entered"]
+[editable path="Doors/Door"]

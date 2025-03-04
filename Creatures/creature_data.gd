@@ -1,6 +1,4 @@
-extends CharacterBody2D
-
-class_name Creature
+class_name CreatureData
 
 enum CreatureType{HERVIVORE, CARNIVORE, OMNIVORE}
 
@@ -13,6 +11,8 @@ var max_hunger: int
 var hunger: int
 var attack_power: int
 var memory: Dictionary
+
+signal Death()
 
 func spawn(_type: CreatureType,_max_health: int, _max_stamina: int, _max_hunger: int, _attack_power: int, _memory:Dictionary):
 	type = _type
@@ -27,7 +27,7 @@ func spawn(_type: CreatureType,_max_health: int, _max_stamina: int, _max_hunger:
 
 func _set_health(new_health):
 	if (new_health<=0):
-		queue_free()
+		Death.emit()
 	if (new_health>=max_health):
 		health = max_health
 	else:

@@ -1,0 +1,13 @@
+[gd_scene load_steps=3 format=3 uid="uid://bkei6koeik1kb"]
+
+[ext_resource type="Script" path="res://Creatures/creature.gd" id="1_sowoi"]
+[ext_resource type="PackedScene" uid="uid://dahmo14t7kdaw" path="res://Creatures/GroundCreature/GroundCreature.tscn" id="2_mdrj5"]
+
+[node name="GeneralCreature" type="Node2D"]
+script = ExtResource("1_sowoi")
+
+[node name="Creature" parent="." instance=ExtResource("2_mdrj5")]
+position = Vector2(2, -1)
+
+[node name="Creature" parent="Creature" instance=ExtResource("2_mdrj5")]
+position = Vector2(2, -1)

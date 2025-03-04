@@ -5,19 +5,28 @@ extends Node2D
 @export var bounding_box_margin: float = 20.0
 
 @onready var astar_ai = $AstarAI
+@onready var low_level_ai = $LowLevelAI
 
 var astar_graph: Node2D
+var low_level_state_manager
 var controller
+var creature
+
 var path = []
 var path_index = 0
 var last_dist: float = 100000.0
+
+var current_low_level_action
+
 #DEBUG
 var target
 
 
-func init(_astar, _controller):
+func init(_astar, _controller, _low_level_state_manager, _creature):
 	self.astar_graph = _astar
 	self.controller = _controller
+	self.low_level_state_manager = _low_level_state_manager
+	self.creature = _creature
 
 	controller.on_change_state.connect(check_path_progress)
 
@@ -33,17 +42,20 @@ func init(_astar, _controller):
 
 #TODO pass to higher AI
 func tick():
-	if not path or path.is_empty():
-		return
-	
-	# Check if we haven't stopped moving towards node
-	# There are cases where we miss the next node by a bit and are still withing the bounding box
-	if abs(controller.position.distance_to(astar_graph.tmhelper.to_world_position(path[path_index].to)) - last_dist) < 0.01:
-		# Recalculate A*
-		calculate_astar()
+	if not current_low_level_action:
+		current_low_level_action = low_level_ai.calculate_action(low_level_state_manager.get_state(creature))
+	else:
+		if not path or path.is_empty():
+			return
+		
+		# Check if we haven't stopped moving towards node
+		# There are cases where we miss the next node by a bit and are still withing the bounding box
+		if abs(controller.position.distance_to(astar_graph.tmhelper.to_world_position(path[path_index].to)) - last_dist) < 0.01:
+			# Recalculate A*
+			calculate_astar()
 
-	elif path and not path.is_empty():
-		last_dist = controller.position.distance_to(astar_graph.tmhelper.to_world_position(path[path_index].to))
+		elif path and not path.is_empty():
+			last_dist = controller.position.distance_to(astar_graph.tmhelper.to_world_position(path[path_index].to))
 
 
 func _process(delta):

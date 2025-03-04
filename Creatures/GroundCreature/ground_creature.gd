@@ -5,9 +5,11 @@ extends CharacterBody2D
 @export var raycasts_length = 25
 
 @export_category("Provided")
-@export var astar: Node2D
+@export var astar_graph: Node2D
+@export var low_level_state_manager: Node2D
 
 @onready var controller = $Controller
+@onready var data = $CreatureData
 @onready var ai = $AI
 @onready var ai_timer: Timer = $AITimer
 
@@ -29,7 +31,7 @@ var target:
 func _ready() -> void:
 
 	controller.init(self)
-	ai.init(astar, controller)
+	ai.init(astar_graph, controller, low_level_state_manager, self)
 
 	down_raycast.target_position = Vector2(0, raycasts_length)
 	up_raycast.target_position = Vector2(0, -raycasts_length)

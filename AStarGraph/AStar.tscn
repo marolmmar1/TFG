@@ -6,7 +6,7 @@
 [ext_resource type="Script" path="res://AStarGraph/link_helper.gd" id="4_sgoau"]
 [ext_resource type="Script" path="res://AStarGraph/creature_node_monitor.gd" id="5_es240"]
 
-[node name="AStar" type="Node2D"]
+[node name="AStarGraph" type="Node2D"]
 script = ExtResource("1_k4lbb")
 
 [node name="TileMapHelper" type="Node" parent="."]

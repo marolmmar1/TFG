@@ -113,5 +113,7 @@ script = ExtResource("13_nlyld")
 [node name="AstarAI" type="Node" parent="AI"]
 script = ExtResource("15_moayh")
 
+[node name="LowLevelAI" type="Node" parent="AI"]
+
 [node name="AITimer" type="Timer" parent="."]
 one_shot = true

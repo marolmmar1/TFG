@@ -1,8 +1,10 @@
-[gd_scene load_steps=6 format=3 uid="uid://ccf6t4ko0ds42"]
+[gd_scene load_steps=8 format=3 uid="uid://ccf6t4ko0ds42"]
 
 [ext_resource type="TileSet" uid="uid://b4u5e7btrs2ms" path="res://Zones/TestTileset.tres" id="1_chf4t"]
 [ext_resource type="PackedScene" uid="uid://ci6e23n678kxs" path="res://AStarGraph/AStar.tscn" id="2_hqvih"]
+[ext_resource type="Script" path="res://LowLevelState/low_level_state_manager.gd" id="3_djki7"]
 [ext_resource type="Script" path="res://Develop/Debug/target_spawner_debugger.gd" id="4_3moak"]
+[ext_resource type="PackedScene" uid="uid://dn72d1sk48sje" path="res://Props/Berry/Berry.tscn" id="5_wdfje"]
 [ext_resource type="PackedScene" uid="uid://dahmo14t7kdaw" path="res://Creatures/GroundCreature/GroundCreature.tscn" id="7_t4mvu"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_wgtwq"]
@@ -30,16 +32,29 @@ position = Vector2(16, 406)
 position = Vector2(0, -52.5)
 shape = SubResource("RectangleShape2D_wgtwq")
 
-[node name="AStar" parent="." node_paths=PackedStringArray("creature", "tilemap", "doors") instance=ExtResource("2_hqvih")]
+[node name="AStarGraph" parent="." node_paths=PackedStringArray("creature", "tilemap", "doors") instance=ExtResource("2_hqvih")]
 creature = NodePath("../Creature")
 tilemap = NodePath("../TileMap")
 doors = NodePath("../TileMap/Doors")
 
-[node name="Creature" parent="." node_paths=PackedStringArray("astar") instance=ExtResource("7_t4mvu")]
+[node name="LowLevelStateManager" type="Node2D" parent="."]
+script = ExtResource("3_djki7")
+
+[node name="Creature" parent="." node_paths=PackedStringArray("astar_graph", "low_level_state_manager") instance=ExtResource("7_t4mvu")]
 position = Vector2(203, 145)
-astar = NodePath("../AStar")
+astar_graph = NodePath("../AStarGraph")
+low_level_state_manager = NodePath("../LowLevelStateManager")
 
 [node name="TargetSpawnerDebugger" type="Node2D" parent="." node_paths=PackedStringArray("astar_graph", "creature")]
 script = ExtResource("4_3moak")
-astar_graph = NodePath("../AStar")
+astar_graph = NodePath("../AStarGraph")
 creature = NodePath("../Creature")
+
+[node name="Berry" parent="." instance=ExtResource("5_wdfje")]
+position = Vector2(104, 588)
+
+[node name="Berry2" parent="." instance=ExtResource("5_wdfje")]
+position = Vector2(634, 227)
+
+[node name="Berry3" parent="." instance=ExtResource("5_wdfje")]
+position = Vector2(1092, 231)

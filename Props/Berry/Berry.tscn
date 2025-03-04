@@ -1,0 +1,13 @@
+[gd_scene load_steps=3 format=3 uid="uid://dn72d1sk48sje"]
+
+[ext_resource type="Script" path="res://Props/Berry/berry.gd" id="1_uvv32"]
+[ext_resource type="Texture2D" uid="uid://cgpgs60ou4ifd" path="res://Props/Berry/Berry.tres" id="2_2dbi3"]
+
+[node name="Berry" type="Node2D" groups=["Food"]]
+position = Vector2(604, 236)
+script = ExtResource("1_uvv32")
+
+[node name="Fruit" type="Sprite2D" parent="."]
+texture_filter = 1
+scale = Vector2(2, 2)
+texture = ExtResource("2_2dbi3")

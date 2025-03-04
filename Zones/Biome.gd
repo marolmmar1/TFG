@@ -26,7 +26,7 @@ func  change_zone(body: CharacterBody2D, exit: Door, enter: Door):
 	var zone_entered = enter.get_parent().get_parent()
 	zone_left.remove_child(body)
 	zone_entered.add_child(body)
-	body.position = enter.position
+	body.position = enter.get_node("ExitSpawn").position
 	zone_left.visible = false
 	zone_entered.visible = true
 	

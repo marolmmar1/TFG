@@ -37,4 +37,13 @@ script = ExtResource("5_4ovi7")
 astar_graph = NodePath("../AStar")
 creature = NodePath("../Creature")
 
-[connection signal="body_entered" from="TileMap/Doors/Door" to="TileMap/Doors/Door" method="_on_body_entered"]
+[node name="Door" parent="Doors" instance=ExtResource("5_hvtut")]
+position = Vector2(1097, 233)
+
+[node name="CollisionShape2D" parent="Doors/Door" index="0"]
+scale = Vector2(2.84, 2.64)
+
+[node name="ExitSpawn" parent="Doors/Door" index="1"]
+position = Vector2(-61, 7)
+
+[editable path="Doors/Door"]

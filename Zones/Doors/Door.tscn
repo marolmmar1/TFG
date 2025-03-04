@@ -9,3 +9,6 @@ script = ExtResource("1_1h8ge")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("RectangleShape2D_7nx71")
+
+[node name="ExitSpawn" type="Node2D" parent="."]
+position = Vector2(24, 0)

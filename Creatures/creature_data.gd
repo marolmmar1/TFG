@@ -1,15 +1,17 @@
+extends Node
+
 class_name CreatureData
 
 enum CreatureType{HERVIVORE, CARNIVORE, OMNIVORE}
 
 var type: CreatureType
-var max_health: int
-var health: int
-var max_stamina: int
-var stamina: int
-var max_hunger: int
-var hunger: int
-var attack_power: int
+var max_health: float = 100
+var health: float
+var max_stamina: float = 100
+var stamina: float
+var max_food: float = 100
+var food: float
+var attack_power: float
 var memory: Dictionary
 
 signal Death()
@@ -20,8 +22,8 @@ func spawn(_type: CreatureType,_max_health: int, _max_stamina: int, _max_hunger:
 	health = _max_health
 	max_stamina= _max_stamina
 	stamina=_max_stamina
-	max_hunger=_max_hunger
-	hunger=_max_hunger
+	max_food=_max_hunger
+	food=_max_hunger
 	attack_power=_attack_power
 	memory=_memory
 

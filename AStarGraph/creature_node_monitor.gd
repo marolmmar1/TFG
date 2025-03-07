@@ -5,20 +5,20 @@ extends Node
 @onready var tmhelper = $"../TileMapHelper"
 
 var temporary_nodes = {}
-var creature: Node2D #DEBUG
-
-func init(_creature):
-	creature = _creature
-	temporary_nodes[creature] = null
-	update_node(creature, tmhelper.to_local_position(creature.position))
 
 func _process(delta):
 	
-	#TODO loop through all creatures from state
+	for creature in astar_graph.get_parent().get_children():
 
-	var pos = tmhelper.to_local_position(creature.position)
-	if temporary_nodes[creature] != pos:
-		update_node(creature, pos)
+		if not creature.is_in_group("Creature"):
+			continue
+
+		if not temporary_nodes.has(creature):
+			temporary_nodes[creature] = null
+
+		var pos = tmhelper.to_local_position(creature.position)
+		if temporary_nodes[creature] != pos:
+			update_node(creature, pos)
 
 func update_node(_creature, pos):
 	if temporary_nodes[_creature]:

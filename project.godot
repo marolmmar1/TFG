@@ -14,3 +14,8 @@ config/name="TFG-iter-2"
 run/main_scene="res://Develop/Bioma.tscn"
 config/features=PackedStringArray("4.3", "Forward Plus")
 config/icon="res://icon.svg"
+
+[global_group]
+
+Food=""
+Creature=""

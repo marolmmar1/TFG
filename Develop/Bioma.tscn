@@ -45,16 +45,21 @@ position = Vector2(203, 145)
 astar_graph = NodePath("../AStarGraph")
 low_level_state_manager = NodePath("../LowLevelStateManager")
 
+[node name="Creature2" parent="." node_paths=PackedStringArray("astar_graph", "low_level_state_manager") instance=ExtResource("7_t4mvu")]
+position = Vector2(808, 236)
+astar_graph = NodePath("../AStarGraph")
+low_level_state_manager = NodePath("../LowLevelStateManager")
+
 [node name="TargetSpawnerDebugger" type="Node2D" parent="." node_paths=PackedStringArray("astar_graph", "creature")]
 script = ExtResource("4_3moak")
 astar_graph = NodePath("../AStarGraph")
 creature = NodePath("../Creature")
 
 [node name="Berry" parent="." instance=ExtResource("5_wdfje")]
-position = Vector2(104, 588)
+position = Vector2(69, 591)
 
 [node name="Berry2" parent="." instance=ExtResource("5_wdfje")]
-position = Vector2(634, 227)
+position = Vector2(630, 235)
 
 [node name="Berry3" parent="." instance=ExtResource("5_wdfje")]
-position = Vector2(1092, 231)
+position = Vector2(1092, 239)

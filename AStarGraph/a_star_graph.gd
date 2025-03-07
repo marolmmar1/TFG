@@ -35,7 +35,7 @@ func _ready():
 	tmhelper.init(tilemap, doors)	
 	nodes_helper.init(tmhelper)
 	link_helper.init(tmhelper)
-	creature_node_monitor.init(creature)
+	# creature_node_monitor.init(creature)
 
 	calculate_astar_nodes()
 

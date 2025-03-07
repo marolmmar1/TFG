@@ -1,7 +1,7 @@
-[gd_scene load_steps=17 format=3 uid="uid://dahmo14t7kdaw"]
+[gd_scene load_steps=19 format=3 uid="uid://dahmo14t7kdaw"]
 
 [ext_resource type="Script" path="res://Creatures/GroundCreature/ground_creature.gd" id="1_8im78"]
-[ext_resource type="Texture2D" uid="uid://2l44j7m7c03b" path="res://icon.svg" id="2_7cq72"]
+[ext_resource type="Texture2D" uid="uid://da130laa21jq" path="res://Assets/enemyDummy.png" id="2_n6fpg"]
 [ext_resource type="Script" path="res://Creatures/GroundCreature/ground_creature_controller.gd" id="3_2relg"]
 [ext_resource type="Script" path="res://Creatures/States/walk_state.gd" id="4_illsp"]
 [ext_resource type="Script" path="res://Creatures/States/fall_state.gd" id="5_d1aoj"]
@@ -15,12 +15,13 @@
 [ext_resource type="Script" path="res://Creatures/GroundCreature/ground_creature_ai.gd" id="13_nlyld"]
 [ext_resource type="Script" path="res://Creatures/States/stun_state.gd" id="13_yh820"]
 [ext_resource type="Script" path="res://Creatures/GroundCreature/astar_ai.gd" id="15_moayh"]
+[ext_resource type="Script" path="res://Creatures/creature_data.gd" id="16_4nifu"]
+[ext_resource type="Script" path="res://Creatures/GroundCreature/low_level_ai.gd" id="17_2iqnd"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_2owua"]
 radius = 13.4509
 
-[node name="Creature" type="CharacterBody2D"]
-position = Vector2(714, 237)
+[node name="Creature" type="CharacterBody2D" groups=["Creature"]]
 scale = Vector2(0.821159, 0.821159)
 collision_layer = 3
 collision_mask = 3
@@ -65,8 +66,8 @@ shape = SubResource("CircleShape2D_2owua")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 modulate = Color(1, 1, 1, 0.45098)
-scale = Vector2(0.209308, 0.209308)
-texture = ExtResource("2_7cq72")
+scale = Vector2(0.075, 0.075)
+texture = ExtResource("2_n6fpg")
 
 [node name="Controller" type="Node" parent="."]
 script = ExtResource("3_2relg")
@@ -107,6 +108,9 @@ script = ExtResource("12_fu1oo")
 [node name="Stunned" type="Node" parent="Controller"]
 script = ExtResource("13_yh820")
 
+[node name="CreatureData" type="Node" parent="."]
+script = ExtResource("16_4nifu")
+
 [node name="AI" type="Node2D" parent="."]
 script = ExtResource("13_nlyld")
 
@@ -114,6 +118,7 @@ script = ExtResource("13_nlyld")
 script = ExtResource("15_moayh")
 
 [node name="LowLevelAI" type="Node" parent="AI"]
+script = ExtResource("17_2iqnd")
 
 [node name="AITimer" type="Timer" parent="."]
 one_shot = true

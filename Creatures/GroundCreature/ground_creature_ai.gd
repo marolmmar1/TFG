@@ -39,32 +39,39 @@ func init(_astar, _controller, _low_level_state_manager, _creature):
 	astar_ai.switch_crawl_walk_speed = controller.find_child("SwitchCrawlWalk").speed
 	astar_ai.switch_crawl_climb_speed = controller.find_child("SwitchCrawlClimb").speed
 
+	low_level_ai.low_level_state_manager = low_level_state_manager
+
 
 #TODO pass to higher AI
 func tick():
-	if not current_low_level_action:
-		current_low_level_action = low_level_ai.calculate_action(low_level_state_manager.get_state(creature))
-	else:
-		if not path or path.is_empty():
-			return
-		
-		# Check if we haven't stopped moving towards node
-		# There are cases where we miss the next node by a bit and are still withing the bounding box
-		if abs(controller.position.distance_to(astar_graph.tmhelper.to_world_position(path[path_index].to)) - last_dist) < 0.01:
-			# Recalculate A*
-			calculate_astar()
+	if not path or path.is_empty():
+		return
+	
+	# Check if we haven't stopped moving towards node
+	# There are cases where we miss the next node by a bit and are still withing the bounding box
+	if abs(controller.position.distance_to(astar_graph.tmhelper.to_world_position(path[path_index].to)) - last_dist) < 0.01:
+		# Recalculate A*
+		calculate_astar()
 
-		elif path and not path.is_empty():
-			last_dist = controller.position.distance_to(astar_graph.tmhelper.to_world_position(path[path_index].to))
+	elif path and not path.is_empty():
+		last_dist = controller.position.distance_to(astar_graph.tmhelper.to_world_position(path[path_index].to))
 
 
 func _process(delta):
-	if (not path or path.is_empty()) and not astar_ai.calculating_astar:
-		calculate_astar()
+	#Check if we have an action then act
+	if not current_low_level_action:
+		current_low_level_action = low_level_ai.calculate_action(low_level_state_manager.get_state(creature))
 
-	if path and not path.is_empty():
-		check_path_progress()
-		calculate_movement()
+	else:
+		current_low_level_action.execute(self)
+
+	# Check if we have a target then act
+		if (not path or path.is_empty()) and not astar_ai.calculating_astar and target:
+			calculate_astar()
+
+		if path and not path.is_empty():
+			check_path_progress()
+			calculate_movement()
 
 
 func calculate_astar():

@@ -5,19 +5,19 @@ class Food:
     var dist: int
     var foodValue: int
 
-    func _init(_dist: int, _foodValue: int):
+    func _init(_dist: int, _food_value: int):
         dist = _dist
-        foodValue = _foodValue
+        foodValue = _food_value
 
 class OtherCreature:
     var dist: int
-    var foodValue: int
-    var threatLevel: int
+    var food_value: int
+    var threat_level: int
 
-    func _init(_dist: int, _foodValue: int, _threatLevel: int):
+    func _init(_dist: int, _foodValue: int, _threat_level: int):
         dist = _dist
-        foodValue = _foodValue
-        threatLevel = _threatLevel
+        food_value = _foodValue
+        threat_level = _threat_level
 
 var health: int
 var food: int

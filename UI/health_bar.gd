@@ -1,33 +1,16 @@
-extends ProgressBar
+extends Control
 
-@onready var timer = $Timer
-@onready var  damage_bar:ProgressBar = $DamageBar
+@onready var health_bar:ProgressBar = $HealthBar
+@onready var food_bar:ProgressBar = $FoodBar
+@onready var stamina_bar:ProgressBar = $StaminaBar
 
-var health = 0
 @export var character: CharacterBody2D
+@export var fill_speed = 5.0
 
 func _process(delta):
 	position = character.global_position
-	damage_bar.position = character.global_position
 
-func _init_health(_health):
-	health = _health
-	max_value = health
-	value = health
-	damage_bar.max_value = health
-	damage_bar.value = health
-
-func _set_health(new_health):
-	var prev_health = health
-	health = new_health
-	value = health
-	if health <= 0:	
-		queue_free()
-	if prev_health > health:
-		timer.start()
-	else:
-		damage_bar.value = health
-
-
-func _on_timer_timeout():
-	damage_bar.value = health
+	if character.data:
+		health_bar.value = lerp(health_bar.value, character.data.health, delta * fill_speed)
+		food_bar.value = lerp(food_bar.value, character.data.food, delta * fill_speed)
+		stamina_bar.value = lerp(stamina_bar.value, character.data.stamina, delta * fill_speed)

@@ -147,7 +147,6 @@ func check_path_progress(state = null):
 			node_b + Vector2(bounding_box_margin, bounding_box_margin).rotated(bounding_box_rot_2)]
 
 		astar_graph.creature_bounding_box = bounding_box #DEBUG
-		astar_graph.bounding_box_center = bounding_box_center
 		astar_graph.queue_redraw()
 
 		if not (controller.position.x < bounding_box.reduce(func(max_vec, vec): return vec if vec.x > max_vec.x else max_vec).x and \

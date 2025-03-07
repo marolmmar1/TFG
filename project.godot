@@ -15,6 +15,11 @@ run/main_scene="res://Develop/Bioma.tscn"
 config/features=PackedStringArray("4.3", "Forward Plus")
 config/icon="res://icon.svg"
 
+[display]
+
+window/size/viewport_width=1200
+window/size/viewport_height=700
+
 [global_group]
 
 Food=""

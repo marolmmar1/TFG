@@ -7,10 +7,10 @@ enum CreatureType{HERVIVORE, CARNIVORE, OMNIVORE}
 var type: CreatureType
 var max_health: float = 100
 var health: float
-var max_stamina: float = 100
-var stamina: float
 var max_food: float = 100
 var food: float
+var max_stamina: float = 100
+var stamina: float
 var attack_power: float
 var memory: Dictionary
 

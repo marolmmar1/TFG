@@ -14,8 +14,8 @@
 [ext_resource type="Script" path="res://Creatures/States/jump_state.gd" id="12_fu1oo"]
 [ext_resource type="Script" path="res://Creatures/GroundCreature/ground_creature_ai.gd" id="13_nlyld"]
 [ext_resource type="Script" path="res://Creatures/States/stun_state.gd" id="13_yh820"]
+[ext_resource type="Script" path="res://Creatures/GroundCreature/creature_data.gd" id="14_wg4da"]
 [ext_resource type="Script" path="res://Creatures/GroundCreature/astar_ai.gd" id="15_moayh"]
-[ext_resource type="Script" path="res://Creatures/creature_data.gd" id="16_4nifu"]
 [ext_resource type="Script" path="res://Creatures/GroundCreature/low_level_ai.gd" id="17_2iqnd"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_2owua"]
@@ -109,7 +109,7 @@ script = ExtResource("12_fu1oo")
 script = ExtResource("13_yh820")
 
 [node name="CreatureData" type="Node" parent="."]
-script = ExtResource("16_4nifu")
+script = ExtResource("14_wg4da")
 
 [node name="AI" type="Node2D" parent="."]
 script = ExtResource("13_nlyld")

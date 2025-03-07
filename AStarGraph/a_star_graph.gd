@@ -1,9 +1,6 @@
 extends Node2D
 
-@export var creature: Node2D #DEBUG
-
 @export var tilemap: TileMap
-@export var doors: Node2D
 @export var horizontal_jump_dist: int = 4
 @export var vertical_jump_dist: int = 3
 @export var max_fall_height: int = 15
@@ -32,10 +29,10 @@ func _ready():
 	# Godot needs a frame to set up the tilemap collisions in memory
 	await get_tree().process_frame
 
+	var doors = tilemap.get_node("Doors")
 	tmhelper.init(tilemap, doors)	
 	nodes_helper.init(tmhelper)
 	link_helper.init(tmhelper)
-	# creature_node_monitor.init(creature)
 
 	calculate_astar_nodes()
 
@@ -255,7 +252,7 @@ func delete_isolated_nodes():
 		if tmhelper.is_exit(node):
 			exits.append(node)
 
-	assert(exits.size() > 0, "No exit nodes found")
+	# assert(exits.size() > 0, "No exit nodes found")
 
 	var to_delete = []
 
@@ -309,9 +306,12 @@ var astar_on_going = []
 var astar_target
 var astar_path = []
 var creature_bounding_box = []
-var bounding_box_center
 
 func _draw():
+	if not tmhelper.tilemap:
+		return
+
+	draw_circle(tmhelper.to_world_position(Vector2(0, 0)), 10, Color(0, 0, 0))
 		
 	for node in platform_nodes:
 		var world_position = tmhelper.to_world_position(node)
@@ -408,4 +408,3 @@ func _draw():
 		draw_line(creature_bounding_box[1], creature_bounding_box[2], Color(0.75, 0, 0.75), 2)
 		draw_line(creature_bounding_box[2], creature_bounding_box[3], Color(0.75, 0, 0.75), 2)
 		draw_line(creature_bounding_box[3], creature_bounding_box[0], Color(0.75, 0, 0.75), 2)
-

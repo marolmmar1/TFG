@@ -4,9 +4,8 @@ extends CharacterBody2D
 @export var ai_time = 0.1
 @export var raycasts_length = 25
 
-@export_category("Provided")
-@export var astar_graph: Node2D
-@export var low_level_state_manager: Node2D
+@onready var astar_graph: Node2D = $"../AStarGraph"
+@onready var low_level_state_manager: Node2D = $"../LowLevelStateManager"
 
 @onready var controller = $Controller
 @onready var data = $CreatureData
@@ -29,6 +28,8 @@ var target:
 		ai.target = value
 
 func _ready() -> void:
+	assert(astar_graph)
+	assert(low_level_state_manager)
 
 	controller.init(self)
 	ai.init(astar_graph, controller, low_level_state_manager, self)

@@ -1,7 +1,7 @@
 [gd_scene load_steps=9 format=3 uid="uid://bs0bnq6ss2smj"]
 
 [ext_resource type="Script" path="res://UI/health_bar.gd" id="1_3g6ad"]
-[ext_resource type="PackedScene" uid="uid://bqhyx5f8nye3i" path="res://Zones/Zone1.tscn" id="2_ckmt1"]
+[ext_resource type="PackedScene" uid="uid://bqhyx5f8nye3i" path="res://Biome/Zones/Zone1.tscn" id="2_ckmt1"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_nav2s"]
 bg_color = Color(0, 0, 0, 1)

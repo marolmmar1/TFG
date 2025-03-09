@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://cl7ie0bg68bvp"]
+
+[ext_resource type="Script" path="res://Biome/biome.gd" id="1_hygwc"]
+
+[node name="Main" type="Node2D"]
+
+[node name="Biome" type="Node2D" parent="."]
+script = ExtResource("1_hygwc")

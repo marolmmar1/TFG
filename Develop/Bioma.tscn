@@ -1,8 +1,8 @@
 [gd_scene load_steps=8 format=3 uid="uid://ccf6t4ko0ds42"]
 
-[ext_resource type="TileSet" uid="uid://b4u5e7btrs2ms" path="res://Zones/TestTileset.tres" id="1_chf4t"]
+[ext_resource type="TileSet" uid="uid://csvls8218aenw" path="res://Biome/TestTileset.tres" id="1_chf4t"]
 [ext_resource type="PackedScene" uid="uid://ci6e23n678kxs" path="res://AStarGraph/AStar.tscn" id="2_hqvih"]
-[ext_resource type="PackedScene" uid="uid://dv4c5jsopxrlm" path="res://Zones/Doors/Door.tscn" id="2_tmoyk"]
+[ext_resource type="PackedScene" uid="uid://dv4c5jsopxrlm" path="res://Biome/Doors/Door.tscn" id="2_tmoyk"]
 [ext_resource type="Script" path="res://LowLevelState/low_level_state_manager.gd" id="3_djki7"]
 [ext_resource type="Script" path="res://Develop/Debug/target_spawner_debugger.gd" id="4_3moak"]
 [ext_resource type="PackedScene" uid="uid://dn72d1sk48sje" path="res://Props/Berry/Berry.tscn" id="5_wdfje"]

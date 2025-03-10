@@ -1,9 +1,10 @@
 extends Node2D
 
 @onready var zones = $Zones.get_children()
-var zone_graph = {"zones": zones, "edges": []}
+var zone_graph = {"zones": [], "edges": []}
 
 func _ready():
+	zone_graph["zones"] = zones
 	#Dict where the {zone_id: {"zone": zone, "doors": {"zone_id it ponts to": door itself}}}
 	var doors_by_zone = {}
 	for zone in zones:
@@ -21,9 +22,11 @@ func _ready():
 		for door_data in doors_by_zone[zone]["doors"]:
 			var this_door =doors_by_zone[zone]["doors"][door_data]
 			if this_door.other_side == null:
+				zone_graph["edges"].append([doors_by_zone[zone]["zone"],doors_by_zone[door_data]["zone"]])
+				zone_graph["edges"].append([doors_by_zone[door_data]["zone"], doors_by_zone[zone]["zone"]])
 				this_door.other_side = doors_by_zone[door_data]["doors"][zone]
 				doors_by_zone[door_data]["doors"][zone].other_side = this_door
-	
+	print(zone_graph)
 	
 
 

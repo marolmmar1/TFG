@@ -1,23 +1,32 @@
 extends Node2D
 
-@onready var zones = get_children()
+@onready var zones = $Zones.get_children()
 var zone_graph = {"zones": zones, "edges": []}
 
-# Called when the node enters the scene tree for the first time.
 func _ready():
-	
+	#Dict where the {zone_id: {"zone": zone, "doors": {"zone_id it ponts to": door itself}}}
+	var doors_by_zone = {}
 	for zone in zones:
-		for door in zone.find_child("Doors").get_children():
-			door.on_creature_changes_zone.connect(change_zone)
-			zone_graph["edges"].append([zone, door.other_side.get_parent().get_parent()])
-		if zone.name=="Zone1":	
+		if zone.name=="Zone_2":	
 			zone.visible = true
 		else:
 			zone.visible = false
-	print(zone_graph)
+		var zone_id = zone.name.rsplit("_", false, 2)[1]
+		doors_by_zone[zone_id]={}
+		doors_by_zone[zone_id]["zone"]=zone
+		doors_by_zone[zone_id]["doors"]={}
+		for door in zone.find_child("Doors").get_children():
+			doors_by_zone[zone_id]["doors"][door.name.rsplit("_", false, 2)[2]]= door
+	for zone in doors_by_zone.keys():
+		for door_data in doors_by_zone[zone]["doors"]:
+			var this_door =doors_by_zone[zone]["doors"][door_data]
+			if this_door.other_side == null:
+				this_door.other_side = doors_by_zone[door_data]["doors"][zone]
+				doors_by_zone[door_data]["doors"][zone].other_side = this_door
+	
+	
 
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
 	pass
 

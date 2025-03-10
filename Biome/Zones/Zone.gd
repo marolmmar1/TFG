@@ -1,6 +1,6 @@
 extends Node
 
-class_name Zone
+class_name ZoneClass
 
 @onready var doors = $TileMap/Doors.get_children()
 @onready var random_timer: Timer = $Randomicer
@@ -26,16 +26,14 @@ func _process(delta):
 	if random_wait:
 		random_wait = false
 		randomize_zone()
-		for creaure in creatures.get_children():
-			print(creaure)
 
 func randomize_zone():
-	print("Randomizing")
+	#print(get_parent().get_children())
 	random_timer.start()
 	threat_level = randi_range(1, 5)
 	food_amount = randi_range(1, 5)
-	print("Threat level: ", threat_level)
-	print("Food amount: ", food_amount)
+	#print("Threat level: ", threat_level)
+	#print("Food amount: ", food_amount)
 	
 func _on_randomicer_timeout():
 	random_wait = true	

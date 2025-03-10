@@ -1,8 +1,16 @@
-[gd_scene load_steps=2 format=3 uid="uid://cl7ie0bg68bvp"]
+[gd_scene load_steps=4 format=3 uid="uid://cl7ie0bg68bvp"]
 
 [ext_resource type="Script" path="res://Biome/biome.gd" id="1_hygwc"]
+[ext_resource type="PackedScene" uid="uid://bqhyx5f8nye3i" path="res://Biome/Zones/Zone_1.tscn" id="2_afxj5"]
+[ext_resource type="PackedScene" uid="uid://w6dvag162277" path="res://Biome/Zones/Zone_2.tscn" id="3_760hj"]
 
 [node name="Main" type="Node2D"]
 
 [node name="Biome" type="Node2D" parent="."]
 script = ExtResource("1_hygwc")
+
+[node name="Zones" type="Node2D" parent="Biome"]
+
+[node name="Zone_1" parent="Biome/Zones" instance=ExtResource("2_afxj5")]
+
+[node name="Zone_2" parent="Biome/Zones" instance=ExtResource("3_760hj")]

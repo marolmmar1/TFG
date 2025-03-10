@@ -1,8 +1,8 @@
-extends Node2D
+extends Node
 
 class_name Zone
 
-@onready var doors = $Doors.get_children()
+@onready var doors = $TileMap/Doors.get_children()
 @onready var random_timer: Timer = $Randomicer
 @onready var zone_tilemap: TileMap = $TileMap
 @onready var creatures: Node2D = $Creatures
@@ -14,18 +14,18 @@ var type = ZoneType.REGULAR
 var threat_level: int
 var food_amount: int
 
-
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	var creature = CreatureData.new()
 	creature.spawn(CreatureData.CreatureType.HERVIVORE, 100, 100, 100, 10, {})
 	creatures.add_child(creature)
 
+
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
 	if random_wait:
 		random_wait = false
-		#randomize_zone()
+		randomize_zone()
 		for creaure in creatures.get_children():
 			print(creaure)
 
@@ -38,4 +38,4 @@ func randomize_zone():
 	print("Food amount: ", food_amount)
 	
 func _on_randomicer_timeout():
-	random_wait = true
+	random_wait = true	

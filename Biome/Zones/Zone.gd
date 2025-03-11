@@ -16,9 +16,7 @@ var food_amount: int
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	var creature = CreatureData.new()
-	creature.spawn(CreatureData.CreatureType.HERVIVORE, 100, 100, 100, 10, {})
-	creatures.add_child(creature)
+	pass
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -28,12 +26,16 @@ func _process(delta):
 		randomize_zone()
 
 func randomize_zone():
-	#print(get_parent().get_children())
+	#print(zone_tilemap.get_parent().get_name())
 	random_timer.start()
 	threat_level = randi_range(1, 5)
 	food_amount = randi_range(1, 5)
 	#print("Threat level: ", threat_level)
 	#print("Food amount: ", food_amount)
+
 	
 func _on_randomicer_timeout():
 	random_wait = true	
+
+func _zone_value():
+	return roundf((threat_level + food_amount)/2)

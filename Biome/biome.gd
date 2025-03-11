@@ -26,7 +26,7 @@ func _ready():
 				zone_graph["edges"].append([doors_by_zone[door_data]["zone"], doors_by_zone[zone]["zone"]])
 				this_door.other_side = doors_by_zone[door_data]["doors"][zone]
 				doors_by_zone[door_data]["doors"][zone].other_side = this_door
-	print(zone_graph)
+	#print(zone_graph)
 	
 
 

@@ -1,8 +1,9 @@
-[gd_scene load_steps=6 format=3 uid="uid://w6dvag162277"]
+[gd_scene load_steps=7 format=3 uid="uid://w6dvag162277"]
 
 [ext_resource type="Script" path="res://Biome/Zones/Zone.gd" id="1_gudqi"]
 [ext_resource type="Texture2D" uid="uid://eujin7w1yov" path="res://Assets/kenney_pico-8-platformer/Default/Tilemap/tilemap_packed.png" id="2_tl41m"]
 [ext_resource type="PackedScene" uid="uid://dv4c5jsopxrlm" path="res://Biome/Doors/Door.tscn" id="3_tk53c"]
+[ext_resource type="PackedScene" uid="uid://c3qi4mwehthfa" path="res://Creatures/HighLevelDummy/Dummy.tscn" id="4_4f0v4"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_5okw5"]
 texture = ExtResource("2_tl41m")
@@ -306,6 +307,9 @@ position = Vector2(-40.0736, 0.568182)
 [node name="Foods" type="Node2D" parent="."]
 
 [node name="Creatures" type="Node2D" parent="."]
+
+[node name="Dummy" parent="Creatures" instance=ExtResource("4_4f0v4")]
+position = Vector2(478, 497)
 
 [node name="Randomicer" type="Timer" parent="."]
 wait_time = 10.0

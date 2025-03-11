@@ -30,6 +30,13 @@ position = Vector2(413.603, -36.1742)
 [node name="ExitSpawn" parent="TileMap/Doors/Door_1_2" index="1"]
 position = Vector2(373.529, -32.5758)
 
+[node name="Door_1_4" parent="TileMap/Doors" instance=ExtResource("2_k8fje")]
+position = Vector2(608, -5)
+scale = Vector2(4.52755, 0.356052)
+
+[node name="ExitSpawn" parent="TileMap/Doors/Door_1_4" index="1"]
+position = Vector2(-0.662607, 95.4918)
+
 [node name="Foods" type="Node2D" parent="."]
 
 [node name="Creatures" type="Node2D" parent="."]
@@ -40,3 +47,4 @@ wait_time = 10.0
 [connection signal="timeout" from="Randomicer" to="." method="_on_randomicer_timeout"]
 
 [editable path="TileMap/Doors/Door_1_2"]
+[editable path="TileMap/Doors/Door_1_4"]

@@ -1,9 +1,11 @@
-[gd_scene load_steps=19 format=3 uid="uid://dahmo14t7kdaw"]
+[gd_scene load_steps=28 format=3 uid="uid://dahmo14t7kdaw"]
 
 [ext_resource type="Script" path="res://Creatures/GroundCreature/ground_creature.gd" id="1_8im78"]
 [ext_resource type="Texture2D" uid="uid://da130laa21jq" path="res://Assets/enemyDummy.png" id="2_n6fpg"]
+[ext_resource type="PackedScene" uid="uid://721pv21788m8" path="res://Generic/Damageable.tscn" id="2_ss6k2"]
 [ext_resource type="Script" path="res://Creatures/GroundCreature/ground_creature_controller.gd" id="3_2relg"]
 [ext_resource type="Script" path="res://Creatures/States/walk_state.gd" id="4_illsp"]
+[ext_resource type="Texture2D" uid="uid://sxwr0a227cph" path="res://Assets/attack placeholder.png" id="4_o3rur"]
 [ext_resource type="Script" path="res://Creatures/States/fall_state.gd" id="5_d1aoj"]
 [ext_resource type="Script" path="res://Creatures/States/climb_state.gd" id="6_ab7tr"]
 [ext_resource type="Script" path="res://Creatures/States/crawl_state.gd" id="7_qc4mj"]
@@ -14,18 +16,27 @@
 [ext_resource type="Script" path="res://Creatures/States/jump_state.gd" id="12_fu1oo"]
 [ext_resource type="Script" path="res://Creatures/GroundCreature/ground_creature_ai.gd" id="13_nlyld"]
 [ext_resource type="Script" path="res://Creatures/States/stun_state.gd" id="13_yh820"]
+[ext_resource type="Script" path="res://Creatures/States/eat_state.gd" id="14_jxpt8"]
 [ext_resource type="Script" path="res://Creatures/GroundCreature/creature_data.gd" id="14_wg4da"]
+[ext_resource type="Script" path="res://Creatures/States/rest_state.gd" id="15_0ikpg"]
 [ext_resource type="Script" path="res://Creatures/GroundCreature/astar_ai.gd" id="15_moayh"]
+[ext_resource type="Script" path="res://Creatures/States/attack_state.gd" id="16_3np05"]
 [ext_resource type="Script" path="res://Creatures/GroundCreature/low_level_ai.gd" id="17_2iqnd"]
+[ext_resource type="Script" path="res://Creatures/LowLevelActions/eat_action_controller.gd" id="18_vqwlj"]
+[ext_resource type="Script" path="res://Creatures/LowLevelActions/flee_action_controller.gd" id="19_l22s6"]
+[ext_resource type="Script" path="res://Creatures/LowLevelActions/attack_action_controller.gd" id="20_fw5rv"]
+[ext_resource type="Script" path="res://Creatures/LowLevelActions/rest_action_controller.gd" id="21_k5vsu"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_2owua"]
 radius = 13.4509
 
 [node name="Creature" type="CharacterBody2D" groups=["Creature"]]
 scale = Vector2(0.821159, 0.821159)
-collision_layer = 3
+collision_layer = 4
 collision_mask = 3
 script = ExtResource("1_8im78")
+
+[node name="Damageable" parent="." instance=ExtResource("2_ss6k2")]
 
 [node name="Raycasts" type="Node2D" parent="."]
 
@@ -66,8 +77,15 @@ shape = SubResource("CircleShape2D_2owua")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 modulate = Color(1, 1, 1, 0.45098)
-scale = Vector2(0.075, 0.075)
+position = Vector2(0, 6.08896)
+scale = Vector2(0.0633251, 0.0633251)
 texture = ExtResource("2_n6fpg")
+
+[node name="DebugSprite" type="Sprite2D" parent="."]
+visible = false
+position = Vector2(0, -6.08895)
+scale = Vector2(0.0608895, 0.0608896)
+texture = ExtResource("4_o3rur")
 
 [node name="Controller" type="Node" parent="."]
 script = ExtResource("3_2relg")
@@ -108,6 +126,15 @@ script = ExtResource("12_fu1oo")
 [node name="Stunned" type="Node" parent="Controller"]
 script = ExtResource("13_yh820")
 
+[node name="Eat" type="Node" parent="Controller"]
+script = ExtResource("14_jxpt8")
+
+[node name="Rest" type="Node" parent="Controller"]
+script = ExtResource("15_0ikpg")
+
+[node name="Attack" type="Node" parent="Controller"]
+script = ExtResource("16_3np05")
+
 [node name="CreatureData" type="Node" parent="."]
 script = ExtResource("14_wg4da")
 
@@ -120,5 +147,19 @@ script = ExtResource("15_moayh")
 [node name="LowLevelAI" type="Node" parent="AI"]
 script = ExtResource("17_2iqnd")
 
+[node name="EatAction" type="Node" parent="AI/LowLevelAI"]
+script = ExtResource("18_vqwlj")
+
+[node name="FleeAction" type="Node" parent="AI/LowLevelAI"]
+script = ExtResource("19_l22s6")
+
+[node name="AttackAction" type="Node" parent="AI/LowLevelAI"]
+script = ExtResource("20_fw5rv")
+
+[node name="RestAction" type="Node" parent="AI/LowLevelAI"]
+script = ExtResource("21_k5vsu")
+
 [node name="AITimer" type="Timer" parent="."]
 one_shot = true
+
+[connection signal="on_damage_taken" from="Damageable" to="." method="_on_damage_taken"]

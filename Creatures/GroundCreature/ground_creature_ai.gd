@@ -1,11 +1,16 @@
 extends Node2D
 
 @export var detect_node_dist: float = 15.0 # Tile size - tolerance
+@export var detect_target_dist: float = 30.0 # Depends on creature size. There are probably better ways to do this though
 @export var unnecessary_jump_threshold: float = 25.0
 @export var bounding_box_margin: float = 20.0
 
 @onready var astar_ai = $AstarAI
 @onready var low_level_ai = $LowLevelAI
+@onready var eat_action_controller = $LowLevelAI/EatAction
+@onready var flee_action_controller = $LowLevelAI/FleeAction
+@onready var attack_action_controller = $LowLevelAI/AttackAction
+@onready var rest_action_controller = $LowLevelAI/RestAction
 
 var astar_graph: Node2D
 var low_level_state_manager
@@ -16,10 +21,11 @@ var path = []
 var path_index = 0
 var last_dist: float = 100000.0
 
+var target
 var current_low_level_action
 
-#DEBUG
-var target
+signal on_target_reached
+signal on_current_node_missing(creature)
 
 
 func init(_astar, _controller, _low_level_state_manager, _creature):
@@ -41,14 +47,23 @@ func init(_astar, _controller, _low_level_state_manager, _creature):
 
 	low_level_ai.low_level_state_manager = low_level_state_manager
 
+	eat_action_controller.on_action_finished.connect(on_action_finished)
+	flee_action_controller.on_action_finished.connect(on_action_finished)
+	attack_action_controller.on_action_finished.connect(on_action_finished)
+	rest_action_controller.on_action_finished.connect(on_action_finished)
+
 
 #TODO pass to higher AI
 func tick():
+	# Calculate best action
+	calculate_action()
+
+
+	# Check if we haven't stopped moving towards node
+	# There are cases where we miss the next node by a bit and are still withing the bounding box
 	if not path or path.is_empty():
 		return
 	
-	# Check if we haven't stopped moving towards node
-	# There are cases where we miss the next node by a bit and are still withing the bounding box
 	if abs(controller.position.distance_to(astar_graph.tmhelper.to_world_position(path[path_index].to)) - last_dist) < 0.01:
 		# Recalculate A*
 		calculate_astar()
@@ -60,18 +75,30 @@ func tick():
 func _process(delta):
 	#Check if we have an action then act
 	if not current_low_level_action:
-		current_low_level_action = low_level_ai.calculate_action(low_level_state_manager.get_state(creature))
+		calculate_action()
 
 	else:
 		current_low_level_action.execute(self)
 
-	# Check if we have a target then act
+		# If we have a target check if we've reached it
+		if target and controller.position.distance_to(target) < detect_target_dist:
+			target = null
+			path = null
+			on_target_reached.emit()
+			
+		# Check if we have a target then act
 		if (not path or path.is_empty()) and not astar_ai.calculating_astar and target:
 			calculate_astar()
 
+		# Check if target node is still the same
+		if path and not path.is_empty() and target and path[path.size() - 1].to != astar_graph.tmhelper.to_local_position(target):
+			calculate_astar()
+
+		# Check if we have a path then act
 		if path and not path.is_empty():
 			check_path_progress()
 			calculate_movement()
+		
 
 
 func calculate_astar():
@@ -86,11 +113,11 @@ func calculate_astar():
 
 	if current_node == target_node:
 		target = null
-		print("REACHED GOAL")
 		path = null
+		on_target_reached.emit()
 		return
 	
-	# #DEBUG
+	#DEBUG
 	astar_graph.astar_on_going = []
 	astar_graph.astar_target = astar_graph.tmhelper.to_world_position(target_node)
 	astar_graph.queue_redraw()
@@ -98,7 +125,8 @@ func calculate_astar():
 	if current_node == null or target_node == null:
 		return
 	if not astar_graph.astar_nodes.has(current_node):
-		push_warning("Current node not found in astar graph")
+		push_warning("Current node not found in astar graph | Creature: ", get_parent().name)
+		on_current_node_missing.emit(creature)
 		return
 
 	path = []
@@ -106,6 +134,38 @@ func calculate_astar():
 	last_dist = 100000
 	path = await astar_ai.astar(current_node, target_node) #DEBUG
 
+
+func calculate_action():
+	var action = low_level_ai.calculate_action(low_level_state_manager.get_state(creature))
+
+	if action is EatAction:
+		if current_low_level_action:
+			current_low_level_action.exit(self)
+		current_low_level_action = eat_action_controller
+		current_low_level_action.enter(self, low_level_state_manager.get_item_node(action.food))
+
+	elif action is FleeAction:
+		if current_low_level_action:
+			current_low_level_action.exit(self)
+		current_low_level_action = flee_action_controller
+
+	elif action is AttackAction:
+		if current_low_level_action:
+			current_low_level_action.exit(self)
+		current_low_level_action = attack_action_controller
+		current_low_level_action.enter(self, low_level_state_manager.get_item_node(action.enemy))
+
+	elif action is RestAction:
+		if current_low_level_action:
+			current_low_level_action.exit(self)
+		current_low_level_action = rest_action_controller
+		current_low_level_action.enter(self)
+
+func on_action_finished():
+	if current_low_level_action:
+		current_low_level_action.exit(self)
+	current_low_level_action = null
+	calculate_action()
 
 
 func check_path_progress(state = null):
@@ -121,11 +181,12 @@ func check_path_progress(state = null):
 		path_index += 1
 		last_dist = 100000
 
+	# Check if reached last node
 	elif path_index == path.size() - 1 and path[path_index].to == astar_graph.tmhelper.to_local_position(controller.position):
 		target = null
-		print("REACHED GOAL")
 		path = null
 		last_dist = 100000
+		on_target_reached.emit()
 
 	else:
 
@@ -210,3 +271,14 @@ func jump(next_node):
 
 func fall():
 	controller.queue_change_state(controller.fall_state, {"should grab": false})
+
+
+# Actions
+func eat(food):
+	controller.queue_change_state(controller.eat_state, {"food": food})
+
+func rest():
+	controller.queue_change_state(controller.rest_state, {})
+
+func attack(_target):
+	controller.queue_change_state(controller.attack_state, {"target": _target})

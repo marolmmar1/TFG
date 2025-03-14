@@ -8,6 +8,8 @@ enum MovementType {
 var from: Vector2i
 var to: Vector2i
 var movement_type: MovementType
+var temporary: bool = false
+var double_temporary: bool = false
 
 func _init(from_node: Vector2i, to_node: Vector2i, type: MovementType):
     self.from = from_node

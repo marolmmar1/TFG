@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://721pv21788m8"]
+
+[ext_resource type="Script" path="res://Generic/damageable.gd" id="1_fmjsr"]
+
+[node name="Damageable" type="Node"]
+script = ExtResource("1_fmjsr")

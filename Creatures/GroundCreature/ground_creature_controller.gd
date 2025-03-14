@@ -3,6 +3,8 @@ extends Node
 @export var stun_height: float = 350
 @export var damage_height: float = 550
 @export var default_stun_time: float = 1.5
+#DEBUG
+@export var debug := true
 
 @onready var idle_state = $Idle
 @onready var idle_climb_state = $IdleClimb
@@ -16,6 +18,9 @@ extends Node
 @onready var switch_crawl_climb_state = $SwitchCrawlClimb
 @onready var jump_state = $Jump
 @onready var stun_state = $Stunned
+@onready var eat_state = $Eat
+@onready var rest_state = $Rest
+@onready var attack_state = $Attack
 
 var controller: CharacterBody2D
 var last_vel
@@ -33,7 +38,7 @@ var position:
 
 signal on_change_state(state)
 
-func init(_controller: CharacterBody2D):
+func init(_controller: CharacterBody2D, vars):
 	self.controller = _controller
 
 	# idle_state.init(controller)
@@ -60,8 +65,18 @@ func init(_controller: CharacterBody2D):
 	jump_state.on_change_state.connect(change_state)
 	stun_state.init(controller)
 	stun_state.on_change_state.connect(change_state)
+	eat_state.init(controller)
+	eat_state.on_change_state.connect(change_state)
+	rest_state.init(controller)
+	rest_state.on_change_state.connect(change_state)
+	attack_state.init(controller)
+	attack_state.on_change_state.connect(change_state)
 
 	gravity = fall_state.gravity
+
+	#TODO set up all movement vars
+	# if vars.has("eat range"):
+	# 	eat_range = vars["eat range"]
 
 func _physics_process(delta: float):
 	if not controller:
@@ -77,12 +92,14 @@ func _physics_process(delta: float):
 		if fall_state.check_conditions({}):
 			current_state = fall_state
 			fall_state.enter({})
-			# print(current_state.name)
+			if debug:
+				print(controller.name, " physics state: ", current_state.name)
 			on_change_state.emit(current_state)
 		elif idle_state.check_conditions({}):
 			current_state = idle_state
 			idle_state.enter({})
-			# print(current_state.name)
+			if debug:
+				print(controller.name, " physics state: ", current_state.name)
 			on_change_state.emit(current_state)
 	
 
@@ -123,7 +140,8 @@ func change_state(_state, vars):
 		current_state.exit()
 		current_state = _state
 		current_vars = vars
-		# print(current_state.name)
+		if debug:
+			print(controller.name, " physics state: ", current_state.name)
 		current_state.enter(current_vars)
 		on_change_state.emit(current_state)
 
@@ -132,7 +150,8 @@ func _switch_to_queued_state():
 	current_state.exit()
 	current_state = queued_state
 	current_vars = queued_vars
-	# print(current_state.name)
+	if debug:
+		print(controller.name, " physics state: ", current_state.name)
 	queued_state = null
 	queued_vars = {}
 	current_state.enter(current_vars)
@@ -146,7 +165,8 @@ func queue_change_state(state, vars):
 	elif current_state == state and current_vars == vars:
 		return
 
-	# print("queue_change_state: ", state.name)
+	if debug:
+		print(controller.name, " physics queue change state: ", state.name)
 
 	queued_state = state
 	queued_vars = vars

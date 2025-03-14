@@ -2,6 +2,7 @@ extends State
 
 @export var speed: float = 100.0
 @export var raycast_length: float = 10.0
+@export var stamina_cost_per_second: float = 0.4
 
 var target_node
 
@@ -25,3 +26,4 @@ func tick(delta):
 	controller.velocity = (target_node - controller.position).normalized() * speed
 
 	controller.move_and_slide()
+	controller.data.stamina -= delta * stamina_cost_per_second

@@ -3,6 +3,7 @@ extends State
 @export var jump_distance: Vector2 = Vector2(130, 100) #HACK hardcoded. Tile size * Astar vars + some margin
 @export var v_jump_offset: float = 7.5
 @export var jump_cooldown: float = 1.5
+@export var stamina_cost := 15
 
 @onready var fall_state = $"../Fall"
 
@@ -51,6 +52,8 @@ func enter(vars):
 	# print("v0x: ", v0x)
 
 	controller.velocity = Vector2(v0x, v0y)
+
+	controller.data.stamina -= stamina_cost
 
 	can_jump = false
 	get_tree().create_timer(jump_cooldown).timeout.connect(func(): can_jump = true)

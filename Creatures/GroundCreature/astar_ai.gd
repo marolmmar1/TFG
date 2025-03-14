@@ -13,6 +13,7 @@ var switch_crawl_walk_speed
 var switch_crawl_climb_speed
 
 var calculating_astar = false
+var astar_nodes = {}
 
 class AstarAINode:
 	func _init(_node: Vector2i, _parent: AstarAINode, _cost: int):
@@ -28,6 +29,8 @@ class AstarAINode:
 func astar(current_node: Vector2i, target_node: Vector2i) -> Array:
 	calculating_astar = true
 
+	astar_nodes = astar_graph.astar_nodes.duplicate()
+
 	var pending = []
 	var explored = []
 
@@ -38,7 +41,7 @@ func astar(current_node: Vector2i, target_node: Vector2i) -> Array:
 	while pending.size() > 0: #TODO prevent infinite loop and split process through ticks
 
 		# #DEBUG
-		await get_tree().create_timer(0.25).timeout
+		await get_tree().create_timer(0.01).timeout
 		astar_graph.queue_redraw()
 
 		var lowest_cost_node = null
@@ -51,6 +54,17 @@ func astar(current_node: Vector2i, target_node: Vector2i) -> Array:
 				lowest_cost = cost
 				lowest_cost_node = node
 
+		#HACK not a good fix but I'm getting tired of this code throwing errors everytime I try something new elsewhere
+		# The main problem comes from the astar algorithm trying to walk throw temporary nodes that have actually been deleted
+		# I've already implemented lots of checks and techniques to avoid this happening but it's still possible
+		# So if everything else fails, just return and try again in a few seconds
+		if not astar_nodes.has(lowest_cost_node.node):
+			push_warning("Tried to access node not in astar graph | Creature: ", get_parent().get_parent().name, " | Node:", lowest_cost_node.node, \
+				" | Pending: ", pending.map(func(x): return x.node), " | Explored: ", explored.map(func(x): return x.node), " Start node: ", start_node.node)
+			
+			get_tree().create_timer(0.25).timeout.connect(func(): calculating_astar = false)
+			return []
+		
 		# We're exploring this one
 		pending.erase(lowest_cost_node)
 		explored.append(lowest_cost_node)
@@ -68,7 +82,7 @@ func astar(current_node: Vector2i, target_node: Vector2i) -> Array:
 		# print("heuristic: ", node_heuristic(lowest_cost_node, AstarAINode.new(target_node, null, 0)))
 		# print("total: ", lowest_cost_node.cost + node_heuristic(lowest_cost_node, AstarAINode.new(target_node, null, 0)), "\n")
 
-		var neighbors = get_neighbors(lowest_cost_node.node)
+		var neighbors = get_neighbors(lowest_cost_node.node, current_node, target_node)
 		for neighbor in neighbors:
 			# Skip explored neighbors
 			if explored.filter(func(x): return x.node == neighbor).size() > 0:
@@ -92,10 +106,23 @@ func astar(current_node: Vector2i, target_node: Vector2i) -> Array:
 
 	return []
 
-func get_neighbors(node: Vector2i) -> Array:
+func get_neighbors(node: Vector2i, current_node: Vector2i, target_node: Vector2i) -> Array:
 	var neighbors = []
 
-	for edge in astar_graph.astar_nodes[node]:
+	for edge in astar_nodes[node]:
+
+		# Ignore temporary edges unless we're in start node or they lead to target node
+		if edge.temporary and (edge.from != current_node or edge.to != target_node):
+			continue
+
+		# Ignore double temporary edges unless we're in start node and they lead to target node
+		if edge.double_temporary and not (edge.from == current_node and edge.to == target_node):
+			continue
+
+		# This is stupid but sometimes happens
+		if not astar_nodes.has(edge.to):
+			continue
+		
 		neighbors.append(edge.to)
 
 	return neighbors
@@ -115,7 +142,7 @@ func node_cost(from: AstarAINode, to: AstarAINode) -> float:
 		parent_cost = from.cost
 
 	var movement_cost = 0
-	for edge in astar_graph.astar_nodes[from.node]:
+	for edge in astar_nodes[from.node]:
 		if edge.to == to.node:
 			movement_cost = speed_cost(edge)
 			movement_cost = reliavility_cost(edge, movement_cost)
@@ -157,7 +184,7 @@ func build_path(start_node: AstarAINode, end_node: AstarAINode) -> Array:
 	var current = end_node
 	while current != start_node:
 		if current.parent:
-			for edge in astar_graph.astar_nodes[current.parent.node]:
+			for edge in astar_nodes[current.parent.node]:
 				if edge.to == current.node:
 					_path.append(edge)
 					break

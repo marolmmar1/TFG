@@ -1,6 +1,5 @@
 extends Node2D
 
-@export var tilemap: TileMap
 @export var horizontal_jump_dist: int = 4
 @export var vertical_jump_dist: int = 3
 @export var max_fall_height: int = 15
@@ -8,7 +7,9 @@ extends Node2D
 @onready var tmhelper = $TileMapHelper
 @onready var nodes_helper = $NodesHelper
 @onready var link_helper = $LinkHelper
-@onready var creature_node_monitor = $CreatureNodeMonitor
+@onready var item_node_monitor = $ItemNodeMonitor
+
+var tilemap: TileMap
 
 var astar_nodes = {}
 
@@ -22,17 +23,23 @@ var tunnel_gate_nodes = []
 var tunnel_end_nodes = []
 var platform_fall_nodes = []
 
+var temporary_nodes = []
+
 #DEBUG
 var update_nodes = []
+@export var draw_graph = false
 
-func _ready():
+func init(_tilemap, _zone):
 	# Godot needs a frame to set up the tilemap collisions in memory
 	await get_tree().process_frame
+
+	tilemap = _tilemap
 
 	var doors = tilemap.get_node("Doors")
 	tmhelper.init(tilemap, doors)	
 	nodes_helper.init(tmhelper)
 	link_helper.init(tmhelper)
+	item_node_monitor.init(self, _zone)
 
 	calculate_astar_nodes()
 
@@ -72,40 +79,64 @@ func add_node(node, update_radius):
 
 	if nodes_helper.is_mid_platform_node(node):
 		astar_nodes[node] = []
+		temporary_nodes.append(node)
 		platform_nodes.append(node)
 	elif nodes_helper.is_mid_wall_node(node):
 		astar_nodes[node] = []
+		temporary_nodes.append(node)
 		wall_nodes.append(node)
 	elif nodes_helper.is_mid_tunnel_node(node):
 		astar_nodes[node] = []
+		temporary_nodes.append(node)
 		intersection_nodes.append(node)
 	#TODO add mid_air_node
 
-	update_nodes_in_radius(node, update_radius)
+	# Non destructive update
+	var astar_nodes_copy = astar_nodes.duplicate()
+
+	update_nodes_in_radius(astar_nodes_copy, node, update_radius)
+
+	for i in astar_nodes_copy:
+		for e in astar_nodes_copy[i]:
+
+			if not astar_nodes[i].has(e):
+				e.temporary = true
+
+				if temporary_nodes.has(e.from) and temporary_nodes.has(e.to):
+					e.double_temporary = true
+				
+				astar_nodes[i].append(e)
+
 
 func delete_node(node, update_radius):
 	
 	if nodes_helper.is_mid_platform_node(node):
 		astar_nodes.erase(node)
+		temporary_nodes.erase(node)
 		platform_nodes.erase(node)
 	elif nodes_helper.is_mid_wall_node(node):
 		astar_nodes.erase(node)
+		temporary_nodes.erase(node)
 		wall_nodes.erase(node)
 	elif nodes_helper.is_mid_tunnel_node(node):
 		astar_nodes.erase(node)
+		temporary_nodes.erase(node)
 		intersection_nodes.erase(node)
 	#TODO add mid_air_node
 
-	update_nodes_in_radius(node, update_radius)
+	# Destructive update
+	update_nodes_in_radius(astar_nodes, node, update_radius)
 
 	# Clean leftover edges
 	for n in astar_nodes:
 		for edge in astar_nodes[n]:
 			if not astar_nodes.has(edge.to) or not astar_nodes.has(edge.from):
-				astar_nodes[n].erase(edge)
+				var res = astar_nodes[n]
+				res.erase(edge)
+				astar_nodes[n] = res
 
 
-func update_nodes_in_radius(node, update_radius):
+func update_nodes_in_radius(_astar_nodes, node, update_radius):
 
 	update_nodes = []
 	var update_platform_nodes = []
@@ -118,14 +149,14 @@ func update_nodes_in_radius(node, update_radius):
 	var update_tunnel_end_nodes = []
 	var update_platform_fall_nodes = []
 
-	for n in astar_nodes:
+	for n in _astar_nodes:
 		if n.distance_to(node) <= update_radius:
 			update_nodes.append(n)
 
 			# Delete all edges in radius
-			for edge in astar_nodes[n]:
+			for edge in _astar_nodes[n]:
 				if update_nodes.has(edge.to) and not update_nodes.has(edge.from):
-					astar_nodes[n].erase(edge)
+					_astar_nodes[n].erase(edge)
 			
 			# Add to appropriate lists
 			if platform_nodes.has(n):
@@ -148,14 +179,15 @@ func update_nodes_in_radius(node, update_radius):
 				update_platform_fall_nodes.append(n)
 			
 	# Only consider nodes in radius for linking. Astar nodes are only used to update the graph
-	link_helper.link_platform_nodes(astar_nodes, update_platform_nodes, update_platform_wall_nodes, update_platform_fall_nodes)
-	link_helper.link_wall_nodes(astar_nodes, update_wall_nodes, update_platform_wall_nodes, update_wall_corner_nodes, update_wall_grab_nodes)
-	link_helper.link_intersection_and_tunnel_gate_nodes(astar_nodes, update_intersection_nodes, update_tunnel_gate_nodes, update_tunnel_end_nodes)
-	link_helper.link_platform_and_wall_nodes(astar_nodes, update_platform_nodes, update_wall_grab_nodes)
-	link_helper.link_tunnel_gate_nodes(astar_nodes, update_tunnel_gate_nodes, update_platform_nodes, update_wall_nodes, update_platform_wall_nodes)
-	link_helper.link_nodes_by_jump(astar_nodes, update_platform_nodes, update_wall_grab_nodes, update_platform_fall_nodes, vertical_jump_dist, horizontal_jump_dist, max_fall_height)
-	link_helper.link_nodes_by_fall(astar_nodes, update_platform_nodes, update_wall_grab_nodes, update_platform_wall_nodes, update_platform_fall_nodes, update_wall_nodes, max_fall_height)
+	link_helper.link_platform_nodes(_astar_nodes, update_platform_nodes, update_platform_wall_nodes, update_platform_fall_nodes)
+	link_helper.link_wall_nodes(_astar_nodes, update_wall_nodes, update_platform_wall_nodes, update_wall_corner_nodes, update_wall_grab_nodes)
+	link_helper.link_intersection_and_tunnel_gate_nodes(_astar_nodes, update_intersection_nodes, update_tunnel_gate_nodes, update_tunnel_end_nodes)
+	link_helper.link_platform_and_wall_nodes(_astar_nodes, update_platform_nodes, update_wall_grab_nodes)
+	link_helper.link_tunnel_gate_nodes(_astar_nodes, update_tunnel_gate_nodes, update_platform_nodes, update_wall_nodes, update_platform_wall_nodes)
+	link_helper.link_nodes_by_jump(_astar_nodes, update_platform_nodes, update_wall_grab_nodes, update_platform_fall_nodes, vertical_jump_dist, horizontal_jump_dist, max_fall_height)
+	link_helper.link_nodes_by_fall(_astar_nodes, update_platform_nodes, update_wall_grab_nodes, update_platform_wall_nodes, update_platform_fall_nodes, update_wall_nodes, max_fall_height)
 
+	#DEBUG
 	queue_redraw()
 
 
@@ -308,11 +340,21 @@ var astar_path = []
 var creature_bounding_box = []
 
 func _draw():
+	if not draw_graph:
+		return
+	
 	if not tmhelper.tilemap:
 		return
 
-	draw_circle(tmhelper.to_world_position(Vector2(0, 0)), 10, Color(0, 0, 0))
-		
+	draw_circle(tmhelper.to_world_position(Vector2(0, 0)), 5, Color(0, 0, 0))
+	draw_circle(tmhelper.to_world_position(Vector2(10, 0)), 5, Color(0, 0, 0))
+	draw_circle(tmhelper.to_world_position(Vector2(20, 0)), 5, Color(0, 0, 0))
+	draw_circle(tmhelper.to_world_position(Vector2(20, 0)), 5, Color(0, 0, 0))
+	draw_circle(tmhelper.to_world_position(Vector2(30, 0)), 5, Color(0, 0, 0))
+	draw_circle(tmhelper.to_world_position(Vector2(0, 10)), 5, Color(0, 0, 0))
+	draw_circle(tmhelper.to_world_position(Vector2(0, 20)), 5, Color(0, 0, 0))
+	draw_circle(tmhelper.to_world_position(Vector2(0, 30)), 5, Color(0, 0, 0))
+	
 	for node in platform_nodes:
 		var world_position = tmhelper.to_world_position(node)
 		draw_circle(world_position, 5, Color(0, 0, 1))

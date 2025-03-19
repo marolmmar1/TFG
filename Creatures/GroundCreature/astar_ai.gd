@@ -4,6 +4,7 @@ extends Node
 @export var fall_reliability_cost_mult: float = 1.5
 
 var astar_graph: Node2D
+var global_astar_manager
 
 var walk_speed
 var climb_speed
@@ -25,11 +26,22 @@ class AstarAINode:
 	var parent: AstarAINode
 	var cost: float
 
+func deep_copy_dict(dict):
+	var new_dict = {}
+	for key in dict:
+		if typeof(dict[key]) == TYPE_DICTIONARY:
+			new_dict[key] = deep_copy_dict(dict[key])
+		elif typeof(dict[key]) == TYPE_ARRAY:
+			new_dict[key] = dict[key].duplicate()
+		else:
+			new_dict[key] = dict[key]
+	return new_dict
 
-func astar(current_node: Vector2i, target_node: Vector2i) -> Array:
+
+func astar(current_node: Vector2i, target_node: Vector2i, debug_mode = false) -> Array:
 	calculating_astar = true
 
-	astar_nodes = astar_graph.astar_nodes.duplicate()
+	astar_nodes = deep_copy_dict(astar_graph.astar_nodes)
 
 	var pending = []
 	var explored = []
@@ -38,11 +50,22 @@ func astar(current_node: Vector2i, target_node: Vector2i) -> Array:
 
 	pending.append(start_node)
 
-	while pending.size() > 0: #TODO prevent infinite loop and split process through ticks
+	var iterations = 0
+	while pending.size() > 0:
+		
+		iterations += 1
+		if iterations > 3: #HACK
+			global_astar_manager.add_loop(iterations)
+			iterations = 0
 
-		# #DEBUG
-		await get_tree().create_timer(0.01).timeout
-		astar_graph.queue_redraw()
+		# Split process through multiple frames
+		if not global_astar_manager.can_process_loop():
+			await get_tree().process_frame
+		
+		#DEBUG
+		if debug_mode:
+			# await get_tree().create_timer(0.01).timeout
+			astar_graph.queue_redraw()
 
 		var lowest_cost_node = null
 		var lowest_cost = INF
@@ -75,12 +98,13 @@ func astar(current_node: Vector2i, target_node: Vector2i) -> Array:
 			calculating_astar = false
 			return _path
 
-		# #DEBUG
-		astar_graph.astar_on_going.append(astar_graph.tmhelper.to_world_position(lowest_cost_node.node))
-		# print("parent cost: ", lowest_cost_node.parent.cost if lowest_cost_node.parent else 0)
-		# print("cost: ", lowest_cost_node.cost - lowest_cost_node.parent.cost if lowest_cost_node.parent else lowest_cost_node.cost)
-		# print("heuristic: ", node_heuristic(lowest_cost_node, AstarAINode.new(target_node, null, 0)))
-		# print("total: ", lowest_cost_node.cost + node_heuristic(lowest_cost_node, AstarAINode.new(target_node, null, 0)), "\n")
+		#DEBUG
+		if debug_mode:
+			astar_graph.astar_on_going.append(astar_graph.tmhelper.to_world_position(lowest_cost_node.node))
+			# print("parent cost: ", lowest_cost_node.parent.cost if lowest_cost_node.parent else 0)
+			# print("cost: ", lowest_cost_node.cost - lowest_cost_node.parent.cost if lowest_cost_node.parent else lowest_cost_node.cost)
+			# print("heuristic: ", node_heuristic(lowest_cost_node, AstarAINode.new(target_node, null, 0)))
+			# print("total: ", lowest_cost_node.cost + node_heuristic(lowest_cost_node, AstarAINode.new(target_node, null, 0)), "\n")
 
 		var neighbors = get_neighbors(lowest_cost_node.node, current_node, target_node)
 		for neighbor in neighbors:
@@ -144,11 +168,16 @@ func node_cost(from: AstarAINode, to: AstarAINode) -> float:
 	var movement_cost = 0
 	for edge in astar_nodes[from.node]:
 		if edge.to == to.node:
-			movement_cost = speed_cost(edge)
-			movement_cost = reliavility_cost(edge, movement_cost)
+			movement_cost = movement_cost(edge)
 			break
 		
 	return movement_cost + parent_cost
+
+func movement_cost(edge: Edge) -> float:
+	var cost = 0
+	cost = speed_cost(edge)
+	cost = reliavility_cost(edge, cost)
+	return cost
 
 func speed_cost(edge: Edge) -> float:
 	var dist = astar_graph.tmhelper.to_world_position(edge.from).distance_to(astar_graph.tmhelper.to_world_position(edge.to))
@@ -184,6 +213,9 @@ func build_path(start_node: AstarAINode, end_node: AstarAINode) -> Array:
 	var current = end_node
 	while current != start_node:
 		if current.parent:
+			if not astar_nodes.has(current.parent.node):
+				push_warning("Failed to build path | Creature: ", get_parent().get_parent().name)
+				return []
 			for edge in astar_nodes[current.parent.node]:
 				if edge.to == current.node:
 					_path.append(edge)
@@ -192,3 +224,10 @@ func build_path(start_node: AstarAINode, end_node: AstarAINode) -> Array:
 
 	_path.reverse()
 	return _path
+
+
+func get_total_cost_from_path(path: Array) -> float:
+	var total_cost = 0
+	for edge in path:
+		total_cost += movement_cost(edge)
+	return total_cost

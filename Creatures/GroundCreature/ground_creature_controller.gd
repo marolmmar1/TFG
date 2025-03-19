@@ -4,7 +4,7 @@ extends Node
 @export var damage_height: float = 550
 @export var default_stun_time: float = 1.5
 #DEBUG
-@export var debug := true
+@export var debug := false
 
 @onready var idle_state = $Idle
 @onready var idle_climb_state = $IdleClimb
@@ -168,5 +168,6 @@ func queue_change_state(state, vars):
 	if debug:
 		print(controller.name, " physics queue change state: ", state.name)
 
+	
 	queued_state = state
 	queued_vars = vars

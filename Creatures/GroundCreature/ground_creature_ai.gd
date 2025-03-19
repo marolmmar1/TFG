@@ -16,6 +16,7 @@ var astar_graph: Node2D
 var low_level_state_manager
 var controller
 var creature
+var calculating_action
 
 var path = []
 var path_index = 0
@@ -37,6 +38,7 @@ func init(_astar, _controller, _low_level_state_manager, _creature):
 	controller.on_change_state.connect(check_path_progress)
 
 	astar_ai.astar_graph = astar_graph
+	astar_ai.global_astar_manager = get_tree().root.get_node("AstarGlobalManager")
 
 	astar_ai.walk_speed = controller.find_child("Walk").speed
 	astar_ai.climb_speed = controller.find_child("Climb").speed
@@ -55,8 +57,9 @@ func init(_astar, _controller, _low_level_state_manager, _creature):
 
 #TODO pass to higher AI
 func tick():
-	# Calculate best action
-	calculate_action()
+	if not calculating_action:	
+		# Calculate best action
+		calculate_action()
 
 
 	# Check if we haven't stopped moving towards node
@@ -64,7 +67,7 @@ func tick():
 	if not path or path.is_empty():
 		return
 	
-	if abs(controller.position.distance_to(astar_graph.tmhelper.to_world_position(path[path_index].to)) - last_dist) < 0.01:
+	if abs(controller.position.distance_to(astar_graph.tmhelper.to_world_position(path[path_index].to)) - last_dist) < 0.1:
 		# Recalculate A*
 		calculate_astar()
 
@@ -74,10 +77,11 @@ func tick():
 
 func _process(delta):
 	#Check if we have an action then act
-	if not current_low_level_action:
+	if not current_low_level_action and not calculating_action:
 		calculate_action()
 
-	else:
+	elif current_low_level_action:
+		# print("Executing action: ", current_low_level_action.name, " creature ", creature.name)
 		current_low_level_action.execute(self)
 
 		# If we have a target check if we've reached it
@@ -102,7 +106,6 @@ func _process(delta):
 
 
 func calculate_astar():
-
 	if not target:
 		return
 	if not astar_graph.astar_nodes:
@@ -125,31 +128,45 @@ func calculate_astar():
 	if current_node == null or target_node == null:
 		return
 	if not astar_graph.astar_nodes.has(current_node):
-		push_warning("Current node not found in astar graph | Creature: ", get_parent().name)
+		# push_warning("Current node not found in astar graph | Creature: ", get_parent().name)
 		on_current_node_missing.emit(creature)
 		return
 
 	path = []
 	path_index = 0
 	last_dist = 100000
-	path = await astar_ai.astar(current_node, target_node) #DEBUG
+	path = await astar_ai.astar(current_node, target_node, true) #DEBUG
 
 
+# Async
 func calculate_action():
-	var action = low_level_ai.calculate_action(low_level_state_manager.get_state(creature))
+	calculating_action = true
+
+	var state = await low_level_state_manager.get_state(creature)
+	var action = low_level_ai.calculate_action(state)
 
 	if action is EatAction:
+		if not low_level_state_manager.get_item_node(action.food):
+			push_warning("Food not found | Creature: ", get_parent().get_parent().name, " | Action: ", action)
+			return
 		if current_low_level_action:
 			current_low_level_action.exit(self)
 		current_low_level_action = eat_action_controller
 		current_low_level_action.enter(self, low_level_state_manager.get_item_node(action.food))
 
 	elif action is FleeAction:
+		if not low_level_state_manager.get_item_node(action.enemy):
+			push_warning("Enemy not found | Creature: ", get_parent().get_parent().name, " | Action: ", action)
+			return
 		if current_low_level_action:
 			current_low_level_action.exit(self)
 		current_low_level_action = flee_action_controller
+		current_low_level_action.enter(self, low_level_state_manager.get_item_node(action.enemy))
 
 	elif action is AttackAction:
+		if not low_level_state_manager.get_item_node(action.enemy):
+			push_warning("Enemy not found | Creature: ", get_parent().get_parent().name, " | Action: ", action)
+			return
 		if current_low_level_action:
 			current_low_level_action.exit(self)
 		current_low_level_action = attack_action_controller
@@ -161,11 +178,15 @@ func calculate_action():
 		current_low_level_action = rest_action_controller
 		current_low_level_action.enter(self)
 
+	calculating_action = false
+
 func on_action_finished():
 	if current_low_level_action:
 		current_low_level_action.exit(self)
 	current_low_level_action = null
-	calculate_action()
+
+	if not calculating_action:
+		calculate_action()
 
 
 func check_path_progress(state = null):

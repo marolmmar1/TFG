@@ -4,17 +4,16 @@ extends Node2D
 @export var food_n: int = 3
 @export var stamina_n: int = 3
 @export var dist_n: int = 4
-@export var max_considerable_distance: float = 1000
+@export var max_considerable_distance: float = 2500
 @export var max_considerable_attack_power: float = 100
+@export var max_considerable_food_value: float = 100
 @export var food_value_n: int = 4
-@export var max_food_value: float = 100
 @export var threat_level_n: int = 4
 
 #DEBUG
 @export var debug := false
 
 var zone_props
-
 
 var item_node = {}
 
@@ -36,39 +35,65 @@ func get_state(creature) -> LowLevelState:
 
 	var state = LowLevelState.new(health, food, stamina)
 
-	for node in zone_props.get_children():
-		if not node.is_in_group("Food"):
+	for prop in zone_props.get_children():
+		if not is_instance_valid(prop):
+			continue
+		if not prop.is_in_group("Food"):
 			continue
 
 		#DEBUG
-		items.append(node)
+		items.append(prop)
 
-		var dist = remap_and_quantize_value(creature.global_position.distance_to(node.global_position), 0, max_considerable_distance, 0, dist_n)
-		var food_value = remap_and_quantize_value(node.food_value, 0, max_food_value, 0, food_value_n)
+		var creature_node = creature.ai.astar_graph.tmhelper.to_local_position(creature.global_position)
+		var prop_node = creature.ai.astar_graph.tmhelper.to_local_position(prop.global_position)
+
+		var path = await creature.ai.astar_ai.astar(creature_node, prop_node)
+		var cost = creature.ai.astar_ai.get_total_cost_from_path(path)
+		
+		# Need to repeat the checks due to the yield
+		if not is_instance_valid(prop):
+			continue
+
+		var dist = remap_and_quantize_value(cost, 0, max_considerable_distance, 0, dist_n)
+
+		var food_value = remap_and_quantize_value(prop.food_value, 0, max_considerable_food_value, 0, food_value_n)
 
 		var food_item = LowLevelState.Food.new(dist, food_value)
-		item_node[food_item] = node
+		item_node[food_item] = prop
 	
 		state.visible_items.append(food_item)
 
-	for node in zone_props.get_children():
-		if not node.is_in_group("Creature"):
+	for prop in zone_props.get_children():
+		if not is_instance_valid(prop):
+			continue
+		if not prop.is_in_group("Creature"):
 			continue
 
-		if node == creature:
+		if prop == creature:
 			continue
 
 		#DEBUG
-		items.append(node)
+		items.append(prop)
 
-		var dist = remap_and_quantize_value(creature.global_position.distance_to(node.global_position), 0, max_considerable_distance, 0, dist_n)
+		var creature_node = creature.ai.astar_graph.tmhelper.to_local_position(creature.global_position)
+		var prop_node = creature.ai.astar_graph.tmhelper.to_local_position(prop.global_position)
+
+		var path = await creature.ai.astar_ai.astar(creature_node, prop_node)
+		var cost = creature.ai.astar_ai.get_total_cost_from_path(path)
+		
+		# Need to repeat the checks due to the yield
+		if not is_instance_valid(prop):
+			continue
+
+		var dist = remap_and_quantize_value(cost, 0, max_considerable_distance, 0, dist_n)
+
 		#TODO how to calculate food value for creatures?
-		var food_value = remap_and_quantize_value(0, 0, max_food_value, 0, food_value_n)
+		var food_value = remap_and_quantize_value(0, 0, max_considerable_food_value, 0, food_value_n)
 		# Threat level = health * attack power
-		var threat_level = remap_and_quantize_value(node.data.health * node.data.attack_power, 0, node.data.max_health * max_considerable_attack_power, 0, threat_level_n)
+		var threat_level = remap_and_quantize_value(prop.data.health * prop.data.attack_power, 0, creature.data.max_health * max_considerable_attack_power, 0, threat_level_n)
 
 		var creature_item = LowLevelState.OtherCreature.new(dist, food_value, threat_level)
-		item_node[creature_item] = node
+		item_node[creature_item] = prop
 
 		state.visible_items.append(creature_item)
 
@@ -85,6 +110,7 @@ func get_state(creature) -> LowLevelState:
 
 	return state
 
+
 func remap_and_quantize_value(value, old_min, old_max, new_min, new_max):
 	var v = value
 	if value > old_max:
@@ -98,6 +124,8 @@ func remap_and_quantize_value(value, old_min, old_max, new_min, new_max):
 	return quantized_value
 	
 func get_item_node(item) -> Node2D:
+	if not is_instance_valid(item_node[item]):
+		return null
 	return item_node[item]
 
 #DEBUG

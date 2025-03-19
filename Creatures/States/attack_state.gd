@@ -50,7 +50,6 @@ func recoil(delta):
 		on_change_state.emit(idle_state, {})
 
 func check_conditions(vars) -> bool:
-	print((controller.check_is_on_floor() or controller.check_is_on_wall()))
 	if (controller.check_is_on_floor() or controller.check_is_on_wall()) and vars.has("target") and vars["target"] != null and vars["target"].global_position.distance_to(controller.global_position) <= attack_range:
 		return true
 

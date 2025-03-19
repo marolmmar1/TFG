@@ -64,7 +64,7 @@ func init(_creature, _controller, _food_depletion_rate, _health_starving_rate, _
 	stamina_regen_rate = stamina_regen_rate
 
 	health = max_health
-	food = max_food - 80 #DEBUG
+	food = max_food - 50 #DEBUG
 	stamina = max_stamina
 
 func _process(delta: float) -> void:

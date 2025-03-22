@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://cl7ie0bg68bvp"]
+[gd_scene load_steps=13 format=3 uid="uid://cl7ie0bg68bvp"]
 
 [ext_resource type="Script" path="res://Biome/biome.gd" id="1_hygwc"]
 [ext_resource type="PackedScene" uid="uid://bqhyx5f8nye3i" path="res://Biome/Zones/Zone_1.tscn" id="2_afxj5"]
@@ -11,6 +11,7 @@
 [ext_resource type="PackedScene" uid="uid://c7civldwc44mq" path="res://Biome/Zones/Zone_8.tscn" id="9_s307o"]
 [ext_resource type="PackedScene" uid="uid://crdvli7pppsk8" path="res://Biome/Zones/Zone_9.tscn" id="10_ptv67"]
 [ext_resource type="PackedScene" uid="uid://rrv1rdvls85b" path="res://Biome/Zones/Zone_10.tscn" id="11_wpfwo"]
+[ext_resource type="PackedScene" uid="uid://dkismmd0t6pni" path="res://HighLevelState/high_level_state_manager.tscn" id="12_nrkgk"]
 
 [node name="Main" type="Node2D"]
 
@@ -45,3 +46,5 @@ position = Vector2(-74.8566, 639.634)
 
 [node name="Zone_10" parent="Biome/Zones" instance=ExtResource("11_wpfwo")]
 position = Vector2(-74.8566, 639.634)
+
+[node name="HighLevelStateManager" parent="Biome" instance=ExtResource("12_nrkgk")]

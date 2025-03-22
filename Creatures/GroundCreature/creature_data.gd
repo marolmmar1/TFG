@@ -13,6 +13,7 @@ var max_stamina: float = 100
 var stamina: float
 var attack_power: float
 var memory: Dictionary
+#{zone: zone_value, "zones":[zone, ..., zone], "edges":[[zone,zone],...,[zone,zone]]]} 
 var current_zone: ZoneClass
 
 signal Death()
@@ -27,8 +28,7 @@ func spawn(_type: CreatureType,_max_health: int, _max_stamina: int, _max_hunger:
 	food=_max_hunger
 	attack_power=_attack_power
 	current_zone=_current_zone
-	memory = {"zones": [current_zone], "edges": []}
-	memory[current_zone]= current_zone._zone_value()
+	memory = {"zones": [current_zone], "edges": [], current_zone: current_zone._zone_value()}
 
 func _set_health(new_health):
 	if (new_health<=0):
@@ -63,3 +63,6 @@ func _update_memory(new_zone: ZoneClass, previous_zone: ZoneClass=null):
 		memory["edges"].append([new_zone,previous_zone])
 		memory[previous_zone] = previous_zone._zone_value()
 		memory[new_zone] = new_zone._zone_value()
+
+func _to_string():
+	return "Type: " + CreatureType.keys()[type] + "\nHealth: " + str(health) + "\nStamina: " + str(stamina) + "\nHunger: " + str(food) + "\nmemory: " + str(memory)

@@ -3,12 +3,15 @@ extends Node
 @onready var randomizer_timer: Timer = $Randomizer_timer
 @onready var data = $CreatureData
 @onready var AI = $AI
+@onready var high_level_state_manager:HighLevelStateManager = get_parent().get_parent().get_parent().get_parent().get_child(1)
 
 var randomizer_wait: bool
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	data.spawn(CreatureData.CreatureType.HERVIVORE, 100, 100, 100, 10, get_parent().get_parent())
+	#
+	var state = high_level_state_manager.get_state(data)
 	randomizer_wait = true
 	
 
@@ -31,8 +34,10 @@ func randomize_creature_state():
 	data._set_health(randi_range(0, data.max_health))
 	data._set_food(randi_range(0, data.max_food))
 	data._set_stamina(randi_range(0, data.max_stamina))
-	#print("Health: ", data.health, "\nFood: ",data.food, "\nStamina: ", data.stamina)
 
 
 func _on_randomizer_timer_timeout():
+	data._update_memory(data.current_zone)
+	var state = high_level_state_manager.get_state(data)
+	AI.get_child(0)._greedy(state)
 	randomizer_wait = true

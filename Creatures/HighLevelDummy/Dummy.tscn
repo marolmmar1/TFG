@@ -1,9 +1,10 @@
-[gd_scene load_steps=5 format=3 uid="uid://c3qi4mwehthfa"]
+[gd_scene load_steps=6 format=3 uid="uid://c3qi4mwehthfa"]
 
 [ext_resource type="Script" path="res://Creatures/HighLevelDummy/dummy.gd" id="1_qob16"]
 [ext_resource type="Texture2D" uid="uid://2l44j7m7c03b" path="res://icon.svg" id="1_vw8e1"]
 [ext_resource type="Script" path="res://Creatures/GroundCreature/creature_data.gd" id="3_v38b3"]
 [ext_resource type="Script" path="res://Creatures/HighLevelDummy/high_level_ai.gd" id="4_hqyok"]
+[ext_resource type="Script" path="res://Creatures/HighLevelDummy/dummy_ai.gd" id="4_mvkb5"]
 
 [node name="Dummy" type="CharacterBody2D"]
 script = ExtResource("1_qob16")
@@ -15,6 +16,7 @@ texture = ExtResource("1_vw8e1")
 script = ExtResource("3_v38b3")
 
 [node name="AI" type="Node2D" parent="."]
+script = ExtResource("4_mvkb5")
 
 [node name="HighLevelAI" type="Node" parent="AI"]
 script = ExtResource("4_hqyok")

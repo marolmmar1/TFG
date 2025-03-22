@@ -1,6 +1,7 @@
 extends Node2D
 
 @onready var zones = $Zones.get_children()
+
 var zone_graph = {"zones": [], "edges": []}
 
 func _ready():

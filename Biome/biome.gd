@@ -28,6 +28,11 @@ func _ready():
 				this_door.other_side = doors_by_zone[door_data]["doors"][zone]
 				doors_by_zone[door_data]["doors"][zone].other_side = this_door
 	#print(zone_graph)
+	var astar = HLAStar.new()
+	var path = astar.a_star(zone_graph, zone_graph["zones"][4], zone_graph["zones"][9])
+	print("Camino encontrado:\n")
+	for zone in path:
+		print(zone.name)
 	
 
 

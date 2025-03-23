@@ -16,7 +16,8 @@ var food_amount: int
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	pass
+	threat_level = randi_range(1, 3)
+	food_amount = randi_range(1, 3)
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.

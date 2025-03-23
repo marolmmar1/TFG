@@ -22,7 +22,6 @@ script = ExtResource("4_mvkb5")
 script = ExtResource("4_hqyok")
 
 [node name="Randomizer_timer" type="Timer" parent="."]
-wait_time = 5.0
 
 [connection signal="Death" from="CreatureData" to="." method="_on_creature_data_death"]
 [connection signal="timeout" from="Randomizer_timer" to="." method="_on_randomizer_timer_timeout"]

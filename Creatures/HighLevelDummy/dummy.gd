@@ -39,5 +39,5 @@ func randomize_creature_state():
 func _on_randomizer_timer_timeout():
 	data._update_memory(data.current_zone)
 	var state = high_level_state_manager.get_state(data)
-	AI.get_child(0)._greedy(state)
+	#AI.get_child(0)._greedy(state)print("calling astar")
 	randomizer_wait = true

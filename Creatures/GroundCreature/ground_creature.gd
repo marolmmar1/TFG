@@ -1,11 +1,23 @@
 extends CharacterBody2D
 
-@export_category("Main")
-@export var ai_time = 0.1
+@export_category("Movement")
+@export var ai_time = 1.0
 @export var raycasts_length = 25
 
-@onready var astar_graph: Node2D = $"../AStarGraph"
-@onready var low_level_state_manager: Node2D = $"../LowLevelStateManager"
+@export_category("Stats")
+@export var food_depletion_rate = 2.0
+@export var health_starving_rate = 5.0
+@export var health_regen_rate = 3.5
+@export var forced_rest_time = 5.0
+@export var stamina_regen_rate = 10.0
+@export var max_health = 100
+@export var max_food = 100
+@export var max_stamina = 100
+@export var attack_power = 40
+
+#HACK
+@onready var astar_graph: Node2D = $"../../AStarGraph"
+@onready var low_level_state_manager: Node2D = $"../../LowLevelStateManager"
 
 @onready var controller = $Controller
 @onready var data = $CreatureData
@@ -28,11 +40,15 @@ var target:
 		ai.target = value
 
 func _ready() -> void:
-	assert(astar_graph)
-	assert(low_level_state_manager)
+	assert(astar_graph, "AStarGraph not found")
+	assert(low_level_state_manager, "LowLevelStateManager not found")
 
-	controller.init(self)
+	controller.init(self, {
+		})
+	
 	ai.init(astar_graph, controller, low_level_state_manager, self)
+	data.init(self, controller, food_depletion_rate, health_starving_rate, health_regen_rate, forced_rest_time, stamina_regen_rate, max_health, max_food, max_stamina, attack_power)
+	data.on_death.connect(death)
 
 	down_raycast.target_position = Vector2(0, raycasts_length)
 	up_raycast.target_position = Vector2(0, -raycasts_length)
@@ -85,7 +101,6 @@ func get_wall_dir() -> Vector2: #TODO do something if both
 	return Vector2.ZERO
 
 func set_collision_for_tunnel(value: bool): # Disable or enable collision with tunnel gates while in or out of tunnel
-	set_collision_layer_value(2, value)
 	set_collision_mask_value(2, value)
 
 	down_raycast.set_collision_mask_value(2, value)
@@ -101,3 +116,12 @@ func set_collision_for_tunnel(value: bool): # Disable or enable collision with t
 func ai_tick():
 	await ai.tick() #DEBUG
 	ai_timer.start()
+
+func death():
+	ai_timer.timeout.disconnect(ai_tick)
+	ai.process_mode = Node.PROCESS_MODE_DISABLED
+	controller.process_mode = Node.PROCESS_MODE_DISABLED
+
+
+func _on_damage_taken(source, damage) -> void:
+	data.health -= damage

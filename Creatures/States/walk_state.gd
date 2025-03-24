@@ -2,6 +2,7 @@ extends State
 
 @export var speed: float = 100.0
 @export var fix_speed: float = 5.0
+@export var stamina_cost_per_second: float = 0.5
 
 @onready var fall_state = $"../Fall"
 
@@ -19,6 +20,7 @@ func tick(delta):
 	controller.velocity.y = (target_node - controller.position).normalized().y * fix_speed
 
 	controller.move_and_slide()
+	controller.data.stamina -= delta * stamina_cost_per_second
 
 	if not controller.check_is_on_floor():
 		on_change_state.emit(fall_state, {})

@@ -11,6 +11,8 @@ func enter(vars):
 
 func tick(delta):
 	time += delta
+	
+	controller.data.stamina += delta * controller.stamina_regen_rate
 
 	if time > stun_time:
 		locked = false

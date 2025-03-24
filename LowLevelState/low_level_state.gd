@@ -9,6 +9,9 @@ class Food:
         dist = _dist
         foodValue = _food_value
 
+    func _to_string():
+        return "Food | dist: " + str(dist) + ", foodValue: " + str(foodValue)
+
 class OtherCreature:
     var dist: int
     var food_value: int
@@ -18,6 +21,9 @@ class OtherCreature:
         dist = _dist
         food_value = _foodValue
         threat_level = _threat_level
+
+    func _to_string():
+        return "Other Creature | dist: " + str(dist) + ", foodValue: " + str(food_value) + ", threat_level: " + str(threat_level)
 
 var health: int
 var food: int

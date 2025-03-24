@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://26qyq65ugswv"]
+
+[ext_resource type="Script" path="res://Global/astar_global_manager.gd" id="1_u4n6f"]
+
+[node name="AstarGlobalManager" type="Node"]
+script = ExtResource("1_u4n6f")

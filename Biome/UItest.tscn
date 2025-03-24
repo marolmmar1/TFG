@@ -1,121 +1,19 @@
-[gd_scene load_steps=9 format=3 uid="uid://bs0bnq6ss2smj"]
+[gd_scene load_steps=3 format=3 uid="uid://bs0bnq6ss2smj"]
 
+<<<<<<< HEAD:Biome/UItest.tscn
 [ext_resource type="Script" path="res://UI/health_bar.gd" id="1_3g6ad"]
 [ext_resource type="PackedScene" uid="uid://bqhyx5f8nye3i" path="res://Biome/Zones/Zone_1.tscn" id="2_ckmt1"]
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_nav2s"]
-bg_color = Color(0, 0, 0, 1)
-corner_radius_top_left = 5
-corner_radius_top_right = 5
-corner_radius_bottom_right = 5
-corner_radius_bottom_left = 5
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fxvu5"]
-bg_color = Color(1, 0, 0.0166664, 1)
-corner_radius_top_left = 5
-corner_radius_top_right = 5
-corner_radius_bottom_right = 5
-corner_radius_bottom_left = 5
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_m81rv"]
-bg_color = Color(0, 0, 0, 1)
-corner_radius_top_left = 5
-corner_radius_top_right = 5
-corner_radius_bottom_right = 5
-corner_radius_bottom_left = 5
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_00b0s"]
-bg_color = Color(0, 0.0499997, 1, 1)
-corner_radius_top_left = 5
-corner_radius_top_right = 5
-corner_radius_bottom_right = 5
-corner_radius_bottom_left = 5
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1e1wg"]
-bg_color = Color(0, 0, 0, 1)
-corner_radius_top_left = 5
-corner_radius_top_right = 5
-corner_radius_bottom_right = 5
-corner_radius_bottom_left = 5
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ih3yc"]
-bg_color = Color(1, 0.816667, 0, 1)
-corner_radius_top_left = 5
-corner_radius_top_right = 5
-corner_radius_bottom_right = 5
-corner_radius_bottom_left = 5
+=======
+[ext_resource type="PackedScene" uid="uid://7dl7i5dhd4uy" path="res://Creatures/UI/StatBars.tscn" id="1_fvxth"]
+[ext_resource type="PackedScene" uid="uid://bqhyx5f8nye3i" path="res://Zones/Zone1.tscn" id="2_ckmt1"]
+>>>>>>> origin/iter-2-ale:Zones/UItest.tscn
 
 [node name="Main" type="Node"]
 
 [node name="Ui" type="CanvasLayer" parent="."]
 
-[node name="StatBars" type="Control" parent="Ui" node_paths=PackedStringArray("character")]
-layout_mode = 3
-anchors_preset = 0
-size_flags_vertical = 4
-script = ExtResource("1_3g6ad")
-character = NodePath("../../Zone1/Creature")
-
-[node name="HealthBar" type="ProgressBar" parent="Ui/StatBars"]
-z_index = 1
-layout_mode = 2
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -26.0
-offset_top = -47.0
-offset_right = 26.0
-offset_bottom = -42.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_styles/background = SubResource("StyleBoxFlat_nav2s")
-theme_override_styles/fill = SubResource("StyleBoxFlat_fxvu5")
-value = 79.97
-show_percentage = false
-
-[node name="FoodBar" type="ProgressBar" parent="Ui/StatBars"]
-z_index = 1
-layout_mode = 2
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -25.0
-offset_top = -39.0
-offset_right = 25.0
-offset_bottom = -34.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_styles/background = SubResource("StyleBoxFlat_m81rv")
-theme_override_styles/fill = SubResource("StyleBoxFlat_00b0s")
-value = 80.0
-show_percentage = false
-
-[node name="StaminaBar" type="ProgressBar" parent="Ui/StatBars"]
-z_index = 1
-layout_mode = 2
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -25.0
-offset_top = -31.0
-offset_right = 25.0
-offset_bottom = -26.0
-grow_horizontal = 2
-grow_vertical = 2
-theme_override_styles/background = SubResource("StyleBoxFlat_1e1wg")
-theme_override_styles/fill = SubResource("StyleBoxFlat_ih3yc")
-value = 79.97
-show_percentage = false
-
-[node name="Timer" type="Timer" parent="Ui/StatBars"]
-wait_time = 0.4
-one_shot = true
+[node name="StatBars" parent="Ui" instance=ExtResource("1_fvxth")]
 
 [node name="Zone1" parent="." instance=ExtResource("2_ckmt1")]
-
-[connection signal="timeout" from="Ui/StatBars/Timer" to="Ui/StatBars/HealthBar" method="_on_timer_timeout"]
 
 [editable path="Zone1"]

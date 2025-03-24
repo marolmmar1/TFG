@@ -15,6 +15,18 @@ run/main_scene="res://Develop/Bioma.tscn"
 config/features=PackedStringArray("4.3", "Forward Plus")
 config/icon="res://icon.svg"
 
+[autoload]
+
+AstarGlobalManager="*res://Global/AstarGlobalManager.tscn"
+
+[debug]
+
+gdscript/warnings/unused_variable=0
+gdscript/warnings/unused_parameter=0
+gdscript/warnings/unused_signal=0
+gdscript/warnings/shadowed_variable=0
+gdscript/warnings/shadowed_global_identifier=0
+
 [display]
 
 window/size/viewport_width=1200

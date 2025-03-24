@@ -9,10 +9,10 @@ func calculate_action(state: LowLevelState) -> LowLevelAction:
 	if get_highest_tl_in_range(state, 0) >= 3:
 		return FleeAction.new(get_highest_threat_in_range(state, 0))
 
-	if get_highest_tl_in_range(state, 0) <= 2 and state.health >= 2:
+	if get_highest_tl_in_range(state, 0) != 0 and get_highest_tl_in_range(state, 0) <= 2 and state.health >= 2:
 		return AttackAction.new(get_highest_threat_in_range(state, 0))
 
-	if state.food == 0 and get_closest_food(state) and not get_highest_tl_in_range(state, 0):
+	if state.food <= 1 and get_closest_food(state) and not get_highest_tl_in_range(state, 0):
 		return EatAction.new(get_closest_food(state))
 
 	if state.food > 0 and state.stamina == 0 and not get_highest_tl_in_range(state, 0):

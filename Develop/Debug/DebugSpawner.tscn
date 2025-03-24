@@ -1,0 +1,56 @@
+[gd_scene load_steps=4 format=3 uid="uid://7obkv5q5ymj5"]
+
+[ext_resource type="Script" path="res://Develop/Debug/debug_spawner.gd" id="1_ri07x"]
+[ext_resource type="PackedScene" uid="uid://dahmo14t7kdaw" path="res://Creatures/GroundCreature/GroundCreature.tscn" id="2_xcnp3"]
+[ext_resource type="PackedScene" uid="uid://dn72d1sk48sje" path="res://Props/Berry/Berry.tscn" id="3_6415k"]
+
+[node name="DebugSpawner" type="Node2D"]
+script = ExtResource("1_ri07x")
+creature_scene = ExtResource("2_xcnp3")
+berry_scene = ExtResource("3_6415k")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="Control" type="Control" parent="CanvasLayer"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Button" type="Button" parent="CanvasLayer/Control"]
+layout_mode = 0
+offset_right = 75.0
+offset_bottom = 59.0
+
+[node name="Label" type="Label" parent="CanvasLayer/Control/Button"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "Spawn creature"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2
+
+[node name="Button2" type="Button" parent="CanvasLayer/Control"]
+layout_mode = 0
+offset_left = 88.0
+offset_right = 180.0
+offset_bottom = 62.0
+
+[node name="Label2" type="Label" parent="CanvasLayer/Control/Button2"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "Spawn berry"
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 2

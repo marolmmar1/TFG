@@ -4,7 +4,7 @@
 [ext_resource type="Script" path="res://AStarGraph/tile_map_helper.gd" id="2_4l024"]
 [ext_resource type="Script" path="res://AStarGraph/nodes_helper.gd" id="3_txqkn"]
 [ext_resource type="Script" path="res://AStarGraph/link_helper.gd" id="4_sgoau"]
-[ext_resource type="Script" path="res://AStarGraph/creature_node_monitor.gd" id="5_es240"]
+[ext_resource type="Script" path="res://AStarGraph/item_node_monitor.gd" id="5_pi6ph"]
 
 [node name="AStarGraph" type="Node2D"]
 script = ExtResource("1_k4lbb")
@@ -21,5 +21,5 @@ script = ExtResource("4_sgoau")
 [node name="RayCast2D" type="RayCast2D" parent="."]
 collision_mask = 3
 
-[node name="CreatureNodeMonitor" type="Node" parent="."]
-script = ExtResource("5_es240")
+[node name="ItemNodeMonitor" type="Node" parent="."]
+script = ExtResource("5_pi6ph")

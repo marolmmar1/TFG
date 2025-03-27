@@ -1,18 +1,15 @@
 extends Node2D
 
-@onready var zones = $Zones.get_children()
+@onready var zones
 
 var zone_graph = {"zones": [], "edges": []}
 
 func _ready():
+	zones = get_children().filter(func(x): return x is ZoneClass)
 	zone_graph["zones"] = zones
 	#Dict where the {zone_id: {"zone": zone, "doors": {"zone_id it ponts to": door itself}}}
 	var doors_by_zone = {}
 	for zone in zones:
-		if zone.name=="Zone_2":	
-			zone.visible = true
-		else:
-			zone.visible = false
 		var zone_id = zone.name.rsplit("_", false, 2)[1]
 		doors_by_zone[zone_id]={}
 		doors_by_zone[zone_id]["zone"]=zone
@@ -27,15 +24,10 @@ func _ready():
 				zone_graph["edges"].append([doors_by_zone[door_data]["zone"], doors_by_zone[zone]["zone"]])
 				this_door.other_side = doors_by_zone[door_data]["doors"][zone]
 				doors_by_zone[door_data]["doors"][zone].other_side = this_door
-	#print(zone_graph)
 	var astar = HLAStar.new()
-	var path = astar.a_star(zone_graph, zone_graph["zones"][4], zone_graph["zones"][9])
-	print("Camino encontrado:\n")
-	for zone in path:
-		print(zone.name)
+	var path = astar.a_star(zone_graph, zone_graph["zones"][0], zone_graph["zones"][1])
 	
-
-
+	
 func _process(delta):
 	pass
 

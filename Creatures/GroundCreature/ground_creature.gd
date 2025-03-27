@@ -47,7 +47,7 @@ func _ready() -> void:
 		})
 	
 	ai.init(astar_graph, controller, low_level_state_manager, self)
-	data.init(self, controller, food_depletion_rate, health_starving_rate, health_regen_rate, forced_rest_time, stamina_regen_rate, max_health, max_food, max_stamina, attack_power)
+	data.init(self, controller, food_depletion_rate, health_starving_rate, health_regen_rate, forced_rest_time, stamina_regen_rate, max_health, max_food, max_stamina, attack_power, get_parent().get_parent())
 	data.on_death.connect(death)
 
 	down_raycast.target_position = Vector2(0, raycasts_length)

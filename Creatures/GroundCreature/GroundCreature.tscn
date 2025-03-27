@@ -1,4 +1,4 @@
-[gd_scene load_steps=28 format=3 uid="uid://dahmo14t7kdaw"]
+[gd_scene load_steps=29 format=3 uid="uid://dahmo14t7kdaw"]
 
 [ext_resource type="Script" path="res://Creatures/GroundCreature/ground_creature.gd" id="1_8im78"]
 [ext_resource type="Texture2D" uid="uid://da130laa21jq" path="res://Assets/enemyDummy.png" id="2_n6fpg"]
@@ -26,6 +26,7 @@
 [ext_resource type="Script" path="res://Creatures/LowLevelActions/flee_action_controller.gd" id="19_l22s6"]
 [ext_resource type="Script" path="res://Creatures/LowLevelActions/attack_action_controller.gd" id="20_fw5rv"]
 [ext_resource type="Script" path="res://Creatures/LowLevelActions/rest_action_controller.gd" id="21_k5vsu"]
+[ext_resource type="Script" path="res://Creatures/HighLevelDummy/high_level_ai.gd" id="27_mlts5"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_2owua"]
 radius = 13.4509
@@ -158,6 +159,9 @@ script = ExtResource("20_fw5rv")
 
 [node name="RestAction" type="Node" parent="AI/LowLevelAI"]
 script = ExtResource("21_k5vsu")
+
+[node name="HighLevelAI" type="Node" parent="AI"]
+script = ExtResource("27_mlts5")
 
 [node name="AITimer" type="Timer" parent="."]
 one_shot = true

@@ -1,4 +1,5 @@
 extends Node
+class_name LeaveAction
 
 # @onready var doors = $Doors.get_children()
 @onready var zone_props = $ZoneProps #HACK not sure
@@ -6,16 +7,14 @@ extends Node
 @onready var astar_graph: Node2D = $"AStarGraph"
 @onready var low_level_state_manager: Node2D = $"LowLevelStateManager"
 
-signal on_creature_enter(creature)
 
-func _ready():
-	astar_graph.init(tilemap, self)
-	low_level_state_manager.init(self)
+var target_door: Door
+
+#assings the target door. Destination must be adjacent to current zone
+func choose_target(current_zone: ZoneClass, destination: ZoneClass):
+	for door in current_zone.doors:
+		if door.other_side.get_parent().get_parent().get_parent() == destination:
+			target_door = door
 
 
-func get_all_creatures():
-	return zone_props.get_children().filter(func(x): return x.is_in_group("Creature"))
 
-
-func _process(delta):
-	pass

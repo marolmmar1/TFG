@@ -65,6 +65,7 @@ func init(_astar, _controller, _low_level_state_manager, _creature):
 func tick():
 	var state = high_level_state_manager.get_state(creature.data)
 	high_level_ai._greedy(state)
+	
 	if not calculating_action:	
 		# Calculate best action
 		calculate_action()

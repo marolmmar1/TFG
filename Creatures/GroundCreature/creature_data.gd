@@ -24,6 +24,8 @@ var stamina_regen_rate
 
 var dead := false
 
+signal Death
+
 var health: float:
 	get:
 		return health
@@ -96,7 +98,6 @@ func spawn(_type: CreatureType,_max_health: int, _max_stamina: int, _max_hunger:
 	current_zone=_current_zone
 	memory = {"zones": [current_zone], "edges": [], current_zone: current_zone._zone_value()}
 
-<<<<<<< HEAD
 func _set_health(new_health):
 	if (new_health<=0):
 		Death.emit()
@@ -133,5 +134,3 @@ func _update_memory(new_zone: ZoneClass, previous_zone: ZoneClass=null):
 
 func _to_string():
 	return "Type: " + CreatureType.keys()[type] + "\nHealth: " + str(health) + "\nStamina: " + str(stamina) + "\nHunger: " + str(food) + "\nmemory: " + str(memory)
-=======
->>>>>>> origin/iter-2-ale

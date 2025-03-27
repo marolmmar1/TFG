@@ -1,12 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://bs0bnq6ss2smj"]
 
-<<<<<<< HEAD:Biome/UItest.tscn
-[ext_resource type="Script" path="res://UI/health_bar.gd" id="1_3g6ad"]
-[ext_resource type="PackedScene" uid="uid://bqhyx5f8nye3i" path="res://Biome/Zones/Zone_1.tscn" id="2_ckmt1"]
-=======
 [ext_resource type="PackedScene" uid="uid://7dl7i5dhd4uy" path="res://Creatures/UI/StatBars.tscn" id="1_fvxth"]
-[ext_resource type="PackedScene" uid="uid://bqhyx5f8nye3i" path="res://Zones/Zone1.tscn" id="2_ckmt1"]
->>>>>>> origin/iter-2-ale:Zones/UItest.tscn
+[ext_resource type="PackedScene" uid="uid://bqhyx5f8nye3i" path="res://Biome/Zone1.tscn" id="2_ckmt1"]
 
 [node name="Main" type="Node"]
 

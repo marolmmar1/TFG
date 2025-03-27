@@ -1,53 +1,25 @@
-[gd_scene load_steps=13 format=3 uid="uid://cl7ie0bg68bvp"]
+[gd_scene load_steps=4 format=3 uid="uid://cl7ie0bg68bvp"]
 
-[ext_resource type="Script" path="res://Biome/biome.gd" id="1_hygwc"]
-[ext_resource type="PackedScene" uid="uid://bqhyx5f8nye3i" path="res://Biome/Zones/Zone_1.tscn" id="2_afxj5"]
-[ext_resource type="PackedScene" uid="uid://w6dvag162277" path="res://Biome/Zones/Zone_2.tscn" id="3_760hj"]
-[ext_resource type="PackedScene" uid="uid://df8rkwygdi6mu" path="res://Biome/Zones/Zone_3.tscn" id="4_ayjgl"]
-[ext_resource type="PackedScene" uid="uid://dmbwbx4dsqoi2" path="res://Biome/Zones/Zone_4.tscn" id="5_t6jwq"]
-[ext_resource type="PackedScene" uid="uid://bqjknxdw02qo6" path="res://Biome/Zones/Zone_5.tscn" id="6_fnofk"]
-[ext_resource type="PackedScene" uid="uid://2b4j4yr2ibps" path="res://Biome/Zones/Zone_6.tscn" id="7_ycv3b"]
-[ext_resource type="PackedScene" uid="uid://c3vsitlkvcpd3" path="res://Biome/Zones/Zone_7.tscn" id="8_7cvdx"]
-[ext_resource type="PackedScene" uid="uid://c7civldwc44mq" path="res://Biome/Zones/Zone_8.tscn" id="9_s307o"]
-[ext_resource type="PackedScene" uid="uid://crdvli7pppsk8" path="res://Biome/Zones/Zone_9.tscn" id="10_ptv67"]
-[ext_resource type="PackedScene" uid="uid://rrv1rdvls85b" path="res://Biome/Zones/Zone_10.tscn" id="11_wpfwo"]
-[ext_resource type="PackedScene" uid="uid://dkismmd0t6pni" path="res://HighLevelState/high_level_state_manager.tscn" id="12_nrkgk"]
+[ext_resource type="Script" path="res://Zones/biome.gd" id="1_hygwc"]
+[ext_resource type="PackedScene" uid="uid://w6dvag162277" path="res://Biome/Zone2.tscn" id="1_y11xm"]
+[ext_resource type="PackedScene" uid="uid://bqhyx5f8nye3i" path="res://Biome/Zone1.tscn" id="2_2nkom"]
 
 [node name="Main" type="Node2D"]
 
 [node name="Biome" type="Node2D" parent="."]
 script = ExtResource("1_hygwc")
 
-[node name="Zones" type="Node2D" parent="Biome"]
+[node name="Zone1" parent="Biome" instance=ExtResource("2_2nkom")]
 
-[node name="Zone_1" parent="Biome/Zones" instance=ExtResource("2_afxj5")]
-position = Vector2(-2832, -292)
+[node name="Door" parent="Biome/Zone1/Doors" index="0" node_paths=PackedStringArray("other_side")]
+other_side = NodePath("../../../Zone2/Doors/Door")
 
-[node name="Zone_2" parent="Biome/Zones" instance=ExtResource("3_760hj")]
-position = Vector2(-1587, -311)
+[node name="Zone2" parent="Biome" instance=ExtResource("1_y11xm")]
 
-[node name="Zone_3" parent="Biome/Zones" instance=ExtResource("4_ayjgl")]
-position = Vector2(-369, -292)
+[node name="Door" parent="Biome/Zone2/Doors" index="0" node_paths=PackedStringArray("other_side")]
+other_side = NodePath("../../../Zone1/Doors/Door")
 
-[node name="Zone_4" parent="Biome/Zones" instance=ExtResource("5_t6jwq")]
-position = Vector2(-431, -1240)
-
-[node name="Zone_5" parent="Biome/Zones" instance=ExtResource("6_fnofk")]
-position = Vector2(958, -1235)
-
-[node name="Zone_6" parent="Biome/Zones" instance=ExtResource("7_ycv3b")]
-position = Vector2(914, -274)
-
-[node name="Zone_7" parent="Biome/Zones" instance=ExtResource("8_7cvdx")]
-position = Vector2(2365, -1218)
-
-[node name="Zone_8" parent="Biome/Zones" instance=ExtResource("9_s307o")]
-position = Vector2(2300, -229)
-
-[node name="Zone_9" parent="Biome/Zones" instance=ExtResource("10_ptv67")]
-position = Vector2(929, 713)
-
-[node name="Zone_10" parent="Biome/Zones" instance=ExtResource("11_wpfwo")]
-position = Vector2(-425, 750)
-
-[node name="HighLevelStateManager" parent="Biome" instance=ExtResource("12_nrkgk")]
+[editable path="Biome/Zone1"]
+[editable path="Biome/Zone1/Doors/Door"]
+[editable path="Biome/Zone2"]
+[editable path="Biome/Zone2/Doors/Door"]

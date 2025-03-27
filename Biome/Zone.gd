@@ -1,4 +1,6 @@
-extends Node
+extends Node2D
+
+class_name Zone
 
 # @onready var doors = $Doors.get_children()
 @onready var zone_props = $ZoneProps #HACK not sure

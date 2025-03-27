@@ -1,7 +1,7 @@
 [gd_scene load_steps=10 format=3 uid="uid://ccf6t4ko0ds42"]
 
-[ext_resource type="TileSet" uid="uid://b4u5e7btrs2ms" path="res://Zones/TestTileset.tres" id="1_chf4t"]
-[ext_resource type="Script" path="res://Zones/Zone.gd" id="1_jc1mc"]
+[ext_resource type="TileSet" uid="uid://b4u5e7btrs2ms" path="res://Biome/TestTileset.tres" id="1_chf4t"]
+[ext_resource type="Script" path="res://Biome/Zone.gd" id="1_jc1mc"]
 [ext_resource type="PackedScene" uid="uid://ci6e23n678kxs" path="res://AStarGraph/AStar.tscn" id="2_hqvih"]
 [ext_resource type="PackedScene" uid="uid://dv4c5jsopxrlm" path="res://Biome/Doors/Door.tscn" id="2_tmoyk"]
 [ext_resource type="Script" path="res://LowLevelState/low_level_state_manager.gd" id="3_djki7"]
@@ -27,8 +27,8 @@ layer_0/tile_data = PackedInt32Array(1245186, 262149, 2, 1245187, 262149, 2, 124
 
 [node name="Doors" type="Node2D" parent="Biome/Zone/TileMap"]
 
-[node name="Door" parent="Biome/Zone/TileMap/Doors" instance=ExtResource("2_tmoyk")]
-position = Vector2(12, 88)
+[node name="Door2" parent="Biome/Zone/TileMap/Doors" instance=ExtResource("2_tmoyk")]
+position = Vector2(12, 87.75)
 
 [node name="AStarGraph" parent="Biome/Zone" instance=ExtResource("2_hqvih")]
 horizontal_jump_dist = 3

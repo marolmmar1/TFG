@@ -53,7 +53,7 @@ var stamina: float:
 
 signal on_death()
 
-func init(_creature, _controller, _food_depletion_rate, _health_starving_rate, _health_regen_rate, _forced_rest_time, _stamina_regen_rate, _max_health, _max_food, _max_stamina, _attack_power):
+func init(_creature, _controller, _food_depletion_rate, _health_starving_rate, _health_regen_rate, _forced_rest_time, _stamina_regen_rate, _max_health, _max_food, _max_stamina, _attack_power, _current_zone: ZoneClass):
 	creature = _creature
 	controller = _controller
 	
@@ -70,6 +70,8 @@ func init(_creature, _controller, _food_depletion_rate, _health_starving_rate, _
 	health = max_health
 	food = max_food - 50 #DEBUG
 	stamina = max_stamina
+	current_zone=_current_zone
+	memory = {"zones": [current_zone], "edges": [], current_zone: current_zone._zone_value()}
 
 func _process(delta: float) -> void:
 	food -= delta * food_depletion_rate

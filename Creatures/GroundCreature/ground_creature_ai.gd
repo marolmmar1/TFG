@@ -7,10 +7,13 @@ extends Node2D
 
 @onready var astar_ai = $AstarAI
 @onready var low_level_ai = $LowLevelAI
+@onready var high_level_ai = $HighLevelAI
 @onready var eat_action_controller = $LowLevelAI/EatAction
 @onready var flee_action_controller = $LowLevelAI/FleeAction
 @onready var attack_action_controller = $LowLevelAI/AttackAction
 @onready var rest_action_controller = $LowLevelAI/RestAction
+
+var high_level_state_manager:HighLevelStateManager
 
 var astar_graph: Node2D
 var low_level_state_manager
@@ -28,6 +31,9 @@ var current_low_level_action
 signal on_target_reached
 signal on_current_node_missing(creature)
 
+func _ready():
+
+	high_level_state_manager=get_parent().get_parent().get_parent().get_parent().get_node("HighLevelStateManager")
 
 func init(_astar, _controller, _low_level_state_manager, _creature):
 	self.astar_graph = _astar
@@ -57,6 +63,9 @@ func init(_astar, _controller, _low_level_state_manager, _creature):
 
 #TODO pass to higher AI
 func tick():
+	var state = high_level_state_manager.get_state(creature.data)
+	high_level_ai._greedy(state)
+	
 	if not calculating_action:	
 		# Calculate best action
 		calculate_action()

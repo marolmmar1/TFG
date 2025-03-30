@@ -2,8 +2,6 @@ extends Node
 
 var low_level_state_manager
 
-#TODO probably should detach further from the actual AI algorithm, greedy or otherwise
-# Also add an action as a parameter and make something with that
 func calculate_action(state: LowLevelState) -> LowLevelAction:
 
 	if get_highest_tl_in_range(state, 0) >= 3:

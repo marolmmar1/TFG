@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=3 uid="uid://cl7ie0bg68bvp"]
 
-[ext_resource type="Script" path="res://Zones/biome.gd" id="1_hygwc"]
+[ext_resource type="Script" path="res://Biome/biome.gd" id="1_hygwc"]
 [ext_resource type="PackedScene" uid="uid://w6dvag162277" path="res://Biome/Zone2.tscn" id="1_y11xm"]
 [ext_resource type="PackedScene" uid="uid://bqhyx5f8nye3i" path="res://Biome/Zone1.tscn" id="2_2nkom"]
 
@@ -11,15 +11,43 @@ script = ExtResource("1_hygwc")
 
 [node name="Zone1" parent="Biome" instance=ExtResource("2_2nkom")]
 
-[node name="Door" parent="Biome/Zone1/Doors" index="0" node_paths=PackedStringArray("other_side")]
-other_side = NodePath("../../../Zone2/Doors/Door")
+[node name="Door" parent="Biome/Zone1/TileMap/Doors" index="0"]
+_import_path = NodePath("")
+unique_name_in_owner = false
+process_mode = 0
+process_priority = 0
+process_physics_priority = 0
+process_thread_group = 0
+physics_interpolation_mode = 0
+auto_translate_mode = 0
+editor_description = ""
+script = null
+
+[node name="Doors#Door" parent="Biome/Zone1" index="5"]
+_import_path = NodePath("")
+unique_name_in_owner = false
+process_mode = 0
+process_priority = 0
+process_physics_priority = 0
+process_thread_group = 0
+physics_interpolation_mode = 0
+auto_translate_mode = 0
+editor_description = ""
+script = null
 
 [node name="Zone2" parent="Biome" instance=ExtResource("1_y11xm")]
 
-[node name="Door" parent="Biome/Zone2/Doors" index="0" node_paths=PackedStringArray("other_side")]
-other_side = NodePath("../../../Zone1/Doors/Door")
+[node name="Door" parent="Biome/Zone2/Doors" index="0"]
+_import_path = NodePath("")
+unique_name_in_owner = false
+process_mode = 0
+process_priority = 0
+process_physics_priority = 0
+process_thread_group = 0
+physics_interpolation_mode = 0
+auto_translate_mode = 0
+editor_description = ""
+script = null
 
 [editable path="Biome/Zone1"]
-[editable path="Biome/Zone1/Doors/Door"]
 [editable path="Biome/Zone2"]
-[editable path="Biome/Zone2/Doors/Door"]

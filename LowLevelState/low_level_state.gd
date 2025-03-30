@@ -3,14 +3,14 @@ class_name LowLevelState
 
 class Food:
     var dist: int
-    var foodValue: int
+    var food_value: int
 
     func _init(_dist: int, _food_value: int):
         dist = _dist
-        foodValue = _food_value
+        food_value = _food_value
 
     func _to_string():
-        return "Food | dist: " + str(dist) + ", foodValue: " + str(foodValue)
+        return "Food | dist: " + str(dist) + ", food_value: " + str(food_value)
 
 class OtherCreature:
     var dist: int

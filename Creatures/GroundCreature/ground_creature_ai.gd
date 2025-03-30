@@ -47,7 +47,7 @@ func init(_astar, _controller, _low_level_state_manager, _creature):
 	astar_ai.switch_crawl_walk_speed = controller.find_child("SwitchCrawlWalk").speed
 	astar_ai.switch_crawl_climb_speed = controller.find_child("SwitchCrawlClimb").speed
 
-	low_level_ai.low_level_state_manager = low_level_state_manager
+	low_level_ai.init(low_level_state_manager)
 
 	eat_action_controller.on_action_finished.connect(on_action_finished)
 	flee_action_controller.on_action_finished.connect(on_action_finished)

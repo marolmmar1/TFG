@@ -1,4 +1,4 @@
-[gd_scene load_steps=28 format=3 uid="uid://dahmo14t7kdaw"]
+[gd_scene load_steps=30 format=3 uid="uid://dahmo14t7kdaw"]
 
 [ext_resource type="Script" path="res://Creatures/GroundCreature/ground_creature.gd" id="1_8im78"]
 [ext_resource type="Texture2D" uid="uid://da130laa21jq" path="res://Assets/enemyDummy.png" id="2_n6fpg"]
@@ -21,11 +21,13 @@
 [ext_resource type="Script" path="res://Creatures/States/rest_state.gd" id="15_0ikpg"]
 [ext_resource type="Script" path="res://Creatures/GroundCreature/astar_ai.gd" id="15_moayh"]
 [ext_resource type="Script" path="res://Creatures/States/attack_state.gd" id="16_3np05"]
-[ext_resource type="Script" path="res://Creatures/GroundCreature/low_level_ai.gd" id="17_2iqnd"]
 [ext_resource type="Script" path="res://Creatures/LowLevelActions/eat_action_controller.gd" id="18_vqwlj"]
 [ext_resource type="Script" path="res://Creatures/LowLevelActions/flee_action_controller.gd" id="19_l22s6"]
 [ext_resource type="Script" path="res://Creatures/LowLevelActions/attack_action_controller.gd" id="20_fw5rv"]
 [ext_resource type="Script" path="res://Creatures/LowLevelActions/rest_action_controller.gd" id="21_k5vsu"]
+[ext_resource type="Script" path="res://Creatures/GroundCreature/LowLevelAIs/low_level_ai.gd" id="22_k0a8w"]
+[ext_resource type="Script" path="res://Creatures/GroundCreature/LowLevelAIs/low_level_greedy.gd" id="27_l5v3w"]
+[ext_resource type="Script" path="res://Creatures/GroundCreature/LowLevelAIs/low_level_genetic.gd" id="28_4wabx"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_2owua"]
 radius = 13.4509
@@ -145,7 +147,7 @@ script = ExtResource("13_nlyld")
 script = ExtResource("15_moayh")
 
 [node name="LowLevelAI" type="Node" parent="AI"]
-script = ExtResource("17_2iqnd")
+script = ExtResource("22_k0a8w")
 
 [node name="EatAction" type="Node" parent="AI/LowLevelAI"]
 script = ExtResource("18_vqwlj")
@@ -158,6 +160,12 @@ script = ExtResource("20_fw5rv")
 
 [node name="RestAction" type="Node" parent="AI/LowLevelAI"]
 script = ExtResource("21_k5vsu")
+
+[node name="Greedy" type="Node" parent="AI/LowLevelAI"]
+script = ExtResource("27_l5v3w")
+
+[node name="Genetic" type="Node" parent="AI/LowLevelAI"]
+script = ExtResource("28_4wabx")
 
 [node name="AITimer" type="Timer" parent="."]
 one_shot = true

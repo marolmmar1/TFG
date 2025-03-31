@@ -1,12 +1,10 @@
 extends Node
 
 var tilemap: TileMap
-var doors: Node2D
 @onready var _raycast: RayCast2D = $"../RayCast2D"
 
-func init(_tilemap, _doors):
+func init(_tilemap):
 	tilemap = _tilemap
-	doors = _doors
 
 func is_terrain(cell):
 
@@ -29,9 +27,9 @@ func is_adjacent_to_terrain(cell):
 			return true
 	return false
 
-func is_exit(cell: Vector2i) -> bool:
+func is_exit(cell: Vector2i, doors) -> bool:
 	var areas = get_areas_at_point(to_world_position(cell))
-	for i in doors.get_children():
+	for i in doors:
 		if i in areas:
 			return true
 		

@@ -12,6 +12,7 @@ extends Node2D
 @onready var flee_action_controller = $LowLevelAI/FleeAction
 @onready var attack_action_controller = $LowLevelAI/AttackAction
 @onready var rest_action_controller = $LowLevelAI/RestAction
+@onready var leave_action_controller = $LowLevelAI/LeaveAction
 
 var high_level_state_manager:HighLevelStateManager
 
@@ -19,7 +20,7 @@ var astar_graph: Node2D
 var low_level_state_manager
 var controller
 var creature
-var calculating_action
+var calculating_low_action
 
 var path = []
 var path_index = 0
@@ -27,6 +28,7 @@ var last_dist: float = 100000.0
 
 var target
 var current_low_level_action
+var current_high_level_action
 
 signal on_target_reached
 signal on_current_node_missing(creature)
@@ -64,11 +66,21 @@ func init(_astar, _controller, _low_level_state_manager, _creature):
 #TODO pass to higher AI
 func tick():
 	var state = high_level_state_manager.get_state(creature.data)
-	high_level_ai._greedy(state)
+	var action = high_level_ai._greedy(state)
+
+	if action:
+		if not current_high_level_action or not action.target_door == current_high_level_action.target_door:
+			var exit_node = astar_graph.get_exit_node(action.target_door)
+			if current_low_level_action:
+				current_low_level_action.exit(self)
+			current_low_level_action = leave_action_controller
+			current_low_level_action.enter(self, exit_node)
 	
-	if not calculating_action:	
-		# Calculate best action
-		calculate_action()
+	else:
+		current_high_level_action = null
+		if not calculating_low_action:
+			# Calculate best action
+			calculate_action()
 
 
 	# Check if we haven't stopped moving towards node
@@ -86,7 +98,7 @@ func tick():
 
 func _process(delta):
 	#Check if we have an action then act
-	if not current_low_level_action and not calculating_action:
+	if not current_low_level_action and not calculating_low_action:
 		calculate_action()
 
 	elif current_low_level_action:
@@ -149,7 +161,7 @@ func calculate_astar():
 
 # Async
 func calculate_action():
-	calculating_action = true
+	calculating_low_action = true
 
 	var state = await low_level_state_manager.get_state(creature)
 	var action = low_level_ai.calculate_action(state)
@@ -187,14 +199,14 @@ func calculate_action():
 		current_low_level_action = rest_action_controller
 		current_low_level_action.enter(self)
 
-	calculating_action = false
+	calculating_low_action = false
 
 func on_action_finished():
 	if current_low_level_action:
 		current_low_level_action.exit(self)
 	current_low_level_action = null
 
-	if not calculating_action:
+	if not calculating_low_action:
 		calculate_action()
 
 

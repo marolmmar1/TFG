@@ -1,4 +1,4 @@
-[gd_scene load_steps=31 format=3 uid="uid://dahmo14t7kdaw"]
+[gd_scene load_steps=32 format=3 uid="uid://dahmo14t7kdaw"]
 
 [ext_resource type="Script" path="res://Creatures/GroundCreature/ground_creature.gd" id="1_8im78"]
 [ext_resource type="Texture2D" uid="uid://da130laa21jq" path="res://Assets/enemyDummy.png" id="2_n6fpg"]
@@ -29,6 +29,7 @@
 [ext_resource type="Script" path="res://Creatures/GroundCreature/high_level_ai.gd" id="22_ty02y"]
 [ext_resource type="Script" path="res://Creatures/GroundCreature/LowLevelAIs/low_level_greedy.gd" id="27_l5v3w"]
 [ext_resource type="Script" path="res://Creatures/GroundCreature/LowLevelAIs/low_level_genetic.gd" id="28_4wabx"]
+[ext_resource type="Script" path="res://Creatures/LowLevelActions/leave_action_controller.gd" id="28_j2kf2"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_2owua"]
 radius = 13.4509
@@ -164,6 +165,9 @@ script = ExtResource("20_fw5rv")
 
 [node name="RestAction" type="Node" parent="AI/LowLevelAI"]
 script = ExtResource("21_k5vsu")
+
+[node name="LeaveAction" type="Node" parent="AI/LowLevelAI"]
+script = ExtResource("28_j2kf2")
 
 [node name="Greedy" type="Node" parent="AI/LowLevelAI"]
 script = ExtResource("27_l5v3w")

@@ -10,6 +10,7 @@ extends Node2D
 @onready var item_node_monitor = $ItemNodeMonitor
 
 var tilemap: TileMap
+var doors
 
 var astar_nodes = {}
 
@@ -34,9 +35,9 @@ func init(_tilemap, _zone):
 	await get_tree().process_frame
 
 	tilemap = _tilemap
+	doors = tilemap.get_node("Doors").get_children()
 
-	var doors = tilemap.get_node("Doors")
-	tmhelper.init(tilemap, doors)	
+	tmhelper.init(tilemap)	
 	nodes_helper.init(tmhelper)
 	link_helper.init(tmhelper)
 	item_node_monitor.init(self, _zone)
@@ -281,7 +282,7 @@ func purge_and_fill_astar_nodes():
 func delete_isolated_nodes():
 	var exits = []
 	for node in astar_nodes:
-		if tmhelper.is_exit(node):
+		if tmhelper.is_exit(node, doors):
 			exits.append(node)
 
 	# assert(exits.size() > 0, "No exit nodes found")
@@ -315,6 +316,12 @@ func delete_isolated_nodes():
 		tunnel_gate_nodes.erase(node)
 		tunnel_end_nodes.erase(node)
 		platform_fall_nodes.erase(node)
+
+
+func get_exit_node(door):
+	for node in astar_nodes:
+		if tmhelper.is_exit(node, [door]):
+			return tmhelper.to_world_position(node)
 
 
 # Depth-first search to find all connected nodes

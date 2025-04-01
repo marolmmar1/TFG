@@ -27,8 +27,17 @@ var chromosome = {
 		"health_mod": 1.0,
 		"food_mod": 1.0,
 		"stamina_mod": 1.0,
-	}
+	},
+	"jump_reliability_cost_mult": 1.0,
+	"fall_reliability_cost_mult": 1.0,
+	"threat_base_cost": 100.0
 }
+
+func init(_low_level_state_manager, astar_ai):
+	low_level_state_manager = _low_level_state_manager
+	astar_ai.jump_reliability_cost_mult = chromosome.jump_reliability_cost_mult
+	astar_ai.fall_reliability_cost_mult = chromosome.fall_reliability_cost_mult
+	astar_ai.threat_base_cost = chromosome.threat_base_cost
 
 func calculate_action(state: LowLevelState) -> LowLevelAction:
 	var action_scores = {}

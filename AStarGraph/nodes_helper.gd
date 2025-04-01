@@ -266,16 +266,16 @@ func is_tunnel_end_node(cell: Vector2i) -> bool:
 
 	return true
 
-func find_fall_node(astar_nodes: Dictionary, start_cell: Vector2i, direction: Vector2i, max_fall_height: int):
+func find_fall_node(astar_nodes: Dictionary, start_cell: Vector2i, direction: Vector2i, max_fall_height: int, inclusive: bool):
 	var current = start_cell + direction
 	for i in range(max_fall_height):
 		# Check if the current cell is terrain
 		if tmhelper.is_terrain(current) or tmhelper.is_tunnel_gate_node(current):
 			# The fall node is the cell above the terrain
 			var fall_node = current + Vector2i(0, -1)
-			# Ensure the fall node is not already in the A* nodes
-			if not astar_nodes.has(fall_node):
-				if fall_node.y - start_cell.y > 1:
+			# Ensure the fall node is not already in the A* nodes if not inclusive
+			if fall_node.y - start_cell.y > 1:
+				if not astar_nodes.has(fall_node) or inclusive:
 					return fall_node
 				else:
 					return null

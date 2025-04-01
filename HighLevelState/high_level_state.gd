@@ -35,7 +35,7 @@ var stamina: int
 var current_zone: Zone
 var zones: Array
 
-func _init(_max_health, _max_food, _max_stamina, _health: int, _food: int, _stamina: int, _current_zone: Zone, zones: Array):
+func _init(_max_health, _max_food, _max_stamina, _health: float, _food: float, _stamina: float, _current_zone: Zone, zones: Array):
 	health = quantize_creature_state(_health, _max_health)
 	food = quantize_creature_state(_food, _max_food)
 	stamina = quantize_creature_state(_stamina, _max_stamina)

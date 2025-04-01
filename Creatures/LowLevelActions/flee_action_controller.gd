@@ -24,8 +24,16 @@ func get_lowest_tl_node(_creature, _nodes):
 	var max_dist = 0
 	var res_node
 	for node in _nodes:
-		var path = await _creature.ai.astar_ai.astar(_creature.ai.astar_graph.tmhelper.to_local_position(_creature.position), node)
-		var dist = _creature.ai.astar_ai.get_total_cost_from_path(path)
+		var creature_node = _creature.ai.astar_graph.tmhelper.to_local_position(_creature.position)
+		
+		if not creature.ai.astar_graph.astar_nodes.has(creature_node):
+			creature.ai.on_current_node_missing.emit(creature)
+		
+		var dist = creature.global_position.distance_to(_creature.ai.astar_graph.tmhelper.to_world_position(node))
+		
+		var path = await creature.ai.astar_ai.astar(creature_node, node)
+		if not path.is_empty():
+			dist = creature.ai.astar_ai.get_total_cost_from_path(path)
 
 		if dist > max_dist:
 			max_dist = dist

@@ -1,7 +1,7 @@
 extends Node2D
 
-@export var horizontal_jump_dist: int = 4
-@export var vertical_jump_dist: int = 3
+@export var horizontal_jump_dist: int = 3
+@export var vertical_jump_dist: int = 2
 @export var max_fall_height: int = 15
 
 @onready var tmhelper = $TileMapHelper
@@ -23,6 +23,7 @@ var intersection_nodes = []
 var tunnel_gate_nodes = []
 var tunnel_end_nodes = []
 var platform_fall_nodes = []
+var mid_air_nodes = []
 
 var temporary_nodes = []
 
@@ -90,7 +91,17 @@ func add_node(node, update_radius):
 		astar_nodes[node] = []
 		temporary_nodes.append(node)
 		intersection_nodes.append(node)
-	#TODO add mid_air_node
+	else:
+		astar_nodes[node] = []
+		temporary_nodes.append(node)
+		mid_air_nodes.append(node)
+		var fall_node = nodes_helper.find_fall_node(astar_nodes, node, Vector2i(0, 0), max_fall_height, false)
+
+		if fall_node != null:
+			astar_nodes[fall_node] = []
+			temporary_nodes.append(fall_node)
+			platform_fall_nodes.append(fall_node)
+
 
 	# Non destructive update
 	var astar_nodes_copy = astar_nodes.duplicate()
@@ -123,7 +134,16 @@ func delete_node(node, update_radius):
 		astar_nodes.erase(node)
 		temporary_nodes.erase(node)
 		intersection_nodes.erase(node)
-	#TODO add mid_air_node
+	else:
+		astar_nodes.erase(node)
+		temporary_nodes.erase(node)
+		mid_air_nodes.erase(node)
+		var fall_node = nodes_helper.find_fall_node(astar_nodes, node, Vector2i(0, 0), max_fall_height, true)
+
+		if fall_node != null and temporary_nodes.has(fall_node):
+			astar_nodes.erase(fall_node)
+			temporary_nodes.erase(fall_node)
+			platform_fall_nodes.erase(fall_node)
 
 	# Destructive update
 	update_nodes_in_radius(astar_nodes, node, update_radius)
@@ -149,6 +169,7 @@ func update_nodes_in_radius(_astar_nodes, node, update_radius):
 	var update_tunnel_gate_nodes = []
 	var update_tunnel_end_nodes = []
 	var update_platform_fall_nodes = []
+	var update_mid_air_nodes = []
 
 	for n in _astar_nodes:
 		if n.distance_to(node) <= update_radius:
@@ -178,6 +199,8 @@ func update_nodes_in_radius(_astar_nodes, node, update_radius):
 				update_tunnel_end_nodes.append(n)
 			if platform_fall_nodes.has(n):
 				update_platform_fall_nodes.append(n)
+			if mid_air_nodes.has(n):
+				update_mid_air_nodes.append(n)
 			
 	# Only consider nodes in radius for linking. Astar nodes are only used to update the graph
 	link_helper.link_platform_nodes(_astar_nodes, update_platform_nodes, update_platform_wall_nodes, update_platform_fall_nodes)
@@ -187,6 +210,7 @@ func update_nodes_in_radius(_astar_nodes, node, update_radius):
 	link_helper.link_tunnel_gate_nodes(_astar_nodes, update_tunnel_gate_nodes, update_platform_nodes, update_wall_nodes, update_platform_wall_nodes)
 	link_helper.link_nodes_by_jump(_astar_nodes, update_platform_nodes, update_wall_grab_nodes, update_platform_fall_nodes, vertical_jump_dist, horizontal_jump_dist, max_fall_height)
 	link_helper.link_nodes_by_fall(_astar_nodes, update_platform_nodes, update_wall_grab_nodes, update_platform_wall_nodes, update_platform_fall_nodes, update_wall_nodes, max_fall_height)
+	link_helper.link_mid_air(astar_nodes, update_mid_air_nodes, wall_nodes, wall_grab_nodes, vertical_jump_dist, horizontal_jump_dist, max_fall_height)
 
 	#DEBUG
 	queue_redraw()
@@ -244,8 +268,8 @@ func calculate_tunnel_end_nodes():
 func calculate_platform_fall_nodes():
 	for node in platform_nodes:
 		# Check left and right for fall nodes
-		var fall_node_left = nodes_helper.find_fall_node(astar_nodes, node, Vector2i(-1, 0), max_fall_height)
-		var fall_node_right = nodes_helper.find_fall_node(astar_nodes, node, Vector2i(1, 0), max_fall_height)
+		var fall_node_left = nodes_helper.find_fall_node(astar_nodes, node, Vector2i(-1, 0), max_fall_height, false)
+		var fall_node_right = nodes_helper.find_fall_node(astar_nodes, node, Vector2i(1, 0), max_fall_height, false)
 
 		if fall_node_left != null:
 			platform_fall_nodes.append(fall_node_left)

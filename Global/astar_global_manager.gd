@@ -1,6 +1,6 @@
 extends Node
 
-@export var max_count: int = 25
+@export var max_count: int = 10
 
 var counter: int = 0
 

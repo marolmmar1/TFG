@@ -16,16 +16,13 @@ extends Node2D
 var zone_props
 
 var item_node = {}
+var creatures = []
 
 func init(_zone):
 	zone_props = _zone.zone_props
 
 
 func get_state(creature) -> LowLevelState:
-	#DEBUG
-	if not creature in creatures:
-		creatures.append(creature)
-
 	if not zone_props:
 		return
 
@@ -47,8 +44,16 @@ func get_state(creature) -> LowLevelState:
 		var creature_node = creature.ai.astar_graph.tmhelper.to_local_position(creature.global_position)
 		var prop_node = creature.ai.astar_graph.tmhelper.to_local_position(prop.global_position)
 
+		if not creature.ai.astar_graph.astar_nodes.has(creature_node):
+			creature.ai.on_current_node_missing.emit(creature)
+		
+		#TODO Do the same with prop
+
+		var cost = creature.global_position.distance_to(prop.global_position)
+
 		var path = await creature.ai.astar_ai.astar(creature_node, prop_node)
-		var cost = creature.ai.astar_ai.get_total_cost_from_path(path)
+		if not path.is_empty():
+			cost = creature.ai.astar_ai.get_total_cost_from_path(path)
 		
 		# Need to repeat the checks due to the yield
 		if not is_instance_valid(prop):
@@ -69,6 +74,9 @@ func get_state(creature) -> LowLevelState:
 		if not prop.is_in_group("Creature"):
 			continue
 
+		if not prop in creatures:
+			creatures.append(prop)
+		
 		if prop == creature:
 			continue
 
@@ -78,8 +86,14 @@ func get_state(creature) -> LowLevelState:
 		var creature_node = creature.ai.astar_graph.tmhelper.to_local_position(creature.global_position)
 		var prop_node = creature.ai.astar_graph.tmhelper.to_local_position(prop.global_position)
 
+		if not creature.ai.astar_graph.astar_nodes.has(creature_node):
+			creature.ai.on_current_node_missing.emit(creature)
+
+		var cost = creature.global_position.distance_to(prop.global_position)
+		
 		var path = await creature.ai.astar_ai.astar(creature_node, prop_node)
-		var cost = creature.ai.astar_ai.get_total_cost_from_path(path)
+		if not path.is_empty():
+			cost = creature.ai.astar_ai.get_total_cost_from_path(path)
 		
 		# Need to repeat the checks due to the yield
 		if not is_instance_valid(prop):
@@ -128,8 +142,10 @@ func get_item_node(item) -> Node2D:
 		return null
 	return item_node[item]
 
+func get_creature_tl(creature) -> int:
+	return (creature.data.health * creature.data.attack_power) / (max_considerable_attack_power * 100) #HACK
+
 #DEBUG
-var creatures = []
 var items = []
 
 func _process(delta: float) -> void:

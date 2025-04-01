@@ -1,6 +1,5 @@
 extends Node
 
-
 @onready var tmhelper = $"../TileMapHelper"
 
 var astar_graph
@@ -24,6 +23,7 @@ func _process(delta):
 
 	var current_items = zone_props.get_children()
 
+	# Erase deleted
 	var new = {}
 	for item in temporary_nodes:
 		if is_instance_valid(item) and current_items.has(item):
@@ -58,7 +58,7 @@ func update_node(_item, pos):
 
 
 func on_creature_node_missing(creature):
+	if not creature.check_is_on_floor() and not creature.check_is_on_wall():
+		return
 	var pos = tmhelper.to_local_position(creature.position)
 	update_node(creature, pos)	
-
-	

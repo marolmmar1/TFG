@@ -1,10 +1,12 @@
 extends Node
 
-@export var jump_reliability_cost_mult: float = 2.0 #HACK possibly variables for the genetic algorithm variation lately
-@export var fall_reliability_cost_mult: float = 1.5
+var jump_reliability_cost_mult: float = 2.0 # Defaults
+var fall_reliability_cost_mult: float = 1.5
+var threat_base_cost: float = 10.0
 
 var astar_graph: Node2D
 var global_astar_manager
+var low_level_state_manager
 
 var walk_speed
 var climb_speed
@@ -82,16 +84,17 @@ func astar(current_node: Vector2i, target_node: Vector2i, debug_mode = false) ->
 		# I've already implemented lots of checks and techniques to avoid this happening but it's still possible
 		# So if everything else fails, just return and try again in a few seconds
 		if not astar_nodes.has(lowest_cost_node.node):
-			push_warning("Tried to access node not in astar graph | Creature: ", get_parent().get_parent().name, " | Node:", lowest_cost_node.node, \
-				" | Pending: ", pending.map(func(x): return x.node), " | Explored: ", explored.map(func(x): return x.node), " Start node: ", start_node.node)
-			
+			# if not get_parent().controller.current_state == get_parent().controller.fall_state:
+			# 	push_warning("Tried to access node not in astar graph | Creature: ", get_parent().get_parent().name, " | Node:", lowest_cost_node.node, \
+			# 		" | Pending: ", pending.map(func(x): return x.node), " | Explored: ", explored.map(func(x): return x.node), " Start node: ", start_node.node)
+						
 			get_tree().create_timer(0.25).timeout.connect(func(): calculating_astar = false)
 			return []
 		
 		# We're exploring this one
 		pending.erase(lowest_cost_node)
 		explored.append(lowest_cost_node)
-
+		
 		# Goal reached
 		if lowest_cost_node.node == target_node:
 			var _path = build_path(start_node, lowest_cost_node)
@@ -177,6 +180,7 @@ func movement_cost(edge: Edge) -> float:
 	var cost = 0
 	cost = speed_cost(edge)
 	cost = reliavility_cost(edge, cost)
+	cost += threat_cost(edge)
 	return cost
 
 func speed_cost(edge: Edge) -> float:
@@ -207,6 +211,18 @@ func reliavility_cost(edge: Edge, base_cost: float) -> float:
 
 	return base_cost
 
+func threat_cost(edge: Edge) -> float:
+	var cost = 0
+	for creature in low_level_state_manager.creatures:
+		var dist_1 = creature.global_position.distance_to(astar_graph.tmhelper.to_world_position(edge.from))
+		var dist_2 = creature.global_position.distance_to(astar_graph.tmhelper.to_world_position(edge.to))
+		var dist = min(dist_1, dist_2)
+		dist = max(dist, 1)
+
+		cost += (low_level_state_manager.max_considerable_distance / dist) * low_level_state_manager.get_creature_tl(creature) * threat_base_cost
+		
+	return cost
+
 
 func build_path(start_node: AstarAINode, end_node: AstarAINode) -> Array:
 	var _path = []
@@ -214,7 +230,7 @@ func build_path(start_node: AstarAINode, end_node: AstarAINode) -> Array:
 	while current != start_node:
 		if current.parent:
 			if not astar_nodes.has(current.parent.node):
-				push_warning("Failed to build path | Creature: ", get_parent().get_parent().name)
+				# push_warning("Failed to build path | Creature: ", get_parent().get_parent().name)
 				return []
 			for edge in astar_nodes[current.parent.node]:
 				if edge.to == current.node:

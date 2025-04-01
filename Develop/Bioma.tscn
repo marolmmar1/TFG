@@ -20,6 +20,8 @@ script = ExtResource("1_k2efv")
 [node name="HighLevelStateManager" parent="Biome" instance=ExtResource("2_g2v8v")]
 
 [node name="Zone_1" type="Node2D" parent="Biome"]
+process_mode = 4
+visible = false
 position = Vector2(-1241, 6)
 script = ExtResource("1_jc1mc")
 
@@ -38,8 +40,6 @@ layer_0/tile_data = PackedInt32Array(1245186, 262149, 2, 1245187, 262149, 2, 124
 position = Vector2(292.25, 87)
 
 [node name="AStarGraph" parent="Biome/Zone_1" instance=ExtResource("2_hqvih")]
-horizontal_jump_dist = 3
-vertical_jump_dist = 2
 draw_graph = true
 
 [node name="LowLevelStateManager" type="Node2D" parent="Biome/Zone_1"]
@@ -117,8 +117,6 @@ layer_0/tile_data = PackedInt32Array(1245186, 262149, 2, 1245187, 262149, 2, 124
 position = Vector2(12, 87.75)
 
 [node name="AStarGraph" parent="Biome/Zone_2" instance=ExtResource("2_hqvih")]
-horizontal_jump_dist = 3
-vertical_jump_dist = 2
 draw_graph = true
 
 [node name="LowLevelStateManager" type="Node2D" parent="Biome/Zone_2"]
@@ -137,7 +135,7 @@ position = Vector2(298, 146)
 position = Vector2(822, 236)
 
 [node name="Creature3" parent="Biome/Zone_2/ZoneProps" instance=ExtResource("7_t4mvu")]
-position = Vector2(645, 239)
+position = Vector2(720, 239)
 max_health = 200
 attack_power = 60
 

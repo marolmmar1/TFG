@@ -47,6 +47,7 @@ func init(_astar, _controller, _low_level_state_manager, _creature):
 
 	astar_ai.astar_graph = astar_graph
 	astar_ai.global_astar_manager = get_tree().root.get_node("AstarGlobalManager")
+	astar_ai.low_level_state_manager = low_level_state_manager
 
 	astar_ai.walk_speed = controller.find_child("Walk").speed
 	astar_ai.climb_speed = controller.find_child("Climb").speed
@@ -55,7 +56,7 @@ func init(_astar, _controller, _low_level_state_manager, _creature):
 	astar_ai.switch_crawl_walk_speed = controller.find_child("SwitchCrawlWalk").speed
 	astar_ai.switch_crawl_climb_speed = controller.find_child("SwitchCrawlClimb").speed
 
-	low_level_ai.init(low_level_state_manager)
+	low_level_ai.init(low_level_state_manager, astar_ai)
 
 	eat_action_controller.on_action_finished.connect(on_action_finished)
 	flee_action_controller.on_action_finished.connect(on_action_finished)
@@ -65,8 +66,9 @@ func init(_astar, _controller, _low_level_state_manager, _creature):
 
 #TODO pass to higher AI
 func tick():
-	var state = high_level_state_manager.get_state(creature.data)
-	var action = high_level_ai._greedy(state)
+	# var state = high_level_state_manager.get_state(creature.data)
+	# var action = high_level_ai._greedy(state)
+	var action = null
 
 	if action:
 		if not current_high_level_action or not action.target_door == current_high_level_action.target_door:
@@ -127,9 +129,11 @@ func _process(delta):
 
 
 func calculate_astar():
+	if not astar_graph.astar_nodes:
+		return
 	if not target:
 		return
-	if not astar_graph.astar_nodes:
+	if controller.current_state == controller.fall_state:
 		return
 	
 	var current_node = astar_graph.tmhelper.to_local_position(controller.position)
@@ -168,7 +172,8 @@ func calculate_action():
 
 	if action is EatAction:
 		if not low_level_state_manager.get_item_node(action.food):
-			push_warning("Food not found | Creature: ", get_parent().get_parent().name, " | Action: ", action)
+			push_warning("Food not found | Creature: ", get_parent().name, " | Action: ", action)
+			calculating_low_action = false
 			return
 		if current_low_level_action:
 			current_low_level_action.exit(self)
@@ -177,7 +182,8 @@ func calculate_action():
 
 	elif action is FleeAction:
 		if not low_level_state_manager.get_item_node(action.enemy):
-			push_warning("Enemy not found | Creature: ", get_parent().get_parent().name, " | Action: ", action)
+			push_warning("Enemy not found | Creature: ", get_parent().name, " | Action: ", action)
+			calculating_low_action = false
 			return
 		if current_low_level_action:
 			current_low_level_action.exit(self)
@@ -186,7 +192,8 @@ func calculate_action():
 
 	elif action is AttackAction:
 		if not low_level_state_manager.get_item_node(action.enemy):
-			push_warning("Enemy not found | Creature: ", get_parent().get_parent().name, " | Action: ", action)
+			push_warning("Enemy not found | Creature: ", get_parent().name, " | Action: ", action)
+			calculating_low_action = false
 			return
 		if current_low_level_action:
 			current_low_level_action.exit(self)

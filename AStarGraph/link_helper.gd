@@ -274,7 +274,17 @@ func are_nodes_connected_by_jump(node_a: Vector2i, node_b: Vector2i, wall_grab_n
 
 
 	# Check for obstacles
-	if tmhelper.raycast(node_a, node_b):
+	var a = Vector2(node_a.x, node_a.y)
+	var b = Vector2(node_b.x, node_b.y)
+	if tmhelper.raycast(a, b):
+		return false
+	if tmhelper.raycast(a + Vector2(0, 0.25), b + Vector2(0, 0.25)):
+		return false
+	if tmhelper.raycast(a + Vector2(0, -0.25), b + Vector2(0, -0.25)):
+		return false
+	if tmhelper.raycast(a + Vector2(0.25, 0), b + Vector2(0.25, 0)):
+		return false
+	if tmhelper.raycast(a + Vector2(-0.25, 0), b + Vector2(-0.25, 0)):
 		return false
 
 	return true
@@ -324,3 +334,36 @@ func are_nodes_connected_by_fall(node_a: Vector2i, node_b: Vector2i, wall_nodes,
 		current += Vector2i.DOWN
 
 	return true
+
+func link_mid_air(astar_nodes, mid_air_nodes, wall_nodes, wall_grab_nodes, vertical_jump_dist, horizontal_jump_dist, max_fall_height):
+	for node_a in mid_air_nodes:
+		for node_b in astar_nodes:
+			if node_a == node_b:
+				continue
+
+			# Ignore if already connected
+			var guard = false
+			for edge in astar_nodes[node_a]:
+				if edge.to == node_b:
+					guard = true
+			for edge in astar_nodes[node_b]:
+				if edge.to == node_a:
+					guard = true
+			if guard:
+				continue
+
+			if are_nodes_connected_by_fall(node_a, node_b, wall_nodes, max_fall_height):
+				# Add a onedirectional connection
+				astar_nodes[node_a].append(Edge.new(node_a, node_b, Edge.MovementType.FALL))
+
+			if are_nodes_connected_by_fall(node_b, node_a, wall_nodes, max_fall_height):
+				# Add a onedirectional connection
+				astar_nodes[node_a].append(Edge.new(node_a, node_b, Edge.MovementType.FALL))
+
+			if are_nodes_connected_by_jump(node_a, node_b, wall_grab_nodes, vertical_jump_dist, horizontal_jump_dist, max_fall_height):
+				# Add a onedirectional connection
+				astar_nodes[node_b].append(Edge.new(node_b, node_a, Edge.MovementType.JUMP))
+
+			if are_nodes_connected_by_jump(node_b, node_a, wall_grab_nodes, vertical_jump_dist, horizontal_jump_dist, max_fall_height):
+				# Add a onedirectional connection
+				astar_nodes[node_b].append(Edge.new(node_b, node_a, Edge.MovementType.JUMP))

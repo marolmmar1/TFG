@@ -55,4 +55,4 @@ func _zone_value():
 	return roundf(value)
 
 func _to_string():
-	return "Type: " + ZoneType.keys()[type] + "\nThreat level: " + str(threat_level) + "\nFood amount: " + str(food_amount)
+	return self.name+", Type: " + ZoneType.keys()[type] + ", Threat level: " + str(threat_level) + ", Food amount: " + str(food_amount)

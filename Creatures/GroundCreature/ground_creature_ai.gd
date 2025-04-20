@@ -63,8 +63,11 @@ func init(_astar, _controller, _low_level_state_manager, _creature):
 
 #TODO pass to higher AI
 func tick():
+	creature.data._update_memory(creature.data.current_zone)
 	var state = high_level_state_manager.get_state(creature.data)
-	high_level_ai._greedy(state)
+	#high_level_ai._greedy(state)
+	var markov = Markov.new()
+	markov.compose_matix(creature.data, true)
 	
 	if not calculating_action:	
 		# Calculate best action

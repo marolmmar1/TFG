@@ -8,7 +8,6 @@ var high_level_state_manager:HighLevelStateManager
 
 
 func _greedy(state: HighLevelState)->LeaveAction:
-	
 	if state.current_zone.food_amount==1 and state.food==1:
 		return _greedy_leave_or_explore(state)
 	elif state.current_zone.threat_level>2 and state.health==1:

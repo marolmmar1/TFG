@@ -13,7 +13,7 @@ var max_food: float
 var max_stamina: float
 var attack_power: float
 var memory: Dictionary
-#{zone: zone_value, "zones":[zone, ..., zone], "edges":[[zone,zone],...,[zone,zone]]]} 
+#{zone: {"threat_level": threat_level, "food_amount": food_amount"}, "zones":[zone, ..., zone], "edges":[[zone,zone],...,[zone,zone]]]} 
 var current_zone: ZoneClass
 
 var food_depletion_rate
@@ -72,6 +72,7 @@ func init(_creature, _controller, _food_depletion_rate, _health_starving_rate, _
 	stamina = max_stamina
 	current_zone=_current_zone
 	memory = {"zones": [current_zone], "edges": [], current_zone: current_zone._zone_value()}
+	memory[current_zone] = {"threat_level": current_zone.threat_level, "food_amount": current_zone.food_amount}
 
 func _process(delta: float) -> void:
 	food -= delta * food_depletion_rate
@@ -99,6 +100,7 @@ func spawn(_type: CreatureType,_max_health: int, _max_stamina: int, _max_hunger:
 	attack_power=_attack_power
 	current_zone=_current_zone
 	memory = {"zones": [current_zone], "edges": [], current_zone: current_zone._zone_value()}
+	memory[current_zone] = {"threat_level": current_zone.threat_level, "food_amount": current_zone.food_amount}
 
 func _set_health(new_health):
 	if (new_health<=0):
@@ -126,13 +128,13 @@ func _set_food(new_food):
 
 func _update_memory(new_zone: ZoneClass, previous_zone: ZoneClass=null):
 	if previous_zone == null:
-		memory[new_zone] = new_zone._zone_value()
+		memory[new_zone] = {"threat_level": new_zone.threat_level, "food_amount": new_zone.food_amount}
 	else:
 		memory["zones"].append(new_zone)
 		memory["edges"].append([previous_zone, new_zone])
 		memory["edges"].append([new_zone,previous_zone])
-		memory[previous_zone] = previous_zone._zone_value()
-		memory[new_zone] = new_zone._zone_value()
+		memory[previous_zone] ={"threat_level": previous_zone.threat_level, "food_amount": previous_zone.food_amount}
+		memory[new_zone] = {"threat_level": new_zone.threat_level, "food_amount": new_zone.food_amount}
 
 func _to_string():
 	return "Type: " + CreatureType.keys()[type] + "\nHealth: " + str(health) + "\nStamina: " + str(stamina) + "\nHunger: " + str(food) + "\nmemory: " + str(memory)

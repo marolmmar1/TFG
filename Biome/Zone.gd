@@ -39,12 +39,12 @@ func _process(delta):
 		randomize_zone()
 
 func randomize_zone():
-	print(zone_tilemap.get_parent().get_name())
+	#print(zone_tilemap.get_parent().get_name())
 	random_timer.start()
 	threat_level = randi_range(1, 3)
 	food_amount = randi_range(1, 3)
-	print("Threat level: ", threat_level)
-	print("Food amount: ", food_amount)
+	#print("Threat level: ", threat_level)
+	#print("Food amount: ", food_amount)
 
 	
 func _on_randomicer_timeout():

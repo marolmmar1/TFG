@@ -67,7 +67,7 @@ func tick():
 	var state = high_level_state_manager.get_state(creature.data)
 	#high_level_ai._greedy(state)
 	var markov = Markov.new()
-	markov.compose_matix(creature.data, true)
+	markov.compose_matix(creature.data, false)
 	
 	if not calculating_action:	
 		# Calculate best action

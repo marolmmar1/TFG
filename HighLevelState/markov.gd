@@ -1,6 +1,97 @@
 extends Node
 class_name Markov
+
 var estimated_zones = []
+
+# Q-table: stores Q-values for (state, action) pairs
+var q_table := {}
+
+# Parameters
+var alpha := 0.1	# Learning rate
+var gamma := 0.9	# Discount factor
+var epsilon := 0.2	# Exploration rate
+var episodes := 100
+
+func get_connected_zones(zone: ZoneClass, creature: CreatureData) -> Array:
+	var connections = []
+	for edge in creature.memory["edges"]:
+		if edge[0] == zone:
+			connections.append(edge[1])
+		elif edge[1] == zone:
+			connections.append(edge[0])
+	return connections
+
+func get_heuristic(zone: ZoneClass, creature: CreatureData):
+	if creature.memory.has(zone):
+		return creature.memory[zone]
+	return 0
+
+func choose_action(state: ZoneClass, creature: CreatureData) -> ZoneClass:
+	var actions = get_connected_zones(state, creature)
+	actions.append(state) # Include option to stay
+	
+	if randf() < epsilon:
+		# Explore
+		return actions[randi() % actions.size()]
+	
+	# Exploit
+	var best_action = actions[0]
+	var best_q = q_table.get([state, best_action], 0.0)
+	for action in actions:
+		var q = q_table.get([state, action], 0.0)
+		if q > best_q:
+			best_q = q
+			best_action = action
+	return best_action
+
+func get_best_heuristic_zone(creature: CreatureData) -> ZoneClass:
+	var best_zone = creature.memory["zones"][0]
+	var best_heuristic = get_heuristic(best_zone, creature)
+	for zone in creature.memory["zones"]:
+		var h = get_heuristic(zone, creature)
+		if h > best_heuristic:
+			best_heuristic = h
+			best_zone = zone
+	return best_zone
+
+
+func reward_function(zone: ZoneClass, creature: CreatureData) -> float:
+	return get_heuristic(zone, creature)
+
+func run_q_learning(creature: CreatureData):
+	for i in range(episodes):
+		var state = creature.current_zone
+		while true:
+			var action = choose_action(state, creature)
+			var reward = reward_function(action, creature)
+			var next_state = action
+			
+			var current_q = q_table.get([state, action], 0.0)
+			
+			var max_future_q = 0.0
+			for next_action in get_connected_zones(next_state,creature) + [next_state]:
+				var q = q_table.get([next_state, next_action], 0.0)
+				if q > max_future_q:
+					max_future_q = q
+			
+			var new_q = current_q + alpha * (reward + gamma * max_future_q - current_q)
+			q_table[[state, action]] = new_q
+			
+			if action == get_best_heuristic_zone(creature):
+				break
+			state = next_state
+
+func print_q_table():
+	var res = "{"
+	for key in q_table.keys():
+		var row = ""
+		if res != "{":
+			row = ", [" + key[0].name + ", " + key[1].name + "] = " + str(q_table[key])
+		else:
+			row = "[" + key[0].name + ", " + key[1].name + "] = " + str(q_table[key])
+		res += row
+	res += "}"
+	print(res)
 
 # if not in memory,adds zones adjacent to current zone and expects a medium threat level and food ammount
 func compose_matix(creature: CreatureData, debug =false):

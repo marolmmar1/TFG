@@ -1,0 +1,173 @@
+[gd_scene load_steps=29 format=3 uid="uid://bf2c0vv1qdd8m"]
+
+[ext_resource type="Script" path="res://Creatures/HighLevelDummy/dummy.gd" id="1_cu4ed"]
+[ext_resource type="PackedScene" uid="uid://721pv21788m8" path="res://Generic/Damageable.tscn" id="2_mbw6j"]
+[ext_resource type="Texture2D" uid="uid://da130laa21jq" path="res://Assets/enemyDummy.png" id="3_7y108"]
+[ext_resource type="Texture2D" uid="uid://sxwr0a227cph" path="res://Assets/attack placeholder.png" id="4_hncbr"]
+[ext_resource type="Script" path="res://Creatures/GroundCreature/ground_creature_controller.gd" id="5_tjb2w"]
+[ext_resource type="Script" path="res://Creatures/States/walk_state.gd" id="6_q5b05"]
+[ext_resource type="Script" path="res://Creatures/States/fall_state.gd" id="7_dd8nw"]
+[ext_resource type="Script" path="res://Creatures/States/climb_state.gd" id="8_3a0ir"]
+[ext_resource type="Script" path="res://Creatures/States/crawl_state.gd" id="9_mrtcq"]
+[ext_resource type="Script" path="res://Creatures/States/state.gd" id="10_i6ul7"]
+[ext_resource type="Script" path="res://Creatures/States/switch_climbing_state.gd" id="11_00xr2"]
+[ext_resource type="Script" path="res://Creatures/States/switch_crawl_walk_state.gd" id="12_kxma0"]
+[ext_resource type="Script" path="res://Creatures/States/switch_crawl_climb_state.gd" id="13_pj528"]
+[ext_resource type="Script" path="res://Creatures/States/jump_state.gd" id="14_81t53"]
+[ext_resource type="Script" path="res://Creatures/States/stun_state.gd" id="15_rpirx"]
+[ext_resource type="Script" path="res://Creatures/States/eat_state.gd" id="16_3kgjy"]
+[ext_resource type="Script" path="res://Creatures/States/rest_state.gd" id="17_xwddm"]
+[ext_resource type="Script" path="res://Creatures/States/attack_state.gd" id="18_8e07h"]
+[ext_resource type="Script" path="res://Creatures/GroundCreature/creature_data.gd" id="19_tnfk8"]
+[ext_resource type="Script" path="res://Creatures/GroundCreature/ground_creature_ai.gd" id="20_1o2hu"]
+[ext_resource type="Script" path="res://Creatures/GroundCreature/astar_ai.gd" id="21_pn14l"]
+[ext_resource type="Script" path="res://Creatures/GroundCreature/low_level_ai.gd" id="22_wlx2u"]
+[ext_resource type="Script" path="res://Creatures/LowLevelActions/eat_action_controller.gd" id="23_cy4wt"]
+[ext_resource type="Script" path="res://Creatures/LowLevelActions/flee_action_controller.gd" id="24_vhapu"]
+[ext_resource type="Script" path="res://Creatures/LowLevelActions/attack_action_controller.gd" id="25_opnaw"]
+[ext_resource type="Script" path="res://Creatures/LowLevelActions/rest_action_controller.gd" id="26_6x7g3"]
+[ext_resource type="Script" path="res://Creatures/HighLevelDummy/high_level_ai.gd" id="27_mw3bt"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_2owua"]
+radius = 13.4509
+
+[node name="Creature" type="CharacterBody2D" groups=["Creature"]]
+scale = Vector2(0.821159, 0.821159)
+collision_layer = 4
+collision_mask = 3
+script = ExtResource("1_cu4ed")
+
+[node name="Damageable" parent="." instance=ExtResource("2_mbw6j")]
+
+[node name="Raycasts" type="Node2D" parent="."]
+
+[node name="DownRaycast" type="RayCast2D" parent="Raycasts"]
+target_position = Vector2(0, 25)
+collision_mask = 3
+
+[node name="RightRaycast" type="RayCast2D" parent="Raycasts"]
+target_position = Vector2(25, 0)
+collision_mask = 3
+
+[node name="LeftRaycast" type="RayCast2D" parent="Raycasts"]
+target_position = Vector2(-25, 0)
+collision_mask = 3
+
+[node name="UpRaycast" type="RayCast2D" parent="Raycasts"]
+target_position = Vector2(0, -25)
+collision_mask = 3
+
+[node name="DLRaycast" type="RayCast2D" parent="Raycasts"]
+target_position = Vector2(-25, 25)
+collision_mask = 3
+
+[node name="DRRaycast" type="RayCast2D" parent="Raycasts"]
+target_position = Vector2(25, 25)
+collision_mask = 3
+
+[node name="ULRaycast" type="RayCast2D" parent="Raycasts"]
+target_position = Vector2(-25, -25)
+collision_mask = 3
+
+[node name="URRaycast" type="RayCast2D" parent="Raycasts"]
+target_position = Vector2(25, -25)
+collision_mask = 3
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_2owua")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+modulate = Color(1, 1, 1, 0.45098)
+position = Vector2(0, 6.08896)
+scale = Vector2(0.0633251, 0.0633251)
+texture = ExtResource("3_7y108")
+
+[node name="DebugSprite" type="Sprite2D" parent="."]
+visible = false
+position = Vector2(0, -6.08895)
+scale = Vector2(0.0608895, 0.0608896)
+texture = ExtResource("4_hncbr")
+
+[node name="Controller" type="Node" parent="."]
+script = ExtResource("5_tjb2w")
+
+[node name="Walk" type="Node" parent="Controller"]
+script = ExtResource("6_q5b05")
+
+[node name="Fall" type="Node" parent="Controller"]
+script = ExtResource("7_dd8nw")
+
+[node name="Climb" type="Node" parent="Controller"]
+script = ExtResource("8_3a0ir")
+
+[node name="Crawl" type="Node" parent="Controller"]
+script = ExtResource("9_mrtcq")
+
+[node name="Idle" type="Node" parent="Controller"]
+script = ExtResource("10_i6ul7")
+
+[node name="IdleClimb" type="Node" parent="Controller"]
+script = ExtResource("10_i6ul7")
+
+[node name="IdleCrawl" type="Node" parent="Controller"]
+script = ExtResource("10_i6ul7")
+
+[node name="SwitchClimbing" type="Node" parent="Controller"]
+script = ExtResource("11_00xr2")
+
+[node name="SwitchCrawlWalk" type="Node" parent="Controller"]
+script = ExtResource("12_kxma0")
+
+[node name="SwitchCrawlClimb" type="Node" parent="Controller"]
+script = ExtResource("13_pj528")
+
+[node name="Jump" type="Node" parent="Controller"]
+script = ExtResource("14_81t53")
+
+[node name="Stunned" type="Node" parent="Controller"]
+script = ExtResource("15_rpirx")
+
+[node name="Eat" type="Node" parent="Controller"]
+script = ExtResource("16_3kgjy")
+
+[node name="Rest" type="Node" parent="Controller"]
+script = ExtResource("17_xwddm")
+
+[node name="Attack" type="Node" parent="Controller"]
+script = ExtResource("18_8e07h")
+
+[node name="CreatureData" type="Node" parent="."]
+script = ExtResource("19_tnfk8")
+
+[node name="AI" type="Node2D" parent="."]
+script = ExtResource("20_1o2hu")
+
+[node name="AstarAI" type="Node" parent="AI"]
+script = ExtResource("21_pn14l")
+
+[node name="LowLevelAI" type="Node" parent="AI"]
+script = ExtResource("22_wlx2u")
+
+[node name="EatAction" type="Node" parent="AI/LowLevelAI"]
+script = ExtResource("23_cy4wt")
+
+[node name="FleeAction" type="Node" parent="AI/LowLevelAI"]
+script = ExtResource("24_vhapu")
+
+[node name="AttackAction" type="Node" parent="AI/LowLevelAI"]
+script = ExtResource("25_opnaw")
+
+[node name="RestAction" type="Node" parent="AI/LowLevelAI"]
+script = ExtResource("26_6x7g3")
+
+[node name="HighLevelAI" type="Node" parent="AI"]
+script = ExtResource("27_mw3bt")
+
+[node name="AITimer" type="Timer" parent="."]
+one_shot = true
+
+[node name="MarkovTimer" type="Timer" parent="."]
+wait_time = 1.5
+
+[connection signal="on_damage_taken" from="Damageable" to="." method="_on_damage_taken"]
+[connection signal="timeout" from="MarkovTimer" to="." method="_on_markov_timer_timeout"]

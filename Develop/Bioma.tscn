@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=3 uid="uid://ccf6t4ko0ds42"]
+[gd_scene load_steps=13 format=3 uid="uid://ccf6t4ko0ds42"]
 
 [ext_resource type="TileSet" uid="uid://b4u5e7btrs2ms" path="res://Biome/TestTileset.tres" id="1_chf4t"]
 [ext_resource type="Script" path="res://Biome/Zone.gd" id="1_jc1mc"]
@@ -10,7 +10,8 @@
 [ext_resource type="PackedScene" uid="uid://dn72d1sk48sje" path="res://Props/Berry/Berry.tscn" id="5_wdfje"]
 [ext_resource type="PackedScene" uid="uid://7obkv5q5ymj5" path="res://Develop/Debug/DebugSpawner.tscn" id="7_3x3xf"]
 [ext_resource type="PackedScene" uid="uid://dahmo14t7kdaw" path="res://Creatures/GroundCreature/GroundCreature.tscn" id="7_t4mvu"]
-[ext_resource type="PackedScene" uid="uid://7dl7i5dhd4uy" path="res://Creatures/UI/StatBars.tscn" id="8_rce6s"]
+[ext_resource type="PackedScene" uid="uid://bpq1aaabj24ut" path="res://Spawners/creature_spawner.tscn" id="11_dp545"]
+[ext_resource type="Script" path="res://Develop/Debug/fps_counter.gd" id="12_wpl44"]
 
 [node name="Main" type="Node"]
 
@@ -128,21 +129,6 @@ zone_props = NodePath("../ZoneProps")
 
 [node name="ZoneProps" type="Node2D" parent="Biome/Zone_2"]
 
-[node name="Creature1" parent="Biome/Zone_2/ZoneProps" instance=ExtResource("7_t4mvu")]
-position = Vector2(298, 146)
-
-[node name="Creature2" parent="Biome/Zone_2/ZoneProps" instance=ExtResource("7_t4mvu")]
-position = Vector2(822, 236)
-
-[node name="Creature3" parent="Biome/Zone_2/ZoneProps" instance=ExtResource("7_t4mvu")]
-position = Vector2(720, 239)
-max_health = 200
-attack_power = 60
-
-[node name="Sprite2D" parent="Biome/Zone_2/ZoneProps/Creature3" index="3"]
-position = Vector2(0, -3.65337)
-scale = Vector2(0.161901, 0.161901)
-
 [node name="Berry" parent="Biome/Zone_2/ZoneProps" instance=ExtResource("5_wdfje")]
 position = Vector2(84, 591)
 
@@ -176,19 +162,30 @@ position = Vector2(1134, 52)
 [node name="Randomicer" type="Timer" parent="Biome/Zone_2"]
 wait_time = 10.0
 
+[node name="CreatureSpawner" parent="Biome/Zone_2" instance=ExtResource("11_dp545")]
+position = Vector2(127, 590)
+
 [node name="UI" type="CanvasLayer" parent="."]
 
-[node name="StatBars" parent="UI" node_paths=PackedStringArray("character") instance=ExtResource("8_rce6s")]
-character = NodePath("../../Biome/Zone_2/ZoneProps/Creature1")
+[node name="Control" type="Control" parent="UI"]
+layout_mode = 3
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -126.0
+offset_bottom = 34.0
+grow_horizontal = 0
 
-[node name="StatBars2" parent="UI" node_paths=PackedStringArray("character") instance=ExtResource("8_rce6s")]
-character = NodePath("../../Biome/Zone_2/ZoneProps/Creature2")
-
-[node name="StatBars3" parent="UI" node_paths=PackedStringArray("character") instance=ExtResource("8_rce6s")]
-character = NodePath("../../Biome/Zone_2/ZoneProps/Creature3")
+[node name="Label" type="Label" parent="UI/Control"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("12_wpl44")
 
 [connection signal="timeout" from="Biome/Zone_1/Randomicer" to="Biome/Zone_1" method="_on_randomicer_timeout"]
 [connection signal="timeout" from="Biome/Zone_2/Randomicer" to="Biome/Zone_2" method="_on_randomicer_timeout"]
 
 [editable path="Biome/Zone_1/ZoneProps/Creature3"]
-[editable path="Biome/Zone_2/ZoneProps/Creature3"]

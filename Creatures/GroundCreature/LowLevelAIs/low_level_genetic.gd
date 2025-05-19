@@ -21,7 +21,8 @@ var chromosome = {
 		"food_mod": 1.0,
 		"stamina_mod": 1.0,
 	},
-	"eat": {
+	"eat": {	
+		"threat_mod": 1.0,
 		"dist_mod": 1.0, 
 		"food_value_mod": 1.0, 
 		"health_mod": 1.0,
@@ -59,7 +60,6 @@ func calculate_action(state: LowLevelState) -> LowLevelAction:
 
 	var best_action = ["rest", null]
 	for action in action_scores.keys():
-		print(action)
 		if action_scores[action] > action_scores[best_action]:
 			best_action = action
 

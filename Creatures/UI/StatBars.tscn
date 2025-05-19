@@ -1,6 +1,6 @@
 [gd_scene load_steps=8 format=3 uid="uid://7dl7i5dhd4uy"]
 
-[ext_resource type="Script" path="res://UI/debug_ui_stats.gd" id="1_qowor"]
+[ext_resource type="Script" path="res://Creatures/UI/debug_ui_stats.gd" id="1_qowor"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_nav2s"]
 bg_color = Color(0, 0, 0, 1)

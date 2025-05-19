@@ -84,9 +84,9 @@ func astar(current_node: Vector2i, target_node: Vector2i, debug_mode = false) ->
 		# I've already implemented lots of checks and techniques to avoid this happening but it's still possible
 		# So if everything else fails, just return and try again in a few seconds
 		if not astar_nodes.has(lowest_cost_node.node):
-			# if not get_parent().controller.current_state == get_parent().controller.fall_state:
-			# 	push_warning("Tried to access node not in astar graph | Creature: ", get_parent().get_parent().name, " | Node:", lowest_cost_node.node, \
-			# 		" | Pending: ", pending.map(func(x): return x.node), " | Explored: ", explored.map(func(x): return x.node), " Start node: ", start_node.node)
+			if not get_parent().controller.current_state == get_parent().controller.fall_state:
+				push_warning("Tried to access node not in astar graph | Creature: ", get_parent().get_parent().name, " | Node:", lowest_cost_node.node, \
+					" | Pending: ", pending.map(func(x): return x.node), " | Explored: ", explored.map(func(x): return x.node), " Start node: ", start_node.node)
 						
 			get_tree().create_timer(0.25).timeout.connect(func(): calculating_astar = false)
 			return []
@@ -214,6 +214,8 @@ func reliavility_cost(edge: Edge, base_cost: float) -> float:
 func threat_cost(edge: Edge) -> float:
 	var cost = 0
 	for creature in low_level_state_manager.creatures:
+		if not is_instance_valid(creature):
+			continue
 		var dist_1 = creature.global_position.distance_to(astar_graph.tmhelper.to_world_position(edge.from))
 		var dist_2 = creature.global_position.distance_to(astar_graph.tmhelper.to_world_position(edge.to))
 		var dist = min(dist_1, dist_2)
@@ -230,7 +232,7 @@ func build_path(start_node: AstarAINode, end_node: AstarAINode) -> Array:
 	while current != start_node:
 		if current.parent:
 			if not astar_nodes.has(current.parent.node):
-				# push_warning("Failed to build path | Creature: ", get_parent().get_parent().name)
+				push_warning("Failed to build path | Creature: ", get_parent().get_parent().name)
 				return []
 			for edge in astar_nodes[current.parent.node]:
 				if edge.to == current.node:

@@ -12,6 +12,7 @@ var max_health: float
 var max_food: float
 var max_stamina: float
 var attack_power: float
+var food_value: float
 var memory: Dictionary
 #{zone: zone_value, "zones":[zone, ..., zone], "edges":[[zone,zone],...,[zone,zone]]]} 
 var current_zone: ZoneClass
@@ -70,6 +71,7 @@ func init(_creature, _controller, _food_depletion_rate, _health_starving_rate, _
 	health = max_health
 	food = max_food - 50 #DEBUG
 	stamina = max_stamina
+	food_value = health
 	current_zone=_current_zone
 	memory = {"zones": [current_zone], "edges": [], current_zone: current_zone._zone_value()}
 

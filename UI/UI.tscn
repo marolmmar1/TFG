@@ -1,6 +1,6 @@
 [gd_scene load_steps=6 format=3 uid="uid://d4j3v11tloovc"]
 
-[ext_resource type="Script" path="res://UI/debug_ui_stats.gd" id="1_0amj6"]
+[ext_resource type="Script" path="res://Creatures/UI/debug_ui_stats.gd" id="1_0amj6"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_q37tc"]
 

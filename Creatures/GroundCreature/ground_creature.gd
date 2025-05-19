@@ -33,11 +33,11 @@ extends CharacterBody2D
 @onready var ul_raycast: RayCast2D = $Raycasts/ULRaycast
 @onready var ur_raycast: RayCast2D = $Raycasts/URRaycast
 
-#DEBUG
-var target:
+var food_value: float:
+	get:
+		return data.food_value
 	set(value):
-		target = value
-		ai.target = value
+		data.food_value = value
 
 func _ready() -> void:
 	assert(astar_graph, "AStarGraph not found")
@@ -121,7 +121,13 @@ func death():
 	ai_timer.timeout.disconnect(ai_tick)
 	ai.process_mode = Node.PROCESS_MODE_DISABLED
 	controller.process_mode = Node.PROCESS_MODE_DISABLED
+	self.add_to_group("Food")
+	self.remove_from_group("Creature")
 
 
 func _on_damage_taken(source, damage) -> void:
 	data.health -= damage
+
+func deplete():
+	if data.dead:
+		queue_free()

@@ -9,6 +9,7 @@ extends Node2D
 @export var max_considerable_food_value: float = 100
 @export var food_value_n: int = 4
 @export var threat_level_n: int = 4
+@export var astar_threshold: int = 3
 
 #DEBUG
 @export var debug := false
@@ -32,15 +33,33 @@ func get_state(creature) -> LowLevelState:
 
 	var state = LowLevelState.new(health, food, stamina)
 
+	# First a dist check
+	var res = {}
 	for prop in zone_props.get_children():
-		if not is_instance_valid(prop):
-			continue
 		if not prop.is_in_group("Food"):
 			continue
 
 		#DEBUG
 		items.append(prop)
 
+		var dist = creature.global_position.distance_to(prop.global_position)
+		res[prop] = dist
+
+	var temp = res.values()
+	var best_res = []
+	if not temp.is_empty():
+		temp.sort()
+		var threshold = astar_threshold if temp.size() > astar_threshold else temp.size()
+		var cut_value = temp[threshold - 1]
+		for i in res.keys():
+			if res[i] < cut_value:
+				best_res.append(i)
+
+	# Then a path check for the best results
+	for prop in best_res:
+		if not is_instance_valid(prop):
+			continue
+		
 		var creature_node = creature.ai.astar_graph.tmhelper.to_local_position(creature.global_position)
 		var prop_node = creature.ai.astar_graph.tmhelper.to_local_position(prop.global_position)
 
@@ -68,20 +87,39 @@ func get_state(creature) -> LowLevelState:
 	
 		state.visible_items.append(food_item)
 
+
+	# First a dist check
+	res = {}
 	for prop in zone_props.get_children():
-		if not is_instance_valid(prop):
-			continue
 		if not prop.is_in_group("Creature"):
 			continue
 
 		if not prop in creatures:
 			creatures.append(prop)
-		
+
 		if prop == creature:
 			continue
 
 		#DEBUG
 		items.append(prop)
+
+		var dist = creature.global_position.distance_to(prop.global_position)
+		res[prop] = dist
+
+	temp = res.values()
+	best_res = []
+	if not temp.is_empty():
+		temp.sort()
+		var threshold = astar_threshold if temp.size() > astar_threshold else temp.size()
+		var cut_value = temp[threshold - 1]
+		for i in res.keys():
+			if res[i] < cut_value:
+				best_res.append(i)
+
+	# Then a path check for the best results
+	for prop in best_res:
+		if not is_instance_valid(prop):
+			continue
 
 		var creature_node = creature.ai.astar_graph.tmhelper.to_local_position(creature.global_position)
 		var prop_node = creature.ai.astar_graph.tmhelper.to_local_position(prop.global_position)

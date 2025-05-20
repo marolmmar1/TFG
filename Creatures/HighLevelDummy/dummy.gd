@@ -1,43 +1,147 @@
-extends Node
+extends CharacterBody2D
 
-@onready var randomizer_timer: Timer = $Randomizer_timer
+@export_category("Movement")
+@export var ai_time = 1.0
+@export var raycasts_length = 25
+
+@export_category("Stats")
+@export var food_depletion_rate = 2.0
+@export var health_starving_rate = 5.0
+@export var health_regen_rate = 3.5
+@export var forced_rest_time = 5.0
+@export var stamina_regen_rate = 10.0
+@export var max_health = 100
+@export var max_food = 100
+@export var max_stamina = 100
+@export var attack_power = 40
+
+#HACK
+@onready var astar_graph: Node2D = $"../../AStarGraph"
+@onready var low_level_state_manager: Node2D = $"../../LowLevelStateManager"
+
+@onready var controller = $Controller
 @onready var data = $CreatureData
-@onready var AI = $AI
-@onready var high_level_state_manager:HighLevelStateManager = get_parent().get_parent().get_parent().get_parent().get_child(1)
+@onready var ai = $AI
+@onready var ai_timer: Timer = $AITimer
+@onready var markov: Timer = $MarkovTimer
 
-var randomizer_wait: bool
+@onready var down_raycast: RayCast2D = $Raycasts/DownRaycast
+@onready var up_raycast: RayCast2D = $Raycasts/UpRaycast
+@onready var left_raycast: RayCast2D = $Raycasts/LeftRaycast
+@onready var right_raycast: RayCast2D = $Raycasts/RightRaycast
+@onready var dl_raycast: RayCast2D = $Raycasts/DLRaycast
+@onready var dr_raycast: RayCast2D = $Raycasts/DRRaycast
+@onready var ul_raycast: RayCast2D = $Raycasts/ULRaycast
+@onready var ur_raycast: RayCast2D = $Raycasts/URRaycast
 
-# Called when the node enters the scene tree for the first time.
-func _ready():
-	data.spawn(CreatureData.CreatureType.HERVIVORE, 100, 100, 100, 10, get_parent().get_parent())
-	#
-	var state = high_level_state_manager.get_state(data)
-	randomizer_wait = true
+var debug = true
+#DEBUG
+var target:
+	set(value):
+		target = value
+		ai.target = value
+
+func _ready() -> void:
+	assert(astar_graph, "AStarGraph not found")
+	assert(low_level_state_manager, "LowLevelStateManager not found")
+
+	controller.init(self, {
+		})
+	
+	ai.init(astar_graph, controller, low_level_state_manager, self)
+	data.init(self, controller, food_depletion_rate, health_starving_rate, health_regen_rate, forced_rest_time, stamina_regen_rate, max_health, max_food, max_stamina, attack_power, get_parent().get_parent())
+	data.on_death.connect(death)
+
+	down_raycast.target_position = Vector2(0, raycasts_length)
+	up_raycast.target_position = Vector2(0, -raycasts_length)
+	left_raycast.target_position = Vector2(-raycasts_length, 0)
+	right_raycast.target_position = Vector2(raycasts_length, 0)
+	dl_raycast.target_position = Vector2(-raycasts_length, raycasts_length)
+	dr_raycast.target_position = Vector2(raycasts_length, raycasts_length)
+	ul_raycast.target_position = Vector2(-raycasts_length, -raycasts_length)
+	ur_raycast.target_position = Vector2(raycasts_length, -raycasts_length)
+
+	ai_timer.wait_time = ai_time
+	ai_timer.timeout.connect(ai_tick)
+	ai_timer.start()
+	markov.start()
+
+
+func check_is_on_floor() -> bool:
+	return down_raycast.is_colliding()
+
+func check_is_on_wall() -> bool:
+	return left_raycast.is_colliding() or right_raycast.is_colliding()
+
+func check_is_on_tunnel() -> bool:
+	if down_raycast.is_colliding() and up_raycast.is_colliding():
+		return true
+	elif left_raycast.is_colliding() and right_raycast.is_colliding():
+		return true
+	elif dl_raycast.is_colliding() and dr_raycast.is_colliding() and ul_raycast.is_colliding() and ur_raycast.is_colliding():
+		return true
+
+	return false
+
+func check_corner(corner: Vector2i) -> bool:
+	if corner == Vector2i(1, 1):
+		return dr_raycast.is_colliding()
+	elif corner == Vector2i(-1, 1):
+		return dl_raycast.is_colliding()
+	elif corner == Vector2i(1, -1):
+		return ur_raycast.is_colliding()
+	elif corner == Vector2i(-1, -1):
+		return ul_raycast.is_colliding()
+	else:
+		return false
 	
 
+func get_wall_dir() -> Vector2: #TODO do something if both
+	if left_raycast.is_colliding():
+		return Vector2.LEFT
+	elif right_raycast.is_colliding():
+		return Vector2.RIGHT
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta):
-	data._update_memory(data.current_zone)
-	if randomizer_wait:
-		randomizer_wait = false
-		randomizer_timer.start()
-		randomize_creature_state()
+	return Vector2.ZERO
+
+func set_collision_for_tunnel(value: bool): # Disable or enable collision with tunnel gates while in or out of tunnel
+	set_collision_mask_value(2, value)
+
+	down_raycast.set_collision_mask_value(2, value)
+	up_raycast.set_collision_mask_value(2, value)
+	left_raycast.set_collision_mask_value(2, value)
+	right_raycast.set_collision_mask_value(2, value)
+	dl_raycast.set_collision_mask_value(2, value)
+	dr_raycast.set_collision_mask_value(2, value)
+	ul_raycast.set_collision_mask_value(2, value)
+	ur_raycast.set_collision_mask_value(2, value)
 
 
+func ai_tick():
+	await ai.tick() #DEBUG
+	ai_timer.start()
 
-func _on_creature_data_death():
-	print("samatao paco")
-	queue_free()
-
-func randomize_creature_state():
-	data._set_health(randi_range(0, data.max_health))
-	data._set_food(randi_range(0, data.max_food))
-	data._set_stamina(randi_range(0, data.max_stamina))
+func death():
+	ai_timer.timeout.disconnect(ai_tick)
+	ai.process_mode = Node.PROCESS_MODE_DISABLED
+	controller.process_mode = Node.PROCESS_MODE_DISABLED
 
 
-func _on_randomizer_timer_timeout():
-	data._update_memory(data.current_zone)
-	var state = high_level_state_manager.get_state(data)
-	#AI.get_child(0)._greedy(state)print("calling astar")
-	randomizer_wait = true
+func _on_damage_taken(source, damage) -> void:
+	data.health -= damage
+
+
+func _on_markov_timer_timeout():
+	if debug:
+		#debug=false
+		var zone_graph = get_parent().get_parent().get_parent().zone_graph
+		data.memory["zones"] = zone_graph["zones"]
+		data.memory["edges"] = zone_graph["edges"]
+		for zone:ZoneClass in data.memory["zones"]:
+			data.memory[zone] = zone._zone_value()
+			print(zone.name,": ", data.memory[zone])
+		var markov = Markov.new()
+		markov.run_q_learning(data)
+		print("qtable: ", markov.q_table.keys().size())
+		markov.print_q_table()
+		

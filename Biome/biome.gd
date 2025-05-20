@@ -24,8 +24,6 @@ func _ready():
 				zone_graph["edges"].append([doors_by_zone[door_data]["zone"], doors_by_zone[zone]["zone"]])
 				this_door.other_side = doors_by_zone[door_data]["doors"][zone]
 				doors_by_zone[door_data]["doors"][zone].other_side = this_door
-	var astar = HLAStar.new()
-	var path = astar.a_star(zone_graph, zone_graph["zones"][0], zone_graph["zones"][1])
 	
 	
 func _process(delta):

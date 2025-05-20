@@ -56,4 +56,4 @@ func _to_string():
 	for zone in zones:
 		zones_string += zone._to_string()+","
 	zones_string += "]"
-	return "Health: " + str(health) + "\nFood: " + str(food) + "\nStamina: " + str(stamina)+"\nCurrent Zone: " + str(current_zone) + "\nZones: " + zones_string
+	return "----------------"+"\nHealth: " + str(health) + "\nFood: " + str(food) + "\nStamina: " + str(stamina)+"\nCurrent Zone: " + str(current_zone) + "\nZones: " + zones_string +"\n"

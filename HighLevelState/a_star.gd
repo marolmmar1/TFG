@@ -58,10 +58,17 @@ func get_neighbors(graph: Dictionary, zone: ZoneClass) -> Array:
 
 func get_edge_weight(graph: Dictionary, zone_a: ZoneClass, zone_b: ZoneClass) -> float:
 	for edge in graph["edges"]:
-		if edge[0] == zone_a and edge[1] == zone_b:
-			return edge[1].threat_level  # Weight is the threat level of the second zone
-		elif edge[1] == zone_a and edge[0] == zone_b:
-			return edge[0].threat_level  # Reverse edge case
+		if graph.keys().has(edge[0]) and graph.keys().has(edge[1]):
+			if edge[0] == zone_a and edge[1] == zone_b:
+				return graph[edge[1]]["threat_level"]  # Weight is the threat level of the second zone
+			elif edge[1] == zone_a and edge[0] == zone_b:
+				return graph[edge[0]]["threat_level"]
+		else:
+			if edge[0] == zone_a and edge[1] == zone_b:
+				print("comprobar grafo:", graph.keys())
+				return edge[1].threat_level  # Weight is the threat level of the second zone
+			elif edge[1] == zone_a and edge[0] == zone_b:
+				return edge[0].threat_level  # Reverse edge case
 	return INF  # If edge not found (should not happen)
 
 

@@ -32,7 +32,7 @@ var queued_vars = {}
 
 var position:
 	get:
-		return controller.position
+		return controller.global_position
 	set(value):
 		assert(false)
 

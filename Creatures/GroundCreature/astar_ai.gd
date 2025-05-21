@@ -103,7 +103,7 @@ func astar(current_node: Vector2i, target_node: Vector2i, debug_mode = false) ->
 
 		#DEBUG
 		if debug_mode:
-			astar_graph.astar_on_going.append(astar_graph.tmhelper.to_world_position(lowest_cost_node.node))
+			astar_graph.astar_on_going.append(astar_graph.tmhelper.to_world_position_in_physics(lowest_cost_node.node))
 			# print("parent cost: ", lowest_cost_node.parent.cost if lowest_cost_node.parent else 0)
 			# print("cost: ", lowest_cost_node.cost - lowest_cost_node.parent.cost if lowest_cost_node.parent else lowest_cost_node.cost)
 			# print("heuristic: ", node_heuristic(lowest_cost_node, AstarAINode.new(target_node, null, 0)))

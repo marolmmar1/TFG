@@ -11,7 +11,7 @@ func enter(mainAI, _target = null):
 
 
 func execute(mainAI):
-	mainAI.target = target.position
+	mainAI.target = target.global_position
 	
 	if can_attack:
 		mainAI.attack(target)

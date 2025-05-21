@@ -13,8 +13,5 @@ var target_door: Door
 #assings the target door. Destination must be adjacent to current zone
 func choose_target(current_zone: ZoneClass, destination: ZoneClass):
 	for door in current_zone.doors:
-		if door.other_side.get_parent().get_parent().get_parent() == destination:
+		if door.other_side and door.other_side.get_parent().get_parent().get_parent() == destination:
 			target_door = door
-
-
-

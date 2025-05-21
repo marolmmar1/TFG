@@ -54,7 +54,7 @@ func explore(state: HighLevelState, debug = false)->LeaveAction:
 		tries = tries -1
 		var door = randi_range(0, state.current_zone.id.doors.size()-1)
 		if debug:
-			print("considering"+ str(state.current_zone.id.doors[door].name))
+			print("considering "+ str(state.current_zone.id.doors[door].name))
 		for zone in state.zones:
 			if not(zone.id == state.current_zone.id.doors[door].other_side.get_parent().get_parent().get_parent()):
 				if debug:
@@ -62,8 +62,9 @@ func explore(state: HighLevelState, debug = false)->LeaveAction:
 				leave.choose_target(state.current_zone.id, zone.id)
 				return leave
 		if tries == 0:
-			if debug:
+			if debug and state.current_zone.id.doors[door].other_side:
 				print("leave to " + str(state.current_zone.id.doors[door].other_side.get_parent().get_parent().get_parent().name))
-			leave.choose_target(state.current_zone.id, state.current_zone.id.doors[door].other_side.get_parent().get_parent().get_parent())
-			return leave
+			if state.current_zone.id.doors[door].other_side:
+				leave.choose_target(state.current_zone.id, state.current_zone.id.doors[door].other_side.get_parent().get_parent().get_parent())
+				return leave
 	return null

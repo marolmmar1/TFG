@@ -32,6 +32,7 @@ func get_closest_food(state: LowLevelState):
 					closest_food = item
 					
 		return closest_food
+	return null
 
 func get_highest_food_value_in_range(state: LowLevelState, range: int):
 	pass
@@ -49,6 +50,7 @@ func get_highest_tl_in_range(state: LowLevelState, range: int):
 					max_tl = item.threat_level
 					
 		return max_tl
+	return 0
 
 # If there are creatures in visible items, return the one with the higheset threat level
 func get_highest_threat_in_range(state: LowLevelState, range: int):
@@ -62,3 +64,4 @@ func get_highest_threat_in_range(state: LowLevelState, range: int):
 					highest_threat = item
 					
 		return highest_threat
+	return null

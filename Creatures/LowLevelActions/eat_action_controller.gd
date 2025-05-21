@@ -13,7 +13,7 @@ func execute(mainAI):
 		on_action_finished.emit()
 
 	else:
-		mainAI.target = food.position
+		mainAI.target = food.global_position
 
 		if can_eat:
 			mainAI.eat(food)

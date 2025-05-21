@@ -51,7 +51,7 @@ func _on_randomicer_timeout():
 	random_wait = true	
 
 func _zone_value():
-	var value  = (threat_level + food_amount)/2
+	var value  = (threat_level + food_amount)/2.0
 	return roundf(value)
 
 func _to_string():

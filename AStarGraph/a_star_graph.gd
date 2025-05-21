@@ -344,7 +344,7 @@ func delete_isolated_nodes():
 
 func get_exit_node(door):
 	for node in astar_nodes:
-		if tmhelper.is_exit(node, [door]):
+		if tmhelper.is_exit(node, [door]) and (node in platform_nodes or node in platform_wall_nodes):
 			return tmhelper.to_world_position(node)
 
 
@@ -377,56 +377,56 @@ func _draw():
 	if not tmhelper.tilemap:
 		return
 
-	draw_circle(tmhelper.to_world_position(Vector2(0, 0)), 5, Color(0, 0, 0))
-	draw_circle(tmhelper.to_world_position(Vector2(10, 0)), 5, Color(0, 0, 0))
-	draw_circle(tmhelper.to_world_position(Vector2(20, 0)), 5, Color(0, 0, 0))
-	draw_circle(tmhelper.to_world_position(Vector2(20, 0)), 5, Color(0, 0, 0))
-	draw_circle(tmhelper.to_world_position(Vector2(30, 0)), 5, Color(0, 0, 0))
-	draw_circle(tmhelper.to_world_position(Vector2(0, 10)), 5, Color(0, 0, 0))
-	draw_circle(tmhelper.to_world_position(Vector2(0, 20)), 5, Color(0, 0, 0))
-	draw_circle(tmhelper.to_world_position(Vector2(0, 30)), 5, Color(0, 0, 0))
+	draw_circle(tmhelper.to_world_position_in_physics(Vector2(0, 0)), 5, Color(0, 0, 0))
+	draw_circle(tmhelper.to_world_position_in_physics(Vector2(10, 0)), 5, Color(0, 0, 0))
+	draw_circle(tmhelper.to_world_position_in_physics(Vector2(20, 0)), 5, Color(0, 0, 0))
+	draw_circle(tmhelper.to_world_position_in_physics(Vector2(20, 0)), 5, Color(0, 0, 0))
+	draw_circle(tmhelper.to_world_position_in_physics(Vector2(30, 0)), 5, Color(0, 0, 0))
+	draw_circle(tmhelper.to_world_position_in_physics(Vector2(0, 10)), 5, Color(0, 0, 0))
+	draw_circle(tmhelper.to_world_position_in_physics(Vector2(0, 20)), 5, Color(0, 0, 0))
+	draw_circle(tmhelper.to_world_position_in_physics(Vector2(0, 30)), 5, Color(0, 0, 0))
 	
 	for node in platform_nodes:
-		var world_position = tmhelper.to_world_position(node)
+		var world_position = tmhelper.to_world_position_in_physics(node)
 		draw_circle(world_position, 5, Color(0, 0, 1))
 	
 	for node in platform_wall_nodes:
-		var world_position = tmhelper.to_world_position(node)
+		var world_position = tmhelper.to_world_position_in_physics(node)
 		draw_circle(world_position, 5, Color(1, 0, 0))
 
 	for node in wall_nodes:
-		var world_position = tmhelper.to_world_position(node)
+		var world_position = tmhelper.to_world_position_in_physics(node)
 		draw_circle(world_position, 5, Color(1, 1, 0))
 
 	for node in wall_grab_nodes:
-		var world_position = tmhelper.to_world_position(node)
+		var world_position = tmhelper.to_world_position_in_physics(node)
 		draw_circle(world_position, 5, Color(0.5, 0.5, 0.5))
 
 	for node in wall_corner_nodes:
-		var world_position = tmhelper.to_world_position(node)
+		var world_position = tmhelper.to_world_position_in_physics(node)
 		draw_circle(world_position, 5, Color(1, 0, 1))
 
 	for node in intersection_nodes:
-		var world_position = tmhelper.to_world_position(node)
+		var world_position = tmhelper.to_world_position_in_physics(node)
 		draw_circle(world_position, 5, Color(0, 1, 0))
 
 	for node in tunnel_gate_nodes:
-		var world_position = tmhelper.to_world_position(node)
+		var world_position = tmhelper.to_world_position_in_physics(node)
 		draw_circle(world_position, 5, Color(1, 0.5, 0))
 
 	for node in tunnel_end_nodes:
-		var world_position = tmhelper.to_world_position(node)
+		var world_position = tmhelper.to_world_position_in_physics(node)
 		draw_circle(world_position, 5, Color(0, 0, 0))
 
 	for node in platform_fall_nodes:
-		var world_position = tmhelper.to_world_position(node)
+		var world_position = tmhelper.to_world_position_in_physics(node)
 		draw_circle(world_position, 5, Color(0, 1, 1))
 
 
 	for node in astar_nodes:
-		var world_position_a = tmhelper.to_world_position(node)
+		var world_position_a = tmhelper.to_world_position_in_physics(node)
 		for edge in astar_nodes[node]:
-			var world_position_b = tmhelper.to_world_position(edge.to)
+			var world_position_b = tmhelper.to_world_position_in_physics(edge.to)
 			var color: Color
 			match edge.movement_type:
 				Edge.MovementType.WALK:
@@ -462,22 +462,22 @@ func _draw():
 				draw_line(world_position_b, arrowhead2, Color(1, 0, 0), 2)
 
 	if astar_target:
-		draw_circle(astar_target, 10, Color(0, 1, 0))
+		draw_circle(astar_target - self.global_position, 10, Color(0, 1, 0))
 	
 	for i in astar_on_going:
 		draw_circle(i, 10, Color(1, 0, 0))
 
 	for edge in astar_path:
-		var world_position_a = tmhelper.to_world_position(edge.from)
-		var world_position_b = tmhelper.to_world_position(edge.to)
+		var world_position_a = tmhelper.to_world_position_in_physics(edge.from)
+		var world_position_b = tmhelper.to_world_position_in_physics(edge.to)
 		draw_line(world_position_a, world_position_b, Color(0, 0, 0), 2)
 
 	for node in update_nodes:
-		var world_position = tmhelper.to_world_position(node)
+		var world_position = tmhelper.to_world_position_in_physics(node)
 		draw_circle(world_position, 2.5, Color(0, 0, 0))
 
 	if creature_bounding_box.size() == 4:
-		draw_line(creature_bounding_box[0], creature_bounding_box[1], Color(0.75, 0, 0.75), 2)
-		draw_line(creature_bounding_box[1], creature_bounding_box[2], Color(0.75, 0, 0.75), 2)
-		draw_line(creature_bounding_box[2], creature_bounding_box[3], Color(0.75, 0, 0.75), 2)
-		draw_line(creature_bounding_box[3], creature_bounding_box[0], Color(0.75, 0, 0.75), 2)
+		draw_line(creature_bounding_box[0] - self.global_position, creature_bounding_box[1] - self.global_position, Color(0.75, 0, 0.75), 2)
+		draw_line(creature_bounding_box[1] - self.global_position, creature_bounding_box[2] - self.global_position, Color(0.75, 0, 0.75), 2)
+		draw_line(creature_bounding_box[2] - self.global_position, creature_bounding_box[3] - self.global_position, Color(0.75, 0, 0.75), 2)
+		draw_line(creature_bounding_box[3] - self.global_position, creature_bounding_box[0] - self.global_position, Color(0.75, 0, 0.75), 2)

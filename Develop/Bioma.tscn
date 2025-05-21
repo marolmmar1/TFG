@@ -221,6 +221,7 @@ wait_time = 10.0
 
 [node name="StatBars" parent="UI" node_paths=PackedStringArray("character") instance=ExtResource("8_rce6s")]
 character = NodePath("../../Biome/Zone_2/ZoneProps/Creature1")
+metadata/_edit_use_anchors_ = true
 
 [node name="StatBars2" parent="UI" node_paths=PackedStringArray("character") instance=ExtResource("8_rce6s")]
 character = NodePath("../../Biome/Zone_2/ZoneProps/Creature2")

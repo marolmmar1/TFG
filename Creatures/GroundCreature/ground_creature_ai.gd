@@ -16,8 +16,21 @@ extends Node2D
 
 var high_level_state_manager:HighLevelStateManager
 
-var astar_graph: Node2D
-var low_level_state_manager
+var astar_graph: Node2D:
+	get:
+		return astar_graph
+	set(value):
+		astar_graph = value
+		astar_ai.astar_graph = value
+
+var low_level_state_manager:
+	get:
+		return low_level_state_manager
+	set(value):
+		low_level_state_manager = value
+		low_level_ai.low_level_state_manager = value
+		astar_ai.low_level_state_manager = value
+
 var controller
 var creature
 var calculating_low_action
@@ -33,11 +46,9 @@ var current_high_level_action
 signal on_target_reached
 signal on_current_node_missing(creature)
 
-func _ready():
-
-	high_level_state_manager=get_parent().get_parent().get_parent().get_parent().get_node("HighLevelStateManager")
 
 func init(_astar, _controller, _low_level_state_manager, _creature):
+	high_level_state_manager=get_parent().get_parent().get_parent().get_parent().get_node("HighLevelStateManager")
 	self.astar_graph = _astar
 	self.controller = _controller
 	self.low_level_state_manager = _low_level_state_manager
@@ -66,9 +77,8 @@ func init(_astar, _controller, _low_level_state_manager, _creature):
 
 #TODO pass to higher AI
 func tick():
-	# var state = high_level_state_manager.get_state(creature.data)
-	# var action = high_level_ai._greedy(state)
-	var action = null
+	var state = high_level_state_manager.get_state(creature.data)
+	var action = high_level_ai._greedy(state)
 
 	if action:
 		if not current_high_level_action or not action.target_door == current_high_level_action.target_door:
@@ -77,6 +87,7 @@ func tick():
 				current_low_level_action.exit(self)
 			current_low_level_action = leave_action_controller
 			current_low_level_action.enter(self, exit_node)
+			current_high_level_action = action
 	
 	else:
 		current_high_level_action = null
@@ -160,6 +171,7 @@ func calculate_astar():
 	path = []
 	path_index = 0
 	last_dist = 100000
+
 	path = await astar_ai.astar(current_node, target_node, true) #DEBUG
 
 
@@ -271,7 +283,7 @@ func check_path_progress(state = null):
 func calculate_movement():
 	if not path:
 		return
-	
+		
 	var next_node = path[path_index].to
 
 	match path[path_index].movement_type:
@@ -294,28 +306,28 @@ func calculate_movement():
 
 
 func walk(next_node):
-	controller.queue_change_state(controller.walk_state, {"target node": astar_graph.tmhelper.to_world_position(next_node)})
+	controller.queue_change_state(controller.walk_state, {"target node": astar_graph.tmhelper.to_world_position_in_physics(next_node)})
 
 func climb(next_node):
-	controller.queue_change_state(controller.climb_state, {"target node": astar_graph.tmhelper.to_world_position(next_node)})
+	controller.queue_change_state(controller.climb_state, {"target node": astar_graph.tmhelper.to_world_position_in_physics(next_node)})
 
 func crawl(next_node):
-	controller.queue_change_state(controller.crawl_state, {"target node": astar_graph.tmhelper.to_world_position(next_node)})
+	controller.queue_change_state(controller.crawl_state, {"target node": astar_graph.tmhelper.to_world_position_in_physics(next_node)})
 
 func switch_climbing(next_node):
-	controller.queue_change_state(controller.switch_climbing_state, {"target node": astar_graph.tmhelper.to_world_position(next_node)})
+	controller.queue_change_state(controller.switch_climbing_state, {"target node": astar_graph.tmhelper.to_world_position_in_physics(next_node)})
 
 func switch_crawl_walk(next_node):
-	controller.queue_change_state(controller.switch_crawl_walk_state, {"target node": astar_graph.tmhelper.to_world_position(next_node)})
+	controller.queue_change_state(controller.switch_crawl_walk_state, {"target node": astar_graph.tmhelper.to_world_position_in_physics(next_node)})
 
 func switch_crawl_climb(next_node):
-	controller.queue_change_state(controller.switch_crawl_climb_state, {"target node": astar_graph.tmhelper.to_world_position(next_node)})
+	controller.queue_change_state(controller.switch_crawl_climb_state, {"target node": astar_graph.tmhelper.to_world_position_in_physics(next_node)})
 
 func jump(next_node):
-	if controller.position.distance_to(astar_graph.tmhelper.to_world_position(next_node)) < unnecessary_jump_threshold:
+	if controller.position.distance_to(astar_graph.tmhelper.to_world_position_in_physics(next_node)) < unnecessary_jump_threshold:
 		walk(next_node) #TODO maybe we need to check for climbing too?	
 	elif controller.current_state != controller.fall_state:
-		controller.queue_change_state(controller.jump_state, {"target node": astar_graph.tmhelper.to_world_position(next_node)})
+		controller.queue_change_state(controller.jump_state, {"target node": astar_graph.tmhelper.to_world_position_in_physics(next_node)})
 	#TODO IMPORTANT Add alternative movement here, and probably add the same behaviour to switching movements once we figure it out
 
 func fall():

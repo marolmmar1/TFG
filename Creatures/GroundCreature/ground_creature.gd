@@ -15,9 +15,18 @@ extends CharacterBody2D
 @export var max_stamina = 100
 @export var attack_power = 40
 
-#HACK
-@onready var astar_graph: Node2D = $"../../AStarGraph"
-@onready var low_level_state_manager: Node2D = $"../../LowLevelStateManager"
+var astar_graph: Node2D:
+	get:
+		return astar_graph
+	set(value):
+		astar_graph = value
+		ai.astar_graph = value
+var low_level_state_manager: Node2D:
+	get:
+		return low_level_state_manager
+	set(value):
+		low_level_state_manager = value
+		ai.low_level_state_manager = value
 
 @onready var controller = $Controller
 @onready var data = $CreatureData
@@ -40,6 +49,10 @@ var food_value: float:
 		data.food_value = value
 
 func _ready() -> void:
+	#HACK
+	astar_graph = $"../../AStarGraph"
+	low_level_state_manager = $"../../LowLevelStateManager"
+
 	assert(astar_graph, "AStarGraph not found")
 	assert(low_level_state_manager, "LowLevelStateManager not found")
 

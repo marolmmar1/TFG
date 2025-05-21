@@ -73,6 +73,10 @@ func get_adjacent_cells(cell):
 	]
 	return adjacent_cells
 
+# Not sure why but some methods like _draw and raycast seem to add the global position by default so we need to remove it
+func to_world_position_in_physics(cell):
+	return tilemap.to_global(tilemap.map_to_local(cell)) - tilemap.global_position;
+	
 func to_world_position(cell):
 	return tilemap.to_global(tilemap.map_to_local(cell));
 
@@ -83,8 +87,8 @@ func to_local_position(cell):
 	return v
 
 func raycast(from, to):
-	_raycast.target_position = to_world_position(to) - to_world_position(from)
-	_raycast.position = to_world_position(from)
+	_raycast.target_position = to_world_position_in_physics(to) - to_world_position_in_physics(from)
+	_raycast.position = to_world_position_in_physics(from)
 	_raycast.enabled = true
 	_raycast.force_update_transform()
 	_raycast.force_raycast_update()

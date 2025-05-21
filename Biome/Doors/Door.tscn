@@ -6,6 +6,8 @@
 size = Vector2(7.5, 33.5)
 
 [node name="Door" type="Area2D"]
+collision_layer = 8
+collision_mask = 4
 script = ExtResource("1_1h8ge")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
@@ -13,3 +15,5 @@ shape = SubResource("RectangleShape2D_7nx71")
 
 [node name="ExitSpawn" type="Node2D" parent="."]
 position = Vector2(24, 0)
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]

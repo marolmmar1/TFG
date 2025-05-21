@@ -207,7 +207,10 @@ func _draw():
 			elif item.is_in_group("Creature"):
 				color = Color(0, 0, 1)
 
-			var dist = remap_and_quantize_value(creature.global_position.distance_to(item.global_position), 0, max_considerable_distance, 0, dist_n)
+			var creature_pos = creature.global_position - self.global_position
+			var item_pos = item.global_position - self.global_position
+
+			var dist = remap_and_quantize_value(creature_pos.distance_to(item_pos), 0, max_considerable_distance, 0, dist_n)
 			if dist == 0:
 				color *= 0.25
 			elif dist == 1:
@@ -218,13 +221,13 @@ func _draw():
 				color *= 1.0
 
 			if debug:
-				draw_line(creature.global_position, item.global_position, color, 1.5)
+				draw_line(creature_pos, item_pos, color, 1.5)
 
-				var direction = (item.global_position - creature.global_position).normalized()
-				var arrowhead1 = item.global_position - direction * 20 + direction.rotated(PI / 2) * 10
-				var arrowhead2 = item.global_position - direction * 20 - direction.rotated(PI / 2) * 10
-				draw_line(item.global_position, arrowhead1, color, 1.5)
-				draw_line(item.global_position, arrowhead2, color, 1.5)
+				var direction = (item_pos - creature_pos).normalized()
+				var arrowhead1 = item_pos - direction * 20 + direction.rotated(PI / 2) * 10
+				var arrowhead2 = item_pos - direction * 20 - direction.rotated(PI / 2) * 10
+				draw_line(item_pos, arrowhead1, color, 1.5)
+				draw_line(item_pos, arrowhead2, color, 1.5)
 
 			if creature.ai.target:
-				draw_line(creature.global_position, creature.ai.target, Color(1, 1, 1), 3)
+				draw_line(creature_pos, creature.ai.target - self.global_position, Color(1, 1, 1), 3)

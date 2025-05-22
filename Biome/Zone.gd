@@ -12,6 +12,7 @@ class_name ZoneClass
 @onready var random_timer: Timer = $Randomicer
 @onready var zone_tilemap: TileMap = $TileMap
 @onready var random_wait : bool = true
+@onready var berry_spawner = $BerrySpawner
 
 enum ZoneType{REGULAR, LAIR}
 
@@ -30,7 +31,17 @@ func _ready():
 	food_amount = randi_range(1, 3)
 	astar_graph.init(tilemap, self)
 	low_level_state_manager.init(self)
+	random_timer.wait_time = randf_range(5, 10.0)
+	food_amount = quantize(random_timer.wait_time,10.0)
 
+func quantize(value, max_value)->int:
+	var quantized_value = 3
+	var threshold = max_value/3
+	if value > 2*threshold:
+		quantized_value = 1
+	elif value > threshold:
+		quantized_value = 2
+	return quantized_value
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
@@ -39,13 +50,15 @@ func _process(delta):
 		randomize_zone()
 
 func randomize_zone():
-	#print(zone_tilemap.get_parent().get_name())
-	random_timer.start()
-	threat_level = randi_range(1, 3)
-	food_amount = randi_range(1, 3)
-	#print("Threat level: ", threat_level)
-	#print("Food amount: ", food_amount)
-
+	var berrys = zone_props.get_children().filter(func(x): return x.name.begins_with("Berry")).size()
+	if berry_spawner != null:
+		var slots = berry_spawner.get_children()
+		var selector = range(0, slots.size()-1)
+		while berrys < slots.size():
+			var id= randi_range(0, selector.size())
+			slots[id].spawn()
+			selector.remove_at(id)
+			berrys += 1
 	
 func _on_randomicer_timeout():
 	random_wait = true	

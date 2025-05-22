@@ -149,8 +149,8 @@ func is_wall_corner_node(cell: Vector2i) -> bool:
 	var left = cell + Vector2i(-1, 0)
 	var right = cell + Vector2i(1, 0)
 
-	var has_left_terrain = tmhelper.is_terrain(left)
-	var has_right_terrain = tmhelper.is_terrain(right)
+	var has_left_terrain = tmhelper.is_terrain(left) or tmhelper.is_tunnel_gate_node(left)
+	var has_right_terrain = tmhelper.is_terrain(right) or tmhelper.is_tunnel_gate_node(right)
 
 	# Must have terrain on either the left or right side, but not both
 	if not (has_left_terrain or has_right_terrain) or (has_left_terrain and has_right_terrain):
@@ -158,7 +158,7 @@ func is_wall_corner_node(cell: Vector2i) -> bool:
 
 	# Check if there is terrain above (0, -1)
 	var above = cell + Vector2i(0, -1)
-	if not tmhelper.is_terrain(above):
+	if not (tmhelper.is_terrain(above) or tmhelper.is_tunnel_gate_node(above)):
 		return false
 
 	# Check if there is terrain between the side and above

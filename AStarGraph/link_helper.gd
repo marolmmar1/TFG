@@ -175,16 +175,16 @@ func link_platform_and_wall_nodes(astar_nodes, platform_nodes, wall_grab_nodes):
 				astar_nodes[node_a].append(Edge.new(node_a, node_b, Edge.MovementType.SWITCH_CLIMBING))
 				astar_nodes[node_b].append(Edge.new(node_b, node_a, Edge.MovementType.SWITCH_CLIMBING))
 
-func link_tunnel_gate_nodes(astar_nodes, tunnel_gate_nodes, platform_nodes, wall_nodes, platform_wall_nodes):
+func link_tunnel_gate_nodes(astar_nodes, tunnel_gate_nodes, platform_nodes, wall_nodes, platform_wall_nodes, wall_corner_nodes):
 	# Combine tunnel gate nodes, platform nodes, wall nodes, and platform wall nodes into a single list
-	var all_nodes = tunnel_gate_nodes + platform_nodes + wall_nodes + platform_wall_nodes
+	var all_nodes = tunnel_gate_nodes + platform_nodes + wall_nodes + platform_wall_nodes + wall_corner_nodes
 
 	for i in range(all_nodes.size()):
 		var node_a = all_nodes[i]
 		for j in range(all_nodes.size()):
 			var node_b = all_nodes[j]
 			if tmhelper.get_adjacent_cells(node_a).has(node_b) and tunnel_gate_nodes.has(node_a) and \
-			(platform_nodes.has(node_b) or wall_nodes.has(node_b) or platform_wall_nodes.has(node_b)):
+			(platform_nodes.has(node_b) or wall_nodes.has(node_b) or platform_wall_nodes.has(node_b) or wall_corner_nodes.has(node_b)):
 
 				# Add a bidirectional connection depending on the source node
 				if wall_nodes.has(node_b):

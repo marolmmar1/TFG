@@ -4,6 +4,7 @@ extends Node2D
 @export var detect_target_dist: float = 30.0 # Depends on creature size. There are probably better ways to do this though
 @export var unnecessary_jump_threshold: float = 25.0
 @export var bounding_box_margin: float = 20.0
+@export var jump_dist_when_walk_in_wall: float = 0.15
 
 @onready var astar_ai = $AstarAI
 @onready var low_level_ai = $LowLevelAI
@@ -284,11 +285,12 @@ func calculate_movement():
 	if not path:
 		return
 		
+	var current_node = path[path_index].from
 	var next_node = path[path_index].to
 
 	match path[path_index].movement_type:
 		Edge.MovementType.WALK: 
-			walk(next_node)
+			walk(next_node, current_node)
 		Edge.MovementType.CLIMB:
 			climb(next_node)
 		Edge.MovementType.CRAWL:
@@ -305,8 +307,13 @@ func calculate_movement():
 			fall()
 
 
-func walk(next_node):
-	controller.queue_change_state(controller.walk_state, {"target node": astar_graph.tmhelper.to_world_position_in_physics(next_node)})
+func walk(next_node, current_node = null):
+	if controller.controller.check_is_on_floor() or current_node == null:
+		controller.queue_change_state(controller.walk_state, {"target node": astar_graph.tmhelper.to_world_position_in_physics(next_node)})
+	# Avoid getting stucked when almost touching the ground
+	else:
+		var dir = Vector2(next_node - current_node).normalized() * jump_dist_when_walk_in_wall
+		controller.queue_change_state(controller.jump_state, {"target node": astar_graph.tmhelper.to_world_position_in_physics(Vector2(current_node) + dir)})
 
 func climb(next_node):
 	controller.queue_change_state(controller.climb_state, {"target node": astar_graph.tmhelper.to_world_position_in_physics(next_node)})

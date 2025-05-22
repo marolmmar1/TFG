@@ -68,4 +68,4 @@ func tick(delta):
 
 
 func check_conditions(vars) -> bool:
-	return controller.check_is_on_floor() and can_jump
+	return (controller.check_is_on_floor() or controller.check_is_on_wall()) and can_jump

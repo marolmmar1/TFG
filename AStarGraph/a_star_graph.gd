@@ -62,7 +62,7 @@ func init(_tilemap, _zone):
 	link_helper.link_wall_nodes(astar_nodes, wall_nodes, platform_wall_nodes, wall_corner_nodes, wall_grab_nodes)
 	link_helper.link_intersection_and_tunnel_gate_nodes(astar_nodes, intersection_nodes, tunnel_gate_nodes, tunnel_end_nodes)
 	link_helper.link_platform_and_wall_nodes(astar_nodes, platform_nodes, wall_grab_nodes)
-	link_helper.link_tunnel_gate_nodes(astar_nodes, tunnel_gate_nodes, platform_nodes, wall_nodes, platform_wall_nodes)
+	link_helper.link_tunnel_gate_nodes(astar_nodes, tunnel_gate_nodes, platform_nodes, wall_nodes, platform_wall_nodes, wall_corner_nodes)
 	link_helper.link_nodes_by_jump(astar_nodes, platform_nodes, wall_grab_nodes, platform_fall_nodes, vertical_jump_dist, horizontal_jump_dist, max_fall_height)
 	link_helper.link_nodes_by_fall(astar_nodes, platform_nodes, wall_grab_nodes, platform_wall_nodes, platform_fall_nodes, wall_nodes, max_fall_height)
 
@@ -207,7 +207,7 @@ func update_nodes_in_radius(_astar_nodes, node, update_radius):
 	link_helper.link_wall_nodes(_astar_nodes, update_wall_nodes, update_platform_wall_nodes, update_wall_corner_nodes, update_wall_grab_nodes)
 	link_helper.link_intersection_and_tunnel_gate_nodes(_astar_nodes, update_intersection_nodes, update_tunnel_gate_nodes, update_tunnel_end_nodes)
 	link_helper.link_platform_and_wall_nodes(_astar_nodes, update_platform_nodes, update_wall_grab_nodes)
-	link_helper.link_tunnel_gate_nodes(_astar_nodes, update_tunnel_gate_nodes, update_platform_nodes, update_wall_nodes, update_platform_wall_nodes)
+	link_helper.link_tunnel_gate_nodes(_astar_nodes, update_tunnel_gate_nodes, update_platform_nodes, update_wall_nodes, update_platform_wall_nodes, update_wall_corner_nodes)
 	link_helper.link_nodes_by_jump(_astar_nodes, update_platform_nodes, update_wall_grab_nodes, update_platform_fall_nodes, vertical_jump_dist, horizontal_jump_dist, max_fall_height)
 	link_helper.link_nodes_by_fall(_astar_nodes, update_platform_nodes, update_wall_grab_nodes, update_platform_wall_nodes, update_platform_fall_nodes, update_wall_nodes, max_fall_height)
 	link_helper.link_mid_air(astar_nodes, update_mid_air_nodes, wall_nodes, wall_grab_nodes, vertical_jump_dist, horizontal_jump_dist, max_fall_height)
@@ -344,7 +344,7 @@ func delete_isolated_nodes():
 
 func get_exit_node(door):
 	for node in astar_nodes:
-		if tmhelper.is_exit(node, [door]) and (node in platform_nodes or node in platform_wall_nodes):
+		if tmhelper.is_exit(node, [door]):
 			return tmhelper.to_world_position(node)
 
 

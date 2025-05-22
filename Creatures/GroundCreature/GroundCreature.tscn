@@ -144,6 +144,11 @@ script = ExtResource("14_wg4da")
 
 [node name="AI" type="Node2D" parent="."]
 script = ExtResource("13_nlyld")
+detect_node_dist = null
+detect_target_dist = null
+unnecessary_jump_threshold = null
+bounding_box_margin = null
+jump_dist_when_walk_in_wall = null
 
 [node name="AstarAI" type="Node" parent="AI"]
 script = ExtResource("15_moayh")

@@ -1,0 +1,75 @@
+[gd_scene load_steps=2 format=3 uid="uid://b06qwc2b30okt"]
+
+[ext_resource type="Script" path="res://Develop/Debug/chromosome_debug.gd" id="1_yn1k5"]
+
+[node name="ChromosomeDebug" type="Control"]
+layout_mode = 3
+anchors_preset = 11
+anchor_left = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -313.0
+grow_horizontal = 0
+grow_vertical = 2
+script = ExtResource("1_yn1k5")
+
+[node name="ColorRect" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.494118)
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 14
+text = "{
+	\"attack\": {
+		\"threat_mod\": 1.0, 
+		\"dist_mod\": 1.0, 
+		\"food_value_mod\": 1.0, 
+		\"health_mod\": 1.0,
+		\"food_mod\": 1.0,
+		\"stamina_mod\": 1.0,
+	},
+	\"flee\": {
+		\"threat_mod\": 1.0, 
+		\"dist_mod\": 1.0, 
+		\"health_mod\": 1.0,
+		\"food_mod\": 1.0,
+		\"stamina_mod\": 1.0,
+	},
+	\"eat\": {	
+		\"threat_mod\": 1.0,
+		\"dist_mod\": 1.0, 
+		\"food_value_mod\": 1.0, 
+		\"health_mod\": 1.0,
+		\"food_mod\": 1.0,
+		\"stamina_mod\": 1.0,
+	},
+	\"jump_reliability_cost_mult\": 1.0,
+	\"fall_reliability_cost_mult\": 1.0,
+	\"threat_base_cost\": 100.0
+}
+"
+
+[node name="Hide" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = -50.0
+offset_top = -18.0
+offset_right = 1.0
+offset_bottom = 18.0
+grow_vertical = 2
+text = "Hide"
+
+[connection signal="button_down" from="Hide" to="." method="_on_hide_button_down"]

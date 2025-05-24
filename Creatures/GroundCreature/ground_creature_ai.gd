@@ -5,6 +5,8 @@ extends Node2D
 @export var unnecessary_jump_threshold: float = 25.0
 @export var bounding_box_margin: float = 20.0
 @export var jump_dist_when_walk_in_wall: float = 0.15
+#DEBUG
+@export var use_high_level_ai: bool = false
 
 @onready var astar_ai = $AstarAI
 @onready var low_level_ai = $LowLevelAI
@@ -14,6 +16,14 @@ extends Node2D
 @onready var attack_action_controller = $LowLevelAI/AttackAction
 @onready var rest_action_controller = $LowLevelAI/RestAction
 @onready var leave_action_controller = $LowLevelAI/LeaveAction
+
+var chromosome:
+	get:
+		if low_level_ai.genetic:
+			return low_level_ai.genetic.chromosome
+		return null
+	set(value):
+		push_warning("Cannot set chromosome manually")
 
 var high_level_state_manager:HighLevelStateManager
 
@@ -78,8 +88,11 @@ func init(_astar, _controller, _low_level_state_manager, _creature):
 
 #TODO pass to higher AI
 func tick():
-	var state = high_level_state_manager.get_state(creature.data)
-	var action = high_level_ai._greedy(state)
+	#DEBUG
+	var action = null
+	if use_high_level_ai:
+		var state = high_level_state_manager.get_state(creature.data)
+		action = high_level_ai._greedy(state)
 
 	if action:
 		if not current_high_level_action or not action.target_door == current_high_level_action.target_door:

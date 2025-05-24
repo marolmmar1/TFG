@@ -1,0 +1,94 @@
+[gd_scene load_steps=3 format=3 uid="uid://nef80b77kgwm"]
+
+[ext_resource type="Script" path="res://Develop/cycle_manager.gd" id="1_rudlh"]
+[ext_resource type="Texture2D" uid="uid://dxdr43hl7tbpc" path="res://Develop/Debug/clock.png" id="2_wt0kn"]
+
+[node name="CycleManager" type="Node"]
+script = ExtResource("1_rudlh")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="CycleCont" type="Control" parent="CanvasLayer"]
+layout_mode = 3
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 7.0
+offset_top = -168.0
+offset_right = 168.0
+offset_bottom = -7.0
+grow_vertical = 0
+
+[node name="TextureRect" type="TextureRect" parent="CanvasLayer/CycleCont"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -26.0
+offset_bottom = -26.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_wt0kn")
+expand_mode = 1
+
+[node name="StageLabel" type="Label" parent="CanvasLayer/CycleCont"]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -105.0
+offset_bottom = -35.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_font_sizes/font_size = 32
+text = "Night"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="TimeLabel" type="Label" parent="CanvasLayer/CycleCont"]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -4.0
+offset_top = -46.0
+offset_right = 4.0
+offset_bottom = -26.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_font_sizes/font_size = 14
+text = "Night"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="DebugAddTime" type="Button" parent="CanvasLayer/CycleCont"]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = -5.0
+offset_top = -24.0
+offset_right = 77.0
+offset_bottom = 7.0
+grow_vertical = 0
+text = "1000 secs"
+
+[node name="DebugAddTime2" type="Button" parent="CanvasLayer/CycleCont"]
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -84.0
+offset_top = -24.0
+offset_right = 1.0
+offset_bottom = 7.0
+grow_horizontal = 0
+grow_vertical = 0
+text = "Next time"
+
+[connection signal="button_down" from="CanvasLayer/CycleCont/DebugAddTime" to="." method="_on_debug_add_time_button_down"]
+[connection signal="button_down" from="CanvasLayer/CycleCont/DebugAddTime2" to="." method="_on_debug_add_time_2_button_down"]

@@ -82,7 +82,7 @@ func _physics_process(delta: float):
 	if not controller:
 		return
 
-	if queued_state and not current_state.locked and queued_state.check_conditions(queued_vars):
+	if queued_state and current_state and not current_state.locked and queued_state.check_conditions(queued_vars):
 		_switch_to_queued_state()
 	
 	if current_state:

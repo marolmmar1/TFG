@@ -1,0 +1,10 @@
+[gd_scene load_steps=4 format=3 uid="uid://dv8j5pa12ji3j"]
+
+[ext_resource type="Script" path="res://Develop/spawnpoint.gd" id="1_c2s85"]
+[ext_resource type="PackedScene" uid="uid://dahmo14t7kdaw" path="res://Creatures/GroundCreature/GroundCreature.tscn" id="2_5yquo"]
+[ext_resource type="PackedScene" uid="uid://7dl7i5dhd4uy" path="res://Creatures/UI/StatBars.tscn" id="3_rurw4"]
+
+[node name="CreatureSpawner" type="Node2D"]
+script = ExtResource("1_c2s85")
+creature_scene = ExtResource("2_5yquo")
+stat_bars_scene = ExtResource("3_rurw4")

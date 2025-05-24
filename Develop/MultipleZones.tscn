@@ -1,7 +1,6 @@
-[gd_scene load_steps=15 format=3 uid="uid://d3dujfobuq3cp"]
+[gd_scene load_steps=16 format=3 uid="uid://d3dujfobuq3cp"]
 
 [ext_resource type="PackedScene" uid="uid://bd3nxbicy7oeg" path="res://UI/camera.tscn" id="1_vehll"]
-[ext_resource type="Script" path="res://UI/camera.gd" id="2_6sebl"]
 [ext_resource type="Script" path="res://Biome/biome.gd" id="3_aaqei"]
 [ext_resource type="PackedScene" uid="uid://dkismmd0t6pni" path="res://HighLevelState/high_level_state_manager.tscn" id="4_2joy4"]
 [ext_resource type="Script" path="res://Biome/Zone.gd" id="5_ewwww"]
@@ -10,21 +9,24 @@
 [ext_resource type="PackedScene" uid="uid://ci6e23n678kxs" path="res://AStarGraph/AStar.tscn" id="8_mco2c"]
 [ext_resource type="PackedScene" uid="uid://cyt3fg4dk1ela" path="res://LowLevelState/LowLevelStateManager.tscn" id="9_oxtyg"]
 [ext_resource type="PackedScene" uid="uid://7obkv5q5ymj5" path="res://Develop/Debug/DebugSpawner.tscn" id="10_4vwhp"]
-[ext_resource type="PackedScene" uid="uid://dahmo14t7kdaw" path="res://Creatures/GroundCreature/GroundCreature.tscn" id="11_i038n"]
 [ext_resource type="PackedScene" uid="uid://dn72d1sk48sje" path="res://Props/Berry/Berry.tscn" id="12_mefbr"]
+[ext_resource type="PackedScene" uid="uid://dv8j5pa12ji3j" path="res://Develop/CreatureSpawner.tscn" id="12_pigs0"]
 [ext_resource type="PackedScene" uid="uid://7dl7i5dhd4uy" path="res://Creatures/UI/StatBars.tscn" id="13_m6xet"]
 [ext_resource type="Script" path="res://LowLevelState/low_level_state_manager.gd" id="14_hwxn8"]
+[ext_resource type="PackedScene" uid="uid://nef80b77kgwm" path="res://Develop/CycleManager.tscn" id="14_ocaue"]
+[ext_resource type="PackedScene" uid="uid://b06qwc2b30okt" path="res://Develop/Debug/ChromosomeDebug.tscn" id="15_j7x86"]
 
 [node name="Main" type="Node"]
 
 [node name="Camera" parent="." instance=ExtResource("1_vehll")]
 position = Vector2(606, 344)
-script = ExtResource("2_6sebl")
 
 [node name="Biome" type="Node2D" parent="."]
 script = ExtResource("3_aaqei")
 
 [node name="HighLevelStateManager" parent="Biome" instance=ExtResource("4_2joy4")]
+
+[node name="CycleManager" parent="Biome" instance=ExtResource("14_ocaue")]
 
 [node name="Zone_1" type="Node2D" parent="Biome"]
 script = ExtResource("5_ewwww")
@@ -121,14 +123,36 @@ draw_graph = true
 
 [node name="LowLevelStateManager" parent="Biome/Zone_2" instance=ExtResource("9_oxtyg")]
 
-[node name="DebugSpawner" parent="Biome/Zone_2" node_paths=PackedStringArray("zone_props") instance=ExtResource("10_4vwhp")]
-position = Vector2(8, 17)
-zone_props = NodePath("../ZoneProps")
-
 [node name="ZoneProps" type="Node2D" parent="Biome/Zone_2"]
 
-[node name="Creature1" parent="Biome/Zone_2/ZoneProps" instance=ExtResource("11_i038n")]
-position = Vector2(82, 583)
+[node name="Berry" parent="Biome/Zone_2/ZoneProps" instance=ExtResource("12_mefbr")]
+position = Vector2(376, 236)
+
+[node name="Berry2" parent="Biome/Zone_2/ZoneProps" instance=ExtResource("12_mefbr")]
+position = Vector2(234, 324)
+
+[node name="Berry3" parent="Biome/Zone_2/ZoneProps" instance=ExtResource("12_mefbr")]
+position = Vector2(360, 522)
+
+[node name="Berry4" parent="Biome/Zone_2/ZoneProps" instance=ExtResource("12_mefbr")]
+position = Vector2(214, 522)
+
+[node name="Berry5" parent="Biome/Zone_2/ZoneProps" instance=ExtResource("12_mefbr")]
+position = Vector2(414, 584)
+
+[node name="Berry6" parent="Biome/Zone_2/ZoneProps" instance=ExtResource("12_mefbr")]
+position = Vector2(913, 365)
+
+[node name="Berry7" parent="Biome/Zone_2/ZoneProps" instance=ExtResource("12_mefbr")]
+position = Vector2(1138, 235)
+
+[node name="Berry8" parent="Biome/Zone_2/ZoneProps" instance=ExtResource("12_mefbr")]
+position = Vector2(830, 233)
+
+[node name="CreatureSpawners" type="Node2D" parent="Biome/Zone_2"]
+
+[node name="CreatureSpawner" parent="Biome/Zone_2/CreatureSpawners" instance=ExtResource("12_pigs0")]
+position = Vector2(662, 232)
 
 [node name="Randomicer" type="Timer" parent="Biome/Zone_2"]
 wait_time = 10.0
@@ -152,9 +176,6 @@ position = Vector2(243.75, -4.25)
 scale = Vector2(2.24, 0.33)
 other_side = NodePath("../../../../Zone_2/TileMap/Doors/Door_2_3")
 
-[node name="CollisionShape2D" parent="Biome/Zone_3/TileMap/Doors/Door_3_2" index="0"]
-scale = Vector2(1, 1)
-
 [node name="ExitSpawn" parent="Biome/Zone_3/TileMap/Doors/Door_3_2" index="1"]
 position = Vector2(-0.11161, 38.6364)
 
@@ -164,7 +185,6 @@ scale = Vector2(2.24, 0.52)
 
 [node name="CollisionShape2D" parent="Biome/Zone_3/TileMap/Doors/Door_3_3" index="0"]
 position = Vector2(0, -9.80688)
-scale = Vector2(1, 1)
 
 [node name="ExitSpawn" parent="Biome/Zone_3/TileMap/Doors/Door_3_3" index="1"]
 position = Vector2(-4.79911, -22.7273)
@@ -195,11 +215,17 @@ position = Vector2(210, 227)
 [node name="Randomicer" type="Timer" parent="Biome/Zone_3"]
 wait_time = 10.0
 
+[node name="DebugSpawner" parent="Biome" node_paths=PackedStringArray("zone_props") instance=ExtResource("10_4vwhp")]
+position = Vector2(1306, 17)
+zone_props = NodePath("../Zone_2/ZoneProps")
+
 [node name="UI" type="CanvasLayer" parent="."]
 
-[node name="StatBars" parent="UI" node_paths=PackedStringArray("character") instance=ExtResource("13_m6xet")]
-character = NodePath("../../Biome/Zone_2/ZoneProps/Creature1")
+[node name="StatBars" parent="UI" instance=ExtResource("13_m6xet")]
 metadata/_edit_use_anchors_ = true
+
+[node name="ChromosomeDebug" parent="UI" instance=ExtResource("15_j7x86")]
+visible = false
 
 [connection signal="timeout" from="Biome/Zone_1/Randomicer" to="Biome/Zone_1" method="_on_randomicer_timeout"]
 [connection signal="timeout" from="Biome/Zone_2/Randomicer" to="Biome/Zone_2" method="_on_randomicer_timeout"]

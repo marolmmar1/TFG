@@ -44,7 +44,7 @@ corner_radius_top_right = 5
 corner_radius_bottom_right = 5
 corner_radius_bottom_left = 5
 
-[node name="DebugStatBars" type="Control"]
+[node name="DebugStatBars" type="Control" groups=["StatBars"]]
 layout_mode = 3
 anchors_preset = 0
 size_flags_vertical = 4
@@ -143,4 +143,22 @@ text = "Sleep"
 horizontal_alignment = 1
 vertical_alignment = 1
 
+[node name="ShowChromosome" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -37.0
+offset_top = -134.0
+offset_right = 36.0
+offset_bottom = -98.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 8
+text = "Show 
+chromosome"
+
 [connection signal="timeout" from="Timer" to="HealthBar" method="_on_timer_timeout"]
+[connection signal="button_down" from="ShowChromosome" to="." method="_on_show_chromosome_button_down"]

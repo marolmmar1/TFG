@@ -38,8 +38,8 @@ func change_zone(body: CharacterBody2D, exit: Door, enter: Door):
 		var zone_left = exit.get_parent().get_parent().get_parent()
 		var zone_entered = enter.get_parent().get_parent().get_parent()
 
-		zone_left.find_child("ZoneProps").remove_child(body)
-		zone_entered.find_child("ZoneProps").add_child(body)
+		zone_left.find_child("ZoneProps").remove_child.call_deferred(body)
+		zone_entered.find_child("ZoneProps").add_child.call_deferred(body)
 		zone_entered.on_creature_enter.emit(body)
 
 		body.astar_graph = zone_entered.astar_graph

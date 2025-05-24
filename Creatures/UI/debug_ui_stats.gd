@@ -25,3 +25,7 @@ func _process(delta):
 
 	if character.controller.current_state:
 		state_lavel.text = character.controller.current_state.name
+
+func _on_show_chromosome_button_down() -> void:
+	if get_parent().find_child("ChromosomeDebug"):
+		get_parent().find_child("ChromosomeDebug").on_chromosome_selected.emit(character.ai.chromosome)

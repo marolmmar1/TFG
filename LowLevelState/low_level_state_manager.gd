@@ -201,6 +201,9 @@ func _draw():
 		if not item:
 			continue
 		for creature in creatures:
+			if not is_instance_valid(creature):
+				continue
+			
 			var color
 			if item.is_in_group("Food"):
 				color = Color(1, 0, 0)

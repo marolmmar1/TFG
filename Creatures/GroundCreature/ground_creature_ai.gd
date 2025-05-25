@@ -14,8 +14,7 @@ extends Node2D
 @onready var attack_action_controller = $LowLevelAI/AttackAction
 @onready var rest_action_controller = $LowLevelAI/RestAction
 @onready var leave_action_controller = $LowLevelAI/LeaveAction
-
-var high_level_state_manager:HighLevelStateManager
+@onready var high_level_state_manager:HighLevelStateManager = HighLevelStateManager.new()
 
 var astar_graph: Node2D:
 	get:
@@ -79,8 +78,7 @@ func init(_astar, _controller, _low_level_state_manager, _creature):
 #TODO pass to higher AI
 func tick():
 	var state = high_level_state_manager.get_state(creature.data)
-	var action = high_level_ai._greedy(state)
-
+	var action = high_level_ai._greedy(state, false)
 	if action:
 		if not current_high_level_action or not action.target_door == current_high_level_action.target_door:
 			var exit_node = astar_graph.get_exit_node(action.target_door)

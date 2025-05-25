@@ -1,7 +1,7 @@
 extends Node2D
 
 @onready var berry := preload("res://Props/Berry/Berry.tscn")
-@onready var props = get_parent().get_parent().get_children()[4]
+@onready var props = get_parent().get_parent().find_child("ZoneProps")
 
 
 

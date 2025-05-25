@@ -29,7 +29,6 @@ func _ready():
 		for door in doors["doors"].values():
 			door.on_creature_changes_zone.connect(change_zone)
 	
-	
 func _process(delta):
 	pass
 
@@ -48,4 +47,5 @@ func change_zone(body: CharacterBody2D, exit: Door, enter: Door):
 		body.global_position = enter.get_node("ExitSpawn").global_position
 		# zone_left.visible = false
 		# zone_entered.visible = true
-	
+
+

@@ -54,8 +54,8 @@ func randomize_zone():
 	if berry_spawner != null:
 		var slots = berry_spawner.get_children()
 		var selector = range(0, slots.size()-1)
-		while berrys < slots.size():
-			var id= randi_range(0, selector.size())
+		while (berrys < slots.size() and (selector.size() >0)):
+			var id= randi_range(0, selector.size()-1)
 			slots[id].spawn()
 			selector.remove_at(id)
 			berrys += 1

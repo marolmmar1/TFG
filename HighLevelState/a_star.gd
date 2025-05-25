@@ -1,7 +1,7 @@
 extends Node
 class_name HLAStar
 
-func a_star(graph: Dictionary, start: ZoneClass, goal: ZoneClass) -> Array:
+func a_star(graph: Dictionary, start: ZoneClass, goal: ZoneClass, markov:Markov = null) -> Array:
 	print("astar from: ", start.name, " to: ", goal.name)
 	var open_set = [start]  # Nodes to explore
 	var came_from = {}  # Tracks the best path
@@ -27,7 +27,11 @@ func a_star(graph: Dictionary, start: ZoneClass, goal: ZoneClass) -> Array:
 			return reconstruct_path(came_from, current)
 
 		for neighbor in get_neighbors(graph, current):
-			var tentative_g_score = g_score[current] + get_edge_weight(graph, current, neighbor)
+			var tentative_g_score = 0
+			if markov == null:
+				tentative_g_score = g_score[current] + get_edge_weight(graph, current, neighbor)
+			else:
+				tentative_g_score = g_score[current] + 50/markov.q_table[[current, neighbor]]
 
 			if tentative_g_score < g_score[neighbor]:
 				came_from[neighbor] = current
@@ -60,12 +64,11 @@ func get_edge_weight(graph: Dictionary, zone_a: ZoneClass, zone_b: ZoneClass) ->
 	for edge in graph["edges"]:
 		if graph.keys().has(edge[0]) and graph.keys().has(edge[1]):
 			if edge[0] == zone_a and edge[1] == zone_b:
-				return graph[edge[1]]["threat_level"]  # Weight is the threat level of the second zone
+				return float(graph[edge[1]]["threat_level"] ) # Weight is the threat level of the second zone
 			elif edge[1] == zone_a and edge[0] == zone_b:
-				return graph[edge[0]]["threat_level"]
+				return float(graph[edge[0]]["threat_level"])
 		else:
 			if edge[0] == zone_a and edge[1] == zone_b:
-				print("comprobar grafo:", graph.keys())
 				return edge[1].threat_level  # Weight is the threat level of the second zone
 			elif edge[1] == zone_a and edge[0] == zone_b:
 				return edge[0].threat_level  # Reverse edge case
@@ -82,3 +85,4 @@ static func heuristic(a: ZoneClass, b: ZoneClass):
 static func get_tilemap_corner_distance(tilemap: TileMap) -> float:
 	var tilemap_size:float = 1245.14
 	return tilemap_size
+	

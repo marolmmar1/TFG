@@ -23,7 +23,9 @@ func get_connected_zones(zone: ZoneClass, creature: CreatureData) -> Array:
 
 func get_heuristic(zone: ZoneClass, creature: CreatureData):
 	if creature.memory.has(zone):
-		return creature.memory[zone]
+		#var value =(creature.memory[zone]["threat_level"] + creature.memory[zone]["food_amount"])/2.0
+		var value = creature.health/creature.memory[zone]["threat_level"] + creature.memory[zone]["food_amount"]/creature.food
+		return roundf(value)
 	return 0
 
 func choose_action(state: ZoneClass, creature: CreatureData) -> ZoneClass:
@@ -80,6 +82,7 @@ func run_q_learning(creature: CreatureData):
 			if action == get_best_heuristic_zone(creature):
 				break
 			state = next_state
+	#return get_best_path(creature)
 
 func print_q_table():
 	var res = "{"
@@ -92,6 +95,14 @@ func print_q_table():
 		res += row
 	res += "}"
 	print(res)
+
+func get_best_path(creature: CreatureData):
+	var current_zone = creature.current_zone
+	var garph = {"zones": creature.memory["zones"], "edges": creature.memory["edges"]}
+	var astar = HLAStar.new()
+	print(current_zone.name, get_best_heuristic_zone(creature).name)
+	var path = astar.a_star(garph, current_zone, get_best_heuristic_zone(creature), self)
+	return path
 
 # if not in memory,adds zones adjacent to current zone and expects a medium threat level and food ammount
 func compose_matix(creature: CreatureData, debug =false):

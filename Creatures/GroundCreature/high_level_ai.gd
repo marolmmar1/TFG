@@ -101,7 +101,16 @@ func debug_algorithms():
 			max = zone._get_zone_value()
 			distance=zone.distance
 			best_zone=zone
-	var results = {"algorithm":["Q-learning","A*"],
+	var id = ""
+	for value in Time.get_datetime_dict_from_system().values():
+		if id == "":
+			id += str(value)
+		if !(value is bool):
+			id += "-" + str(value)
+	id += "-" + str(Time.get_ticks_usec())
+	var results = {
+		"id": [id,id],
+		"algorithm":["Q-learning","A*"],
 		"time":[0.0,0.0],
 		"graph_size":[debugData.memory["zones"].size(),debugData.memory["zones"].size()],
 		"route heuristic": [0,0],
@@ -111,17 +120,17 @@ func debug_algorithms():
 		"episodes":[0,0]
 		}
 	var markov = Markov.new()
-	var start_time := Time.get_ticks_usec()
-	markov.run_q_learning(debugData)
-	var markov_config = [randf(),randf(),randf(),randi_range(0,1000)]
-	markov.alpha = markov_config[0]
+	#var markov_config = stress_test_markov(high_level_state_manager, debugData, best_zone,id)
+	#markov.alpha = markov_config[0]
 	results["alpha"][0] = markov.alpha
-	markov.gamma = markov_config[1]
+	#markov.gamma = markov_config[1]
 	results["gamma"][0] = markov.gamma
-	markov.epsilon = markov_config[2]
+	#markov.epsilon = markov_config[2]
 	results["epsilon"][0] = markov.epsilon
-	markov.episodes = markov_config[3]
+	#markov.episodes = markov_config[3]
 	results["episodes"][0] = markov.episodes
+	var start_time := Time.get_ticks_usec()
+	var mpath =markov.run_q_learning(debugData)
 	var end_time := Time.get_ticks_usec()
 	var elapsed_usec := end_time - start_time
 	results["time"][0] = float(elapsed_usec) / 1_000_000.0
@@ -132,23 +141,62 @@ func debug_algorithms():
 	end_time = Time.get_ticks_usec()
 	elapsed_usec = end_time - start_time
 	results["time"][1] = float(elapsed_usec) / 1_000_000.0
-	var mpath = markov.get_best_path(debugData)
 	results["route heuristic"][0] = path_effort(mpath, debugData)
 	results["route heuristic"][1] = path_effort(next_zone, debugData)
 	write_or_append_csv("debug.csv", results)
 	
+func stress_test_markov(high_level_state_manager, debugData, best_zone,id):
+	var results = {
+		"id": [],
+		"algorithm":[],
+		"time":[],
+		"graph_size":[debugData.memory["zones"].size(),debugData.memory["zones"].size()],
+		"route heuristic": [],
+		"alpha":[],
+		"gamma":[],
+		"epsilon":[],
+		"episodes":[]
+		}
+	var markov = Markov.new()
+	var best_config = []
+	var max = 0
+	for i in range(10):
+		results["id"].append(id)
+		results["algorithm"].append("Q-learning")
+		var markov_config = [.7,.1,.1,500]
+		#markov.alpha = markov_config[0]
+		results["alpha"].append(markov.alpha)
+		#markov.gamma = markov_config[1]
+		results["gamma"].append(markov.gamma)
+		#markov.epsilon = markov_config[2]
+		results["epsilon"].append(markov.epsilon)
+		#markov.episodes = markov_config[3]
+		results["episodes"].append(markov.episodes)
+		var start_time := Time.get_ticks_usec()
+		var mpath = markov.run_q_learning(debugData)
+		var end_time := Time.get_ticks_usec()
+		var elapsed_usec := end_time - start_time
+		results["time"].append(float(elapsed_usec) / 1_000_000.0)
+		var effort =path_effort(mpath, debugData)
+		if effort > max:
+			best_config = markov_config
+		results["route heuristic"].append(effort)
+	write_or_append_csv("markov-default.csv", results)
+	return best_config
+
 
 func path_effort(path, creature: CreatureData):
-	var goal = path[path.size()-1].food_amount
+	var goal = 0
+	if path.size()>0:
+		goal = path[path.size()-1].food_amount
 	var effort = data.stamina/path.size()
 	var risk = 0
 	for zone in path:
 		risk += zone.threat_level
-	risk = creature.health/risk
-	return goal + effort + risk
+	return goal + effort - risk
 
 func exportData(results):
-	print(results.keys().reduce(func(a, b): return str(a) + ", " + str(b)))
+	print(results.keys().reduce(func(a, b): return str(a) + "; " + str(b)))
 
 
 func write_or_append_csv(path: String, results) -> void:
@@ -156,21 +204,19 @@ func write_or_append_csv(path: String, results) -> void:
 	var file_exists := FileAccess.file_exists(path)
 	var file := FileAccess.open(path, FileAccess.READ_WRITE if file_exists else FileAccess.WRITE)
 	if not file:
-		print("Error: Could not open file at ", path)
 		return
 
 	if file_exists:
 		# Move to the end of the file to append data
-		print("file exists")
 		file.seek_end()
 	else:
 		# If file is new, write a header first
-		print(results.keys().reduce(func(a, b): return str(a) + ", " + str(b)))
 		file.store_line(results.keys().reduce(func(a, b): return str(a) + ", " + str(b)))
 
 	for i in [0,1]:
 		var storeData=[]
 		for key in results.keys():
 			storeData.append(results[key][i])
-		file.store_line("%s,%.4f,%d,%.4f,%.4f,%.4f,%.4f,%d" % storeData)
+		var formatted ="%s,%s,%.4f,%d,%.4f,%.4f,%.4f,%.4f,%d" % storeData
+		file.store_line(formatted)
 	file.close()

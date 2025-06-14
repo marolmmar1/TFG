@@ -5,7 +5,6 @@ var estimated_zones = []
 
 # Q-table: stores Q-values for (state, action) pairs
 var q_table := {}
-
 # Parameters
 var alpha := 0.1	# Learning rate
 var gamma := 0.9	# Discount factor
@@ -61,7 +60,9 @@ func reward_function(zone: ZoneClass, creature: CreatureData) -> float:
 	return get_heuristic(zone, creature)
 
 func run_q_learning(creature: CreatureData):
+	var path=[]
 	for i in range(episodes):
+		path=[]
 		var state = creature.current_zone
 		while true:
 			var action = choose_action(state, creature)
@@ -78,11 +79,11 @@ func run_q_learning(creature: CreatureData):
 			
 			var new_q = current_q + alpha * (reward + gamma * max_future_q - current_q)
 			q_table[[state, action]] = new_q
-			
+			path.append(state)
 			if action == get_best_heuristic_zone(creature):
 				break
 			state = next_state
-	#return get_best_path(creature)
+	return path
 
 func print_q_table():
 	var res = "{"

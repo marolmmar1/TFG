@@ -47,5 +47,3 @@ func change_zone(body: CharacterBody2D, exit: Door, enter: Door):
 		body.global_position = enter.get_node("ExitSpawn").global_position
 		# zone_left.visible = false
 		# zone_entered.visible = true
-
-

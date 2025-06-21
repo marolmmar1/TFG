@@ -107,7 +107,7 @@ func tick():
 	elif path and not path.is_empty():
 		last_dist = controller.position.distance_to(astar_graph.tmhelper.to_world_position(path[path_index].to))
 
-
+"""
 func _process(delta):
 	#Check if we have an action then act
 	if not current_low_level_action and not calculating_low_action:
@@ -135,7 +135,8 @@ func _process(delta):
 		if path and not path.is_empty():
 			check_path_progress()
 			calculate_movement()
-		
+	
+"""	
 
 
 func calculate_astar():

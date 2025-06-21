@@ -2,6 +2,7 @@ extends Node
 class_name Markov
 
 var estimated_zones = []
+var average_route_length = 0
 
 # Q-table: stores Q-values for (state, action) pairs
 var q_table := {}
@@ -10,6 +11,37 @@ var alpha := 0.1	# Learning rate
 var gamma := 0.9	# Discount factor
 var epsilon := 0.2	# Exploration rate
 var episodes := 100
+var objective: ZoneClass
+
+func _init():
+	estimated_zones = []
+	average_route_length = 0
+	q_table = {}
+	alpha = 0.1
+	gamma = 0.9
+	epsilon = 0.2
+	episodes = 100
+	objective = null
+
+func reward_function(zone: ZoneClass, creature: CreatureData, test: bool = false) -> float:
+	if test:
+		return get_test_reward(zone, creature)
+	return get_heuristic(zone, creature)
+
+func get_heuristic(previous_zone: ZoneClass, creature: CreatureData):
+	return creature.current_zone._zone_value() - previous_zone._zone_value()
+
+func get_test_reward(next_zone: ZoneClass, creature: CreatureData):
+	return get_test_zone_value(creature.current_zone, creature) - get_test_zone_value(next_zone, creature)
+
+func get_test_zone_value(zone: ZoneClass, creature: CreatureData):
+	return creature.memory[zone]["food_amount"] - creature.memory[zone]["threat_level"] - normalized_distance(zone,objective)
+
+static func normalized_distance(a: ZoneClass, b: ZoneClass):
+	var tilemap: TileMap = a.get_children()[0]
+	var tilemap_distance = 1245.14
+	var distance= abs(abs(a.get_global_position()) - abs(b.get_global_position()))
+	return sqrt(distance.x*distance.x+distance.y*distance.y)/tilemap_distance
 
 func get_connected_zones(zone: ZoneClass, creature: CreatureData) -> Array:
 	var connections = []
@@ -20,12 +52,6 @@ func get_connected_zones(zone: ZoneClass, creature: CreatureData) -> Array:
 			connections.append(edge[0])
 	return connections
 
-func get_heuristic(zone: ZoneClass, creature: CreatureData):
-	if creature.memory.has(zone):
-		#var value =(creature.memory[zone]["threat_level"] + creature.memory[zone]["food_amount"])/2.0
-		var value = creature.health/creature.memory[zone]["threat_level"] + creature.memory[zone]["food_amount"]/creature.food
-		return roundf(value)
-	return 0
 
 func choose_action(state: ZoneClass, creature: CreatureData) -> ZoneClass:
 	var actions = get_connected_zones(state, creature)
@@ -56,9 +82,6 @@ func get_best_heuristic_zone(creature: CreatureData) -> ZoneClass:
 	return best_zone
 
 
-func reward_function(zone: ZoneClass, creature: CreatureData) -> float:
-	return get_heuristic(zone, creature)
-
 func run_q_learning(creature: CreatureData):
 	var path=[]
 	for i in range(episodes):
@@ -76,13 +99,35 @@ func run_q_learning(creature: CreatureData):
 				var q = q_table.get([next_state, next_action], 0.0)
 				if q > max_future_q:
 					max_future_q = q
-			
 			var new_q = current_q + alpha * (reward + gamma * max_future_q - current_q)
 			q_table[[state, action]] = new_q
 			path.append(state)
 			if action == get_best_heuristic_zone(creature):
 				break
 			state = next_state
+	return path
+
+func run_test_q_learning(creature: CreatureData):	
+	var path=[]
+	for i in range(episodes):
+		path=[]
+		var state = creature.current_zone
+		while state != objective:
+			var action = choose_action(state, creature)
+			var reward = reward_function(action, creature, true)
+			var next_state = action
+			var current_q = q_table.get([state, action], 0.0)
+			var max_future_q = 0.0
+			for next_action in get_connected_zones(next_state,creature) + [next_state]:
+				var q = q_table.get([next_state, next_action], 0.0)
+				if q > max_future_q:
+					max_future_q = q
+			var new_q = current_q + alpha * (reward + gamma * max_future_q - current_q)
+			q_table[[state, action]] = new_q
+			path.append(action)
+			state = next_state
+		average_route_length = average_route_length + path.size()
+	average_route_length = average_route_length/episodes
 	return path
 
 func print_q_table():
@@ -97,27 +142,19 @@ func print_q_table():
 	res += "}"
 	print(res)
 
-func get_best_path(creature: CreatureData):
-	var current_zone = creature.current_zone
-	var garph = {"zones": creature.memory["zones"], "edges": creature.memory["edges"]}
-	var astar = HLAStar.new()
-	print(current_zone.name, get_best_heuristic_zone(creature).name)
-	var path = astar.a_star(garph, current_zone, get_best_heuristic_zone(creature), self)
-	return path
-
 # if not in memory,adds zones adjacent to current zone and expects a medium threat level and food ammount
 func compose_matix(creature: CreatureData, debug =false):
 	var actions = []
 	for door: Door in creature.current_zone.doors:
-					var other_side : ZoneClass = door.other_side.get_parent().get_parent().get_parent()
-					if not creature.memory.keys().has(other_side):
-						estimated_zones.append(other_side)
-						creature._update_memory(other_side)
-						creature.memory["zones"].append(other_side)
-						creature.memory["edges"].append([creature.current_zone, other_side])
-						creature.memory["edges"].append([other_side, creature.current_zone])
-						creature.memory[other_side]["threat_level"] = 2
-						creature.memory[other_side]["food_amount"] = 2
+		var other_side : ZoneClass = door.other_side.get_parent().get_parent().get_parent()
+		if not creature.memory.keys().has(other_side):
+			estimated_zones.append(other_side)
+			creature._update_memory(other_side)
+			creature.memory["zones"].append(other_side)
+			creature.memory["edges"].append([creature.current_zone, other_side])
+			creature.memory["edges"].append([other_side, creature.current_zone])
+			creature.memory[other_side]["threat_level"] = 2
+			creature.memory[other_side]["food_amount"] = 2
 	for origin in creature.memory["zones"]:
 		for destination in creature.memory["zones"]:				
 			actions.append({"origin": origin, "destination": destination})
@@ -125,33 +162,6 @@ func compose_matix(creature: CreatureData, debug =false):
 		print(action_value(creature, actions[1]))
 	return actions
 
-
-func build_weight_matrix(states: Array, edges: Array) -> Array:
-	var n = states.size()
-	var matrix = []
-	var weight = 1.00/(3**4)
-	var adjacency = {}
-	for edge in edges:
-		var a = edge[0]
-		var b = edge[1]
-		if !adjacency.has(a):
-			adjacency[a] = []
-		if !adjacency.has(b):
-			adjacency[b] = []
-		adjacency[a].append(b)
-		adjacency[b].append(a)
-
-	for i in range(n):
-		matrix.append([])
-		var id_i = states[i].current_zone.id
-		for j in range(n):
-			var id_j = states[j].current_zone.id
-			if id_i == id_j or (adjacency.has(id_i) and id_j in adjacency[id_i]):
-				matrix[i].append(weight)
-			else:
-				matrix[i].append(0.0)
-	
-	return matrix
 
 func quantize_creature_state(value, max_value)->int:
 	var quantized_value = 1
@@ -172,13 +182,3 @@ func action_value(creature: CreatureData, action: Dictionary):
 	for zone in path:
 		value -= creature.memory[zone]["threat_level"]
 	return value
-
-func restore_memory(creature: CreatureData, zones: Array):
-	for zone in zones:
-		if creature.memory.keys().has(zone):
-			creature.memory.erase(zone)
-			creature.memory["zones"].erase(zone)
-			for edge in creature.memory["edges"]:
-				if edge[0] == zone or edge[1] == zone:
-					creature.memory["edges"].erase(edge)
-	estimated_zones = []

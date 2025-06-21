@@ -84,29 +84,25 @@ func debug_algorithms():
 	var objective = select_objective_zone(debugData, high_level_state_manager)
 	advanced_agent.objective = objective.id
 	var results = compose_file_structure(debugData)
-	stress_test_markov(high_level_state_manager, debugData,results["id"][0])
-	"""
+	#stress_test_markov(high_level_state_manager, debugData,results["id"][0])
 	var qLearning_results = test_QLearning(debugData, results)
 	results = qLearning_results["results"]
 	var astarresults = test_astar(debugData, results, objective)
 	results = astarresults["results"]
 	results["route heuristic"][0] = path_effort(qLearning_results["path"], debugData)
 	results["route heuristic"][1] = path_effort(astarresults["path"], debugData)
-	write_or_append_csv("debug.csv", results)"""
+	write_or_append_csv("compare-test.csv", results)
+	
 	
 func test_QLearning(debugData: CreatureData, results , stress = false):
 	if stress:
 		return null
 	else:
-		#var markov_config = stress_test_markov(high_level_state_manager, debugData, best_zone,id)
-		#markov.alpha = markov_config[0]
-		results["alpha"][0] = advanced_agent.alpha
-		#markov.gamma = markov_config[1]
-		results["gamma"][0] = advanced_agent.gamma
-		#markov.epsilon = markov_config[2]
-		results["epsilon"][0] = advanced_agent.epsilon
-		#markov.episodes = markov_config[3]
-		results["episodes"][0] = advanced_agent.episodes
+		var markov_config = [.26,.55,.56,275]
+		advanced_agent.alpha = markov_config[0]
+		advanced_agent.gamma = markov_config[1]
+		advanced_agent.epsilon = markov_config[2]
+		advanced_agent.episodes = markov_config[3]
 		var start_time := Time.get_ticks_usec()
 		var mpath =advanced_agent.run_test_q_learning(debugData)
 		var end_time := Time.get_ticks_usec()
@@ -120,8 +116,8 @@ func test_astar(debugData: CreatureData, results, objective):
 	var next_zone =  basic_agent.a_star(debugData.memory, debugData.current_zone, objective.id)
 	var end_time := Time.get_ticks_usec()
 	var elapsed_usec := end_time - start_time
-	results["time"][0] = float(elapsed_usec) / 1_000_000.0
-	results["route length"][0] = next_zone.size()
+	results["time"][1] = float(elapsed_usec) / 1_000_000.0
+	results["route length"][1] = next_zone.size()
 	return {"results": results, "path": next_zone}
 
 func create_dummy(high_level_state_manager: HighLevelStateManager) -> CreatureData:
@@ -145,13 +141,15 @@ func stress_test_markov(high_level_state_manager, debugData,id):
 	var objective = select_objective_zone(debugData, high_level_state_manager).id
 	advanced_agent.objective = objective
 	var optimal_route_length = basic_agent.a_star(debugData.memory, debugData.current_zone, objective).size()
-	var test_cases = {
+	"""var test_cases = {
 		"baseline": [.1,.9,.2,100],
 		"alpha": [randf_range(0,1),.9,.2,100],
 		"gamma": [.1,randf_range(0,1),.2,100],
 		"epsilon": [.1,.9,randf_range(0,1),100],
-		"episodes": [.1,.9,.2,randi_range(1,500)]
-	}
+		"episodes": [.1,.9,.2,randi_range(1,500)],
+		"test_config": [.26,.55,.56,275]
+	}"""
+	var test_cases = {"test_baseline": [.1,.9,.2,100]}
 	for key in test_cases.keys():
 		var results = {
 			"id": [],
@@ -217,13 +215,8 @@ func compose_file_structure(debugData:CreatureData):
 		"id": [id,id],
 		"algorithm":["Q-learning","A*"],
 		"time":[0.0,0.0],
-		"graph_size":[debugData.memory["zones"].size(),debugData.memory["zones"].size()],
 		"route length":[0,0],
-		"route heuristic": [0,0],
-		"alpha":[0,0],
-		"gamma":[0,0],
-		"epsilon":[0,0],
-		"episodes":[0,0]
+		"route heuristic": [0,0]
 		}
 	return results
 
@@ -258,7 +251,7 @@ func write_or_append_csv(path: String, results) -> void:
 		var storeData=[]
 		for key in results.keys():
 			storeData.append(results[key][i])
-		var formatted ="%s,%s,%.4f,%d,%.4f,%.4f,%.4f,%.4f,%d" % storeData
+		var formatted ="%s,%s,%.4f,%d,%.6f" % storeData
 		file.store_line(formatted)
 	file.close()
 
@@ -301,5 +294,3 @@ func write_or_append_QLearning_csv(path: String, results: Dictionary) -> void:
 		file.store_line(",".join(row))
 
 	file.close()
-
-

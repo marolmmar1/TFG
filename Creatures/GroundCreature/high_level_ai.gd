@@ -4,10 +4,12 @@ extends Node
 var stop = true
 @onready var basic_agent = HLAStar.new()
 @onready var advanced_agent = Markov.new()
+var stress_test_intensity = 10
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	print(advanced_agent.print_q_table())
+	advanced_agent
 
 func _greedy(state: HighLevelState, debug = false)->LeaveAction:
 	if state.current_zone._get_zone_value() >= 2 and state.health>=2 and state.stamina>=1 and state.food>=1:
@@ -39,10 +41,6 @@ func _greedy_leave_or_explore(state: HighLevelState, debug=false)->LeaveAction:
 			var astar = HLAStar.new()
 			var next_zone =  astar.a_star(data.memory, data.current_zone, best_zone.id)[1]
 			print("greedy")
-			if(randi_range(1,2)==1):
-				next_zone= astar.a_star(data.memory, data.current_zone, best_zone.id)[1]
-			else:
-				markov()
 			var leave = LeaveAction.new()
 			leave.choose_target(data.current_zone, next_zone)
 			return leave
@@ -129,7 +127,6 @@ func test_astar(debugData: CreatureData, results, objective):
 func create_dummy(high_level_state_manager: HighLevelStateManager) -> CreatureData:
 	var debugData = CreatureData.new()
 	debugData.init(null, null, 0, 0, 0,0,0, 100, 100, 100,1, data.current_zone)
-	
 	var zone_graph = get_parent().get_parent().get_parent().get_parent().get_parent().zone_graph
 	debugData.memory["zones"] = zone_graph.get("zones")
 	debugData.memory["edges"] = zone_graph.get("edges")
@@ -144,54 +141,54 @@ func randomize_memory(debugData:CreatureData):
 
 
 func stress_test_markov(high_level_state_manager, debugData,id):
-	var results = {
-		"id": [],
-		"algorithm":[],
-		"time":[],
-		"graph_size":[debugData.memory["zones"].size(),debugData.memory["zones"].size()],
-		"route heuristic": [],
-		"route length": [],
-		"avg route length": [],
-		"alpha":[],
-		"gamma":[],
-		"epsilon":[],
-		"episodes":[]
-		}
-	var best_config = []
-	var max = 0
 	debugData.memory = randomize_memory(debugData)
 	var objective = select_objective_zone(debugData, high_level_state_manager).id
 	advanced_agent.objective = objective
-	for i in range(1):
-		results["id"].append(id)
-		results["algorithm"].append("Q-learning")
-		#var markov_config = [.1,randf_range(0,1),.2,100]
-		var markov_config = [.1,.9,.2,10]
-		advanced_agent.alpha = markov_config[0]
-		results["alpha"].append(advanced_agent.alpha)
-		advanced_agent.gamma = markov_config[1]
-		results["gamma"].append(advanced_agent.gamma)
-		advanced_agent.epsilon = markov_config[2]
-		results["epsilon"].append(advanced_agent.epsilon)
-		advanced_agent.episodes = markov_config[3]
-		results["episodes"].append(advanced_agent.episodes)
-		var start_time := Time.get_ticks_usec()
-		var mpath = advanced_agent.run_test_q_learning(debugData)
-		"""print("from " + str(debugData.current_zone.name) + " to " + str(objective.name))
-		print("--------------------")
-		for zone in mpath:
-			print(zone.name	)"""
-		"""var end_time := Time.get_ticks_usec()
-		var elapsed_usec := end_time - start_time
-		results["time"].append(float(elapsed_usec) / 1_000_000.0)
-		var effort =path_effort(mpath, debugData)
-		results["route length"].append(mpath.size())
-		results["avg route length"].append(advanced_agent.average_route_length)
-		if effort > max:
-			best_config = markov_config
-		results["route heuristic"].append(effort)
-	write_or_append_QLearning_csv("advanced_agent-baseline.csv", results)"""
-	return best_config
+	var optimal_route_length = basic_agent.a_star(debugData.memory, debugData.current_zone, objective).size()
+	var test_cases = {
+		"baseline": [.1,.9,.2,100],
+		"alpha": [randf_range(0,1),.9,.2,100],
+		"gamma": [.1,randf_range(0,1),.2,100],
+		"epsilon": [.1,.9,randf_range(0,1),100],
+		"episodes": [.1,.9,.2,randi_range(1,500)]
+	}
+	for key in test_cases.keys():
+		var results = {
+			"id": [],
+			"algorithm":[],
+			"time":[],
+			"route heuristic": [],
+			"route deviation": [],
+			"avg route length": [],
+			"alpha":[],
+			"gamma":[],
+			"epsilon":[],
+			"episodes":[]
+		}
+		for i in range(stress_test_intensity):
+			results["id"].append(key+"_test_"+id)	
+			results["algorithm"].append("Q-learning")
+			#var markov_config = [.1,randf_range(0,1),.2,100]
+			var markov_config = test_cases[key]
+			advanced_agent.alpha = markov_config[0]
+			results["alpha"].append(advanced_agent.alpha)
+			advanced_agent.gamma = markov_config[1]
+			results["gamma"].append(advanced_agent.gamma)
+			advanced_agent.epsilon = markov_config[2]
+			results["epsilon"].append(advanced_agent.epsilon)
+			advanced_agent.episodes = markov_config[3]
+			results["episodes"].append(advanced_agent.episodes)
+			var start_time := Time.get_ticks_usec()
+			var mpath = advanced_agent.run_test_q_learning(debugData)
+			var end_time := Time.get_ticks_usec()
+			var elapsed_usec := end_time - start_time
+			results["time"].append(float(elapsed_usec) / 1_000_000.0)
+			var effort =path_effort(mpath, debugData)
+			results["route deviation"].append(mpath.size()- optimal_route_length)
+			results["avg route length"].append(advanced_agent.average_route_length)
+			results["route heuristic"].append(effort)
+		var fileName = "advanced_agent"+key+".csv"
+		write_or_append_QLearning_csv(fileName, results)
 
 func select_objective_zone(debugData: CreatureData, high_level_state_manager : HighLevelStateManager):
 	var best_zone
@@ -261,28 +258,48 @@ func write_or_append_csv(path: String, results) -> void:
 		var storeData=[]
 		for key in results.keys():
 			storeData.append(results[key][i])
-		var formatted ="%s,%s,%.4f,%d,%d,%.4f,%.4f,%.4f,%.4f,%d" % storeData
+		var formatted ="%s,%s,%.4f,%d,%.4f,%.4f,%.4f,%.4f,%d" % storeData
 		file.store_line(formatted)
 	file.close()
 
-func write_or_append_QLearning_csv(path: String, results) -> void:
+func write_or_append_QLearning_csv(path: String, results: Dictionary) -> void:
+	const stress_test_intensity := 10
+
 	path = "user://" + path
 	var file_exists := FileAccess.file_exists(path)
 	var file := FileAccess.open(path, FileAccess.READ_WRITE if file_exists else FileAccess.WRITE)
 	if not file:
+		printerr("No se pudo abrir el archivo: ", path)
 		return
 
-	if file_exists:
-		# Move to the end of the file to append data
-		file.seek_end()
-	else:
-		# If file is new, write a header first
-		file.store_line(results.keys().reduce(func(a, b): return str(a) + ", " + str(b)))
+	var keys := results.keys()
 
-	for i in [0,1]:
-		var storeData=[]
-		for key in results.keys():
-			storeData.append(results[key][i])
-		var formatted ="%s,%s,%.4f,%d,%.4f,%d,%.4f,%.4f,%.4f,%.4f,%d" % storeData
-		file.store_line(formatted)
+	if not file_exists:
+		# Escribir encabezado
+		file.store_line(",".join(keys))
+	else:
+		# Mover al final del archivo para agregar datos
+		file.seek_end()
+
+	for i in range(stress_test_intensity):
+		var row := []
+		for key in keys:
+			if i < results[key].size():
+				var value = results[key][i]
+				match typeof(value):
+					TYPE_FLOAT:
+						row.append("%.4f" % value)
+					TYPE_INT:
+						row.append(str(value))
+					TYPE_STRING:
+						row.append(value)
+					_:
+						row.append(str(value))  # Fallback
+			else:
+				row.append("")  # Valor vacío si falta
+
+		file.store_line(",".join(row))
+
 	file.close()
+
+

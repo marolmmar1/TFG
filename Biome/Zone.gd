@@ -69,3 +69,10 @@ func _zone_value():
 
 func _to_string():
 	return self.name+", Type: " + ZoneType.keys()[type] + ", Threat level: " + str(threat_level) + ", Food amount: " + str(food_amount)
+
+func get_connected_zones():
+	var connected_zones = []
+	for door in self.find_child("Doors").get_children():
+			var connected_zone = door.other_side.get_parent().get_parent().get_parent()
+			connected_zones.append(connected_zone)
+	return connected_zones
